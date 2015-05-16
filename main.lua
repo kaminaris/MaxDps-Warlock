@@ -25,7 +25,7 @@ local isDemonbolt = false;
 ----------------------------------------------
 -- Pre enable, checking talents
 ----------------------------------------------
-TDWarlockDps_CheckTalents = function()
+TDDps_Warlock_CheckTalents = function()
 	isCataclysm = TDTalentEnabled('Cataclysm');
 	isDemonbolt = TDTalentEnabled('Demonbolt');
 	isGrimoireOfService = TDTalentEnabled('Grimoire of Service');
@@ -34,12 +34,18 @@ end
 ----------------------------------------------
 -- Enabling Addon
 ----------------------------------------------
-function TDWarlockDps_EnableAddon(mode)
+function TDDps_Warlock_EnableAddon(mode)
 	mode = mode or 1;
-	_TD['DPS_Description'] = 'TD Warlock DPS supports: Elemental';
-	_TD['DPS_OnEnable'] = TDWarlockDps_CheckTalents;
+	_TD['DPS_Description'] = 'TD Warlock DPS supports: Affliction, Demonology, Destruction';
+	_TD['DPS_OnEnable'] = TDDps_Warlock_CheckTalents;
 	if mode == 1 then
-		_TD['DPS_NextSpell'] = TDWarlockDps_Demonology
+		_TD['DPS_NextSpell'] = TDDps_Warlock_Affliction
+	end;
+	if mode == 2 then
+		_TD['DPS_NextSpell'] = TDDps_Warlock_Demonology
+	end;
+	if mode == 3 then
+		_TD['DPS_NextSpell'] = TDDps_Warlock_Destruction
 	end;
 	TDDps_EnableAddon();
 end
@@ -47,15 +53,15 @@ end
 ----------------------------------------------
 -- Main rotation: Demonology
 ----------------------------------------------
-TDWarlockDps_Demonology = function()
+TDDps_Warlock_Demonology = function()
 
 	local timeShift, casting = TDEndCast();
 
-	local meta = TDWarlockDps_Metamorphosis();
+	local meta = TDDps_Warlock_Metamorphosis();
 	local fury = UnitPower('player', 15);
 	local corruption = TDTargetAura(_Corruption, timeShift + 4);
 	local dsCD, dsCharges, dsMax = TDDps_SpellCharges(_DarkSoul);
-	local moltenCore = TDWarlockDps_MoltenCore();
+	local moltenCore = TDDps_Warlock_MoltenCore();
 	local targetPh = TD_TargetPercentHealth();
 	local doom = TDTargetAura('Doom', timeShift + 18);
 	local hogCD, hogCharges, hogMax = TDDps_SpellCharges(_HandOfGuldan);
@@ -132,13 +138,12 @@ TDWarlockDps_Demonology = function()
 	end
 	
 	return _ShadowBolt;
-	
 end
 
 ----------------------------------------------
 -- Molten Core stacks
 ----------------------------------------------
-function TDWarlockDps_MoltenCore()
+function TDDps_Warlock_MoltenCore()
 	local _, _, _, count, _, _, expirationTime = UnitAura('player', 'Molten Core'); 
 	if expirationTime ~= nil and (expirationTime - GetTime()) > 0.2 then
 		return count;
@@ -149,7 +154,7 @@ end
 ----------------------------------------------
 -- Is in Metamorphosis
 ----------------------------------------------
-function TDWarlockDps_Metamorphosis()
+function TDDps_Warlock_Metamorphosis()
 	local is = UnitAura('player', 'Metamorphosis');
 	return is == 'Metamorphosis';
 end
