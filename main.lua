@@ -26,9 +26,9 @@ local isDemonbolt = false;
 -- Pre enable, checking talents
 ----------------------------------------------
 TDDps_Warlock_CheckTalents = function()
-	isCataclysm = TDTalentEnabled('Cataclysm');
-	isDemonbolt = TDTalentEnabled('Demonbolt');
-	isGrimoireOfService = TDTalentEnabled('Grimoire of Service');
+	isCataclysm = TD_TalentEnabled('Cataclysm');
+	isDemonbolt = TD_TalentEnabled('Demonbolt');
+	isGrimoireOfService = TD_TalentEnabled('Grimoire of Service');
 end
 
 ----------------------------------------------
@@ -55,16 +55,17 @@ end
 ----------------------------------------------
 TDDps_Warlock_Demonology = function()
 
-	local timeShift, casting = TDEndCast();
-
+	local lcd, casting, gcd = TD_EndCast();
+	local timeShift = gcd + lcd;
+	
 	local meta = TDDps_Warlock_Metamorphosis();
 	local fury = UnitPower('player', 15);
-	local corruption = TDTargetAura(_Corruption, timeShift + 4);
-	local dsCD, dsCharges, dsMax = TDDps_SpellCharges(_DarkSoul);
+	local corruption = TD_TargetAura(_Corruption, timeShift + 4);
+	local dsCD, dsCharges, dsMax = TD_SpellCharges(_DarkSoul);
 	local moltenCore = TDDps_Warlock_MoltenCore();
 	local targetPh = TD_TargetPercentHealth();
-	local doom = TDTargetAura('Doom', timeShift + 18);
-	local hogCD, hogCharges, hogMax = TDDps_SpellCharges(_HandOfGuldan);
+	local doom = TD_TargetAura('Doom', timeShift + 18);
+	local hogCD, hogCharges, hogMax = TD_SpellCharges(_HandOfGuldan);
 
 	if casting == 'Soul Fire' and moltenCore > 0 then
 		moltenCore = moltenCore - 1;
@@ -80,11 +81,11 @@ TDDps_Warlock_Demonology = function()
 			return _Corruption; -- same slot as Doom
 		end
 	
-		if not TDTargetAura(_Corruption, timeShift + 8) then
+		if not TD_TargetAura(_Corruption, timeShift + 8) then
 			return _ShadowBolt; -- same slot as Touch of Chaos 
 		end
 		
-		if isCataclysm and TDDps_SpellCooldown(_Cataclysm, timeShift) then
+		if isCataclysm and TD_SpellAvailable(_Cataclysm, timeShift) then
 			return _Cataclysm;
 		end
 		
@@ -105,7 +106,7 @@ TDDps_Warlock_Demonology = function()
 		end
 	else
 		-- Not in metamorphosis
-		local hogDot = TDTargetAura(_HandOfGuldan, 3);
+		local hogDot = TD_TargetAura(_HandOfGuldan, 3);
 		
 		if not corruption then
 			return _Corruption;
