@@ -14,6 +14,7 @@ local _DarkSoulKnowledge	= 113861;
 local _GrimoireDoomguard	= 157900;
 local _Cataclysm			= 152108;
 local _DarkSoul				= 113861;
+local _Felstorm				= 119914;
 
 -- AURAS
 local _MoltenCore = 140074;
@@ -21,6 +22,13 @@ local _MoltenCore = 140074;
 local isCataclysm = false;
 local isGrimoireOfService = false;
 local isDemonbolt = false;
+
+-- Flags
+
+local _FlagCata = false;
+local _FlagDs = false;
+local _FlagGd = false;
+local _FlagFelstorm = false;
 
 ----------------------------------------------
 -- Pre enable, checking talents
@@ -62,13 +70,53 @@ TDDps_Warlock_Demonology = function()
 	local fury = UnitPower('player', 15);
 	local corruption = TD_TargetAura(_Corruption, timeShift + 4);
 	local dsCD, dsCharges, dsMax = TD_SpellCharges(_DarkSoul);
+	local gd = TD_SpellAvailable(_GrimoireDoomguard, timeShift);
+	local felstorm = TD_SpellAvailable(_Felstorm);
 	local moltenCore = TDDps_Warlock_MoltenCore();
 	local targetPh = TD_TargetPercentHealth();
 	local doom = TD_TargetAura('Doom', timeShift + 18);
 	local hogCD, hogCharges, hogMax = TD_SpellCharges(_HandOfGuldan);
-
+	local cata = TD_SpellAvailable(_Cataclysm, timeShift);
 	if casting == 'Soul Fire' and moltenCore > 0 then
 		moltenCore = moltenCore - 1;
+	end
+
+	if isCataclysm then
+		if cata and not _FlagCata then
+			_FlagCata = true;
+			TDButton_GlowIndependent(_Cataclysm, 'cata', 0, 1, 0);
+		end
+		if not cata and _FlagCata then
+			_FlagCata = false;
+			TDButton_ClearGlowIndependent(_Cataclysm, 'cata');
+		end
+	end
+
+	if gd and not _FlagGd then
+		_FlagGd = true;
+		TDButton_GlowIndependent(_GrimoireDoomguard, 'gd', 0, 1, 0);
+	end
+	if not gd and _FlagGd then
+		_FlagGd = false;
+		TDButton_ClearGlowIndependent(_GrimoireDoomguard, 'gd');
+	end
+
+	if felstorm and not _FlagFelstorm then
+		_FlagFelstorm = true;
+		TDButton_GlowIndependent(_Felstorm, 'fs', 0, 1, 0);
+	end
+	if not felstorm and _FlagFelstorm then
+		_FlagFelstorm = false;
+		TDButton_ClearGlowIndependent(_Felstorm, 'fs');
+	end
+
+	if dsCharges > 0 and not _FlagDs then
+		_FlagDs = true;
+		TDButton_GlowIndependent(_DarkSoulKnowledge, 'ds', 0, 1, 0);
+	end
+	if dsCharges <= 0 and _FlagDs then
+		_FlagDs = false;
+		TDButton_ClearGlowIndependent(_DarkSoulKnowledge, 'ds');
 	end
 
 	if meta then
@@ -83,10 +131,6 @@ TDDps_Warlock_Demonology = function()
 	
 		if not TD_TargetAura(_Corruption, timeShift + 8) then
 			return _ShadowBolt; -- same slot as Touch of Chaos 
-		end
-		
-		if isCataclysm and TD_SpellAvailable(_Cataclysm, timeShift) then
-			return _Cataclysm;
 		end
 		
 		if not doom then
