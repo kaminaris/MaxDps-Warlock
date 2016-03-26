@@ -42,15 +42,6 @@ local isSoulburnHaunt = false;
 local isCharredRemains = false;
 local isDemonicServitude = false;
 
--- Flags
-
-local _FlagCata = false;
-local _FlagDs = false;
-local _FlagGd = false;
-local _FlagFelstorm = false;
-local _FlagDoom = false;
-local _FlagHavoc = false;
-
 ----------------------------------------------
 -- Pre enable, checking talents
 ----------------------------------------------
@@ -86,7 +77,6 @@ end
 -- Main rotation: Affliction
 ----------------------------------------------
 TDDps_Warlock_Affliction = function()
-
 	local lcd, currentSpell, gcd = TD_EndCast();
 	local timeShift = lcd;
 	if gcd > timeShift then
@@ -161,7 +151,6 @@ end
 -- Main rotation: Demonology
 ----------------------------------------------
 TDDps_Warlock_Demonology = function()
-
 	local lcd, currentSpell, gcd = TD_EndCast();
 	local timeShift = lcd;
 	if gcd > timeShift then
@@ -171,6 +160,7 @@ TDDps_Warlock_Demonology = function()
 	local meta = TDDps_Warlock_Metamorphosis();
 	local fury = UnitPower('player', 15);
 	local corruption = TD_TargetAura(_Corruption, timeShift + 4);
+	local dsk = TD_TargetAura(_DarkSoulKnowledge, timeShift);
 	local dsCD, dsCharges, dsMax = TD_SpellCharges(_DarkSoulKnowledge);
 	local gd = TD_SpellAvailable(_GrimoireDoomguard, timeShift);
 	local felstorm = TD_SpellAvailable(_Felstorm);
@@ -184,42 +174,12 @@ TDDps_Warlock_Demonology = function()
 	end
 
 	if isCataclysm then
-		if cata and not _FlagCata then
-			_FlagCata = true;
-			TDButton_GlowIndependent(_Cataclysm, 'cata', 0, 1, 0);
-		end
-		if not cata and _FlagCata then
-			_FlagCata = false;
-			TDButton_ClearGlowIndependent(_Cataclysm, 'cata');
-		end
+		TDButton_GlowCooldown(_Cataclysm, cata);
 	end
 
-	if gd and not _FlagGd then
-		_FlagGd = true;
-		TDButton_GlowIndependent(_GrimoireDoomguard, 'gd', 0, 1, 0);
-	end
-	if not gd and _FlagGd then
-		_FlagGd = false;
-		TDButton_ClearGlowIndependent(_GrimoireDoomguard, 'gd');
-	end
-
-	if felstorm and not _FlagFelstorm then
-		_FlagFelstorm = true;
-		TDButton_GlowIndependent(_Felstorm, 'fs', 0, 1, 0);
-	end
-	if not felstorm and _FlagFelstorm then
-		_FlagFelstorm = false;
-		TDButton_ClearGlowIndependent(_Felstorm, 'fs');
-	end
-
-	if dsCharges > 0 and not _FlagDs then
-		_FlagDs = true;
-		TDButton_GlowIndependent(_DarkSoulKnowledge, 'ds', 0, 1, 0);
-	end
-	if dsCharges <= 0 and _FlagDs then
-		_FlagDs = false;
-		TDButton_ClearGlowIndependent(_DarkSoulKnowledge, 'ds');
-	end
+	TDButton_GlowCooldown(_GrimoireDoomguard, gd);
+	TDButton_GlowCooldown(_Felstorm, felstorm);
+	TDButton_GlowCooldown(_DarkSoulKnowledge, dsCharges > 0 and not dsk);
 
 	if meta then
 	
@@ -291,7 +251,6 @@ end
 -- Main rotation: Destruction
 ----------------------------------------------
 TDDps_Warlock_Destruction = function()
-
 	local lcd, currentSpell, gcd = TD_EndCast();
 	local timeShift = lcd;
 	if gcd > timeShift then
@@ -324,20 +283,12 @@ TDDps_Warlock_Destruction = function()
 	local targetPh = TD_TargetPercentHealth();
 	local cata = TD_SpellAvailable(_Cataclysm, timeShift);
 
-	if gd and not _FlagGd then
-		_FlagGd = true;
-		TDButton_GlowIndependent(_GrimoireDoomguard, 'gd', 0, 1, 0);
-	end
-	if not gd and _FlagGd then
-		_FlagGd = false;
-		TDButton_ClearGlowIndependent(_GrimoireDoomguard, 'gd');
-	end
-
 	if not isDemonicServitude then
 		TDButton_GlowCooldown(_SummonDoomguard, doomguard);
 	end
 
-	TDButton_GlowCooldown(_SummonDoomguard, dsCharges > 0);
+	TDButton_GlowCooldown(_GrimoireDoomguard, gd);
+	TDButton_GlowCooldown(_DarkSoulInstability, dsCharges > 0 and not dsi);
 	TDButton_GlowCooldown(_Havoc, havoc);
 
 	local chaosFlag = (embers >= 35 or (isCharredRemains and embers > 25)) or (dsi and embers >= 10);
