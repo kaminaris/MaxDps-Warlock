@@ -77,11 +77,7 @@ end
 -- Main rotation: Affliction
 ----------------------------------------------
 TDDps_Warlock_Affliction = function()
-	local lcd, currentSpell, gcd = TD_EndCast();
-	local timeShift = lcd;
-	if gcd > timeShift then
-		timeShift = gcd;
-	end
+	local timeShift, currentSpell, gcd = TD_EndCast();
 
 	local shards = UnitPower('player', SPELL_POWER_SOUL_SHARDS);
 	local dsCD, dsCharges, dsMax = TD_SpellCharges(_DarkSoulMisery, timeShift);
@@ -151,11 +147,7 @@ end
 -- Main rotation: Demonology
 ----------------------------------------------
 TDDps_Warlock_Demonology = function()
-	local lcd, currentSpell, gcd = TD_EndCast();
-	local timeShift = lcd;
-	if gcd > timeShift then
-		timeShift = gcd;
-	end
+	local timeShift, currentSpell, gcd = TD_EndCast();
 
 	local meta = TDDps_Warlock_Metamorphosis();
 	local fury = UnitPower('player', 15);
@@ -251,11 +243,7 @@ end
 -- Main rotation: Destruction
 ----------------------------------------------
 TDDps_Warlock_Destruction = function()
-	local lcd, currentSpell, gcd = TD_EndCast();
-	local timeShift = lcd;
-	if gcd > timeShift then
-		timeShift = gcd;
-	end
+	local timeShift, currentSpell, gcd = TD_EndCast();
 
 	local embers = UnitPower('player', SPELL_POWER_BURNING_EMBERS, true);
 
@@ -338,6 +326,3 @@ function TDDps_Warlock_Metamorphosis()
 	local is = UnitAura('player', 'Metamorphosis');
 	return is == 'Metamorphosis';
 end
-
-
-

@@ -1,7 +1,7 @@
 ## Title: TDDps_Warlock
-## Version: 1.3
+## Version: 1.3.1
 ## Author: Kaminari
-## Interface: 61000
+## Interface: 60200
 ## Dependencies: TDDps
 ## LoadOnDemand: 1
 
