@@ -58,6 +58,9 @@ local isEradication = false;
 local isSummonDarkglare = false;
 local isSoulHarvest = false;
 
+local wasEra = false;
+local willBeEra = false;
+
 ----------------------------------------------
 -- Pre enable, checking talents
 ----------------------------------------------
@@ -194,9 +197,16 @@ TDDps_Warlock_Destruction = function()
 	local conCD, conCharges, conMax = TD_SpellCharges(_Conflagrate, timeShift);
 
 	local immo = TD_TargetAura(_Immolate, timeShift + 5);
+	local immo1 = TD_TargetAura(_Immolate, timeShift + 1);
 	local health = UnitHealth('target');
 
-	local era = TD_TargetAura(_Eradication, timeShift);
+	local era = TD_TargetAura(_Eradication, timeShift + 2);
+	if wasEra and not era then
+		-- eradication went off
+		willBeEra = false;
+	end
+	wasEra = era;
+
 	local mana = TD_Mana(0, timeShift);
 
 	local gd = TD_SpellAvailable(_GrimoireDoomguard, timeShift);
@@ -211,6 +221,7 @@ TDDps_Warlock_Destruction = function()
 	end
 
 	if currentSpell == 'Chaos Bolt' then
+		willBeEra = true;
 		ss = ss - 2;
 	end
 
@@ -221,7 +232,7 @@ TDDps_Warlock_Destruction = function()
 		return _LifeTap;
 	end
 
-	if not immo and currentSpell ~= 'Immolate' then
+	if not immo1 and currentSpell ~= 'Immolate' then
 		return _Immolate;
 	end
 
@@ -229,8 +240,16 @@ TDDps_Warlock_Destruction = function()
 		return _ChaosBolt;
 	end
 
+	if not immo and currentSpell ~= 'Immolate' then
+		return _Immolate;
+	end
+
 	if drCharges > 2 then
 		return _DimensionalRift
+	end
+
+	if ss >= 4 then
+		return _ChaosBolt;
 	end
 
 	if isShadowburn and health < 500000 and ss > 0 then
@@ -241,7 +260,7 @@ TDDps_Warlock_Destruction = function()
 		return _Conflagrate;
 	end
 
-	if isEradication and not era and ss > 1 and currentSpell ~= 'Chaos Bolt' then
+	if isEradication and not era and not willBeEra and ss > 1 and currentSpell ~= 'Chaos Bolt' then
 		return _ChaosBolt;
 	end
 
