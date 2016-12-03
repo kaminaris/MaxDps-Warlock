@@ -1,8 +1,0 @@
-## Title: TDDps_Warlock
-## Version: 1.4.1
-## Author: Kaminari
-## Interface: 70100
-## Dependencies: TDDps
-## LoadOnDemand: 1
-
-main.lua

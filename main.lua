@@ -1,7 +1,4 @@
-﻿-- Author      : Kaminari
--- Create Date : 10/27/2014 6:47:46 PM
-
--- NEW SPELLS
+﻿-- NEW SPELLS
 local _DimensionalRift = 196586;
 local _Eradication = 196412;
 local _LifeTap = 1454;
@@ -57,73 +54,64 @@ local isShadowburn = false;
 local isEradication = false;
 local isSummonDarkglare = false;
 local isSoulHarvest = false;
+local isHandofDoom = false;
 
 local wasEra = false;
 local willBeEra = false;
 
-----------------------------------------------
--- Pre enable, checking talents
-----------------------------------------------
-TDDps_Warlock_CheckTalents = function()
-	isCataclysm = TD_TalentEnabled('Cataclysm');
-	isDemonbolt = TD_TalentEnabled('Demonbolt');
-	isGrimoireOfService = TD_TalentEnabled('Grimoire of Service');
-	isSoulburnHaunt = TD_TalentEnabled('Soulburn: Haunt');
-	isCharredRemains = TD_TalentEnabled('Charred Remains');
-	isSummonDarkglare = TD_TalentEnabled('Summon Darkglare');
-	isSupremacy = TD_TalentEnabled('Grimoire of Supremacy');
-	isShadowburn = TD_TalentEnabled('Shadowburn');
-	isEradication = TD_TalentEnabled('Eradication');
-	isSoulHarvest = TD_TalentEnabled('Soul Harvest');
+MaxDps.Warlock = {};
+
+function MaxDps.Warlock.CheckTalents()
+	isCataclysm = MaxDps:TalentEnabled('Cataclysm');
+	isDemonbolt = MaxDps:TalentEnabled('Demonbolt');
+	isGrimoireOfService = MaxDps:TalentEnabled('Grimoire of Service');
+	isSoulburnHaunt = MaxDps:TalentEnabled('Soulburn: Haunt');
+	isCharredRemains = MaxDps:TalentEnabled('Charred Remains');
+	isSummonDarkglare = MaxDps:TalentEnabled('Summon Darkglare');
+	isSupremacy = MaxDps:TalentEnabled('Grimoire of Supremacy');
+	isShadowburn = MaxDps:TalentEnabled('Shadowburn');
+	isEradication = MaxDps:TalentEnabled('Eradication');
+	isHandofDoom = MaxDps:TalentEnabled('Hand of Doom');
+	isSoulHarvest = MaxDps:TalentEnabled('Soul Harvest');
 end
 
-----------------------------------------------
--- Enabling Addon
-----------------------------------------------
-function TDDps_Warlock_EnableAddon(mode)
+function MaxDps:EnableRotationModule(mode)
 	mode = mode or 1;
-	_TD['DPS_Description'] = 'TD Warlock DPS supports: Affliction, Demonology, Destruction';
-	_TD['DPS_OnEnable'] = TDDps_Warlock_CheckTalents;
+	MaxDps.Description = 'Warlock Module [Affliction, Demonology, Destruction]';
+	MaxDps.ModuleOnEnable = MaxDps.Warlock.CheckTalents;
 	if mode == 1 then
-		_TD['DPS_NextSpell'] = TDDps_Warlock_Affliction
+		MaxDps.NextSpell = MaxDps.Warlock.Affliction
 	end;
 	if mode == 2 then
-		_TD['DPS_NextSpell'] = TDDps_Warlock_Demonology
+		MaxDps.NextSpell = MaxDps.Warlock.Demonology
 	end;
 	if mode == 3 then
-		_TD['DPS_NextSpell'] = TDDps_Warlock_Destruction
+		MaxDps.NextSpell = MaxDps.Warlock.Destruction
 	end;
-	TDDps_EnableAddon();
 end
 
-----------------------------------------------
--- Main rotation: Affliction
-----------------------------------------------
-TDDps_Warlock_Affliction = function()
-	local timeShift, currentSpell, gcd = TD_EndCast();
+function MaxDps.Warlock.Affliction()
+	local timeShift, currentSpell, gcd = MaxDps:EndCast();
 
 	return _DrainSoul;
 end
 
-----------------------------------------------
--- Main rotation: Demonology
-----------------------------------------------
-TDDps_Warlock_Demonology = function()
-	local timeShift, currentSpell, gcd = TD_EndCast();
+function MaxDps.Warlock.Demonology()
+	local timeShift, currentSpell, gcd = MaxDps:EndCast();
 
 	local ss = UnitPower('player', SPELL_POWER_SOUL_SHARDS);
-	local mana = TD_Mana(0, timeShift)
+	local mana = MaxDps:Mana(0, timeShift)
 
-	local doom = TD_TargetAura(_Doom, timeShift + 5);
-	local demoEmp = TD_UnitAura(_DemonicEmpowerment, timeShift + 5, 'pet');
+	local doom = MaxDps:TargetAura(_Doom, timeShift + 5);
+	local demoEmp = MaxDps:UnitAura(_DemonicEmpowerment, timeShift + 5, 'pet');
 
-	local sdk = TD_SpellAvailable(_SummonDarkglare, timeShift);
-	local callD = TD_SpellAvailable(_CallDreadstalkers, timeShift);
-	local felg = TD_SpellAvailable(_GrimoireFelguard, timeShift);
-	local harv = TD_SpellAvailable(_SoulHarvest, timeShift);
-	local doomguard = TD_SpellAvailable(_SummonDoomguard, timeShift);
-	local tk = TD_SpellAvailable(_ThalkielsConsumption, timeShift);
-	local felstorm = TD_SpellAvailable(_Felstorm, timeShift);
+	local sdk = MaxDps:SpellAvailable(_SummonDarkglare, timeShift);
+	local callD = MaxDps:SpellAvailable(_CallDreadstalkers, timeShift);
+	local felg = MaxDps:SpellAvailable(_GrimoireFelguard, timeShift);
+	local harv = MaxDps:SpellAvailable(_SoulHarvest, timeShift);
+	local doomguard = MaxDps:SpellAvailable(_SummonDoomguard, timeShift);
+	local tk = MaxDps:SpellAvailable(_ThalkielsConsumption, timeShift);
+	local felstorm = MaxDps:SpellAvailable(_Felstorm, timeShift);
 
 	if currentSpell == 'Call Dreadstalkers' then
 		ss = ss - 2;
@@ -135,14 +123,14 @@ TDDps_Warlock_Demonology = function()
 	end
 
 	if not isSupremacy then
-		TDButton_GlowCooldown(_SummonDoomguard, doomguard);
+		MaxDps:GlowCooldown(_SummonDoomguard, doomguard);
 	end
 
 	if mana < 0.2 then
 		return _LifeTap;
 	end
 
-	if not doom then
+	if not isHandofDoom and not doom then
 		return _Doom;
 	end
 
@@ -188,36 +176,36 @@ end
 ----------------------------------------------
 -- Main rotation: Destruction
 ----------------------------------------------
-TDDps_Warlock_Destruction = function()
-	local timeShift, currentSpell, gcd = TD_EndCast();
+function MaxDps.Warlock.Destruction()
+	local timeShift, currentSpell, gcd = MaxDps:EndCast();
 
 	local ss = UnitPower('player', SPELL_POWER_SOUL_SHARDS);
 
-	local drCD, drCharges, drMax = TD_SpellCharges(_DimensionalRift, timeShift);
-	local conCD, conCharges, conMax = TD_SpellCharges(_Conflagrate, timeShift);
+	local drCD, drCharges, drMax = MaxDps:SpellCharges(_DimensionalRift, timeShift);
+	local conCD, conCharges, conMax = MaxDps:SpellCharges(_Conflagrate, timeShift);
 
-	local immo = TD_TargetAura(_Immolate, timeShift + 5);
-	local immo1 = TD_TargetAura(_Immolate, timeShift + 1);
+	local immo = MaxDps:TargetAura(_Immolate, timeShift + 5);
+	local immo1 = MaxDps:TargetAura(_Immolate, timeShift + 1);
 	local health = UnitHealth('target');
 
-	local era = TD_TargetAura(_Eradication, timeShift + 2);
+	local era = MaxDps:TargetAura(_Eradication, timeShift + 2);
 	if wasEra and not era then
 		-- eradication went off
 		willBeEra = false;
 	end
 	wasEra = era;
 
-	local mana = TD_Mana(0, timeShift);
+	local mana = MaxDps:Mana(0, timeShift);
 
-	local gd = TD_SpellAvailable(_GrimoireDoomguard, timeShift);
-	local doomguard = TD_SpellAvailable(_SummonDoomguard, timeShift);
-	local havoc = TD_SpellAvailable(_Havoc, timeShift);
+	local gd = MaxDps:SpellAvailable(_GrimoireDoomguard, timeShift);
+	local doomguard = MaxDps:SpellAvailable(_SummonDoomguard, timeShift);
+	local havoc = MaxDps:SpellAvailable(_Havoc, timeShift);
 
-	local targetPh = TD_TargetPercentHealth();
-	local cata = TD_SpellAvailable(_Cataclysm, timeShift);
+	local targetPh = MaxDps:TargetPercentHealth();
+	local cata = MaxDps:SpellAvailable(_Cataclysm, timeShift);
 
 	if not isSupremacy then
-		TDButton_GlowCooldown(_SummonDoomguard, doomguard);
+		MaxDps:GlowCooldown(_SummonDoomguard, doomguard);
 	end
 
 	if currentSpell == 'Chaos Bolt' then
@@ -225,8 +213,8 @@ TDDps_Warlock_Destruction = function()
 		ss = ss - 2;
 	end
 
-	TDButton_GlowCooldown(_GrimoireDoomguard, gd);
-	TDButton_GlowCooldown(_Havoc, havoc);
+	MaxDps:GlowCooldown(_GrimoireDoomguard, gd);
+	MaxDps:GlowCooldown(_Havoc, havoc);
 
 	if mana < 0.1 then
 		return _LifeTap;
@@ -244,11 +232,11 @@ TDDps_Warlock_Destruction = function()
 		return _Immolate;
 	end
 
-	if drCharges > 2 then
+	if drCharges >= 2 then
 		return _DimensionalRift
 	end
 
-	if ss >= 4 then
+	if ss >= 3 then
 		return _ChaosBolt;
 	end
 
@@ -265,23 +253,4 @@ TDDps_Warlock_Destruction = function()
 	end
 
 	return _Incinerate;
-end
-
-----------------------------------------------
--- Molten Core stacks
-----------------------------------------------
-function TDDps_Warlock_MoltenCore()
-	local _, _, _, count, _, _, expirationTime = UnitAura('player', 'Molten Core'); 
-	if expirationTime ~= nil and (expirationTime - GetTime()) > 0.2 then
-		return count;
-	end
-	return 0;
-end
-
-----------------------------------------------
--- Is in Metamorphosis
-----------------------------------------------
-function TDDps_Warlock_Metamorphosis()
-	local is = UnitAura('player', 'Metamorphosis');
-	return is == 'Metamorphosis';
 end
