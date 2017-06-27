@@ -14,8 +14,6 @@ local _GrimoireofService = 108501;
 local _GrimoireofSupremacy = 152107;
 local _GrimoireofSacrifice = 108503;
 
-
-
 -- SPELLS
 local _ShadowBolt			= 686;
 local _Metamorphosis		= 103958;
@@ -71,37 +69,12 @@ local _TormentedSouls = 216695;
 local _MoltenCore = 140074;
 local _HauntingSpirits = 157698;
 
-local isCataclysm = false;
-local isGrimoireOfService = false;
-local isDemonbolt = false;
-local isSupremacy = false;
-local isShadowburn = false;
-local isEradication = false;
-local isSummonDarkglare = false;
-local isSoulHarvest = false;
-local isHandofDoom = false;
-local isSiphonLife = false;
-local isPhantomSingularity = false;
-
 local wasEra = false;
 local willBeEra = false;
 
 MaxDps.Warlock = {};
 
 function MaxDps.Warlock.CheckTalents()
-	MaxDps:CheckTalents();
-	isCataclysm = MaxDps:HasTalent(_Cataclysm);
-	isDemonbolt = MaxDps:HasTalent(_Demonbolt);
-	isGrimoireOfService = MaxDps:HasTalent(_GrimoireofService);
-	isSummonDarkglare = MaxDps:HasTalent(_SummonDarkglare);
-	isSupremacy = MaxDps:HasTalent(_GrimoireofSupremacy);
-	isShadowburn = MaxDps:HasTalent(_Shadowburn);
-	isEradication = MaxDps:HasTalent(_Eradication);
-	isHandofDoom = MaxDps:HasTalent(_HandofDoom);
-	isSoulHarvest = MaxDps:HasTalent(_SoulHarvest);
-	isSoulHarvest = MaxDps:HasTalent(_SoulHarvest);
-	isSiphonLife = MaxDps:HasTalent(_SiphonLife);
-	isPhantomSingularity = MaxDps:HasTalent(_PhantomSingularity);
 end
 
 function MaxDps:EnableRotationModule(mode)
@@ -119,15 +92,15 @@ function MaxDps:EnableRotationModule(mode)
 	end;
 end
 
-function MaxDps.Warlock.Affliction()
-	local timeShift, currentSpell, gcd = MaxDps:EndCast();
-
+function MaxDps.Warlock.Affliction(_, timeShift, currentSpell, gcd, talents)
 	local ss = UnitPower('player', SPELL_POWER_SOUL_SHARDS);
 	local mana = MaxDps:Mana(0, timeShift);
 
 	local uaCount, uaCd = MaxDps.Warlock.UACount(timeShift);
 
-	MaxDps:GlowCooldown(_PhantomSingularity, isPhantomSingularity and MaxDps:SpellAvailable(_PhantomSingularity, timeShift));
+	if talents[_PhantomSingularity] then
+		MaxDps:GlowCooldown(_PhantomSingularity, MaxDps:SpellAvailable(_PhantomSingularity, timeShift));
+	end
 
 	if mana < 0.2 then
 		return _LifeTap;
@@ -137,11 +110,19 @@ function MaxDps.Warlock.Affliction()
 		return _Agony;
 	end
 
-	if not MaxDps:TargetAura(_Corruption, timeShift + 4) then
-		return _Corruption;
+	if talents[_AbsoluteCorruption] then
+		local spellName = GetSpellInfo(_Corruption);
+		local aura = UnitAura('target', spellName, nil, 'PLAYER|HARMFUL');
+		if not aura then
+			return _Corruption;
+		end
+	else
+		if not MaxDps:TargetAura(_Corruption, timeShift + 4) then
+			return _Corruption;
+		end
 	end
 
-	if isSiphonLife and not MaxDps:TargetAura(_SiphonLife, timeShift + 4) then
+	if talents[_SiphonLife] and not MaxDps:TargetAura(_SiphonLife, timeShift + 4) then
 		return _SiphonLife;
 	end
 
@@ -149,30 +130,22 @@ function MaxDps.Warlock.Affliction()
 		return _UnstableAffliction;
 	end
 
-	if MaxDps:PersistentAura(_TormentedSouls) and (not MaxDps:Aura(_DeadwindHarvester,
-		timeShift + 1) and uaCount >= 2) then
+	if MaxDps:PersistentAura(_TormentedSouls) and (not MaxDps:Aura(_DeadwindHarvester, timeShift + 1) and uaCount >= 2) then
 		return _ReapSouls;
 	end
 
 	return _DrainSoul;
 end
 
-function MaxDps.Warlock.Demonology()
-	local timeShift, currentSpell, gcd = MaxDps:EndCast();
-
+function MaxDps.Warlock.Demonology(_, timeShift, currentSpell, gcd, talents)
 	local ss = UnitPower('player', SPELL_POWER_SOUL_SHARDS);
 	local mana = MaxDps:Mana(0, timeShift);
 
 	local doom = MaxDps:TargetAura(_Doom, timeShift + 5);
 	local demoEmp = MaxDps:UnitAura(_DemonicEmpowerment, timeShift + 5, 'pet');
 
-	local sdk = MaxDps:SpellAvailable(_SummonDarkglare, timeShift);
-	local callD = MaxDps:SpellAvailable(_CallDreadstalkers, timeShift);
-	local felg = MaxDps:SpellAvailable(_GrimoireFelguard, timeShift);
-	local harv = MaxDps:SpellAvailable(_SoulHarvest, timeShift);
 	local doomguard = MaxDps:SpellAvailable(_SummonDoomguard, timeShift);
 	local tk = MaxDps:SpellAvailable(_ThalkielsConsumption, timeShift);
-	local felstorm = MaxDps:SpellAvailable(_Felstorm, timeShift);
 
 	if MaxDps:SameSpell(currentSpell, _CallDreadstalkers) then
 		ss = ss - 2;
@@ -183,7 +156,7 @@ function MaxDps.Warlock.Demonology()
 		end
 	end
 
-	if not isSupremacy then
+	if not talents[_GrimoireofSupremacy] then
 		MaxDps:GlowCooldown(_SummonDoomguard, doomguard);
 	end
 
@@ -191,19 +164,19 @@ function MaxDps.Warlock.Demonology()
 		return _LifeTap;
 	end
 
-	if not isHandofDoom and not doom then
+	if not talents[_HandofDoom] and not doom then
 		return _Doom;
 	end
 
-	if isSummonDarkglare and sdk and ss > 0 then
+	if talents[_SummonDarkglare] and MaxDps:SpellAvailable(_SummonDarkglare, timeShift) and ss > 0 then
 		return _SummonDarkglare;
 	end
 
-	if callD and ss > 1 and not MaxDps:SameSpell(currentSpell, _CallDreadstalkers) then
+	if MaxDps:SpellAvailable(_CallDreadstalkers, timeShift) and ss > 1 and not MaxDps:SameSpell(currentSpell, _CallDreadstalkers) then
 		return _CallDreadstalkers;
 	end
 
-	if isGrimoireOfService and felg and ss > 0 then
+	if talents[_GrimoireofService]and MaxDps:SpellAvailable(_GrimoireFelguard, timeShift) and ss > 0 then
 		return _GrimoireFelguard;
 	end
 
@@ -215,7 +188,7 @@ function MaxDps.Warlock.Demonology()
 		return _DemonicEmpowerment;
 	end
 
-	if isSoulHarvest and harv then
+	if talents[_SoulHarvest] and MaxDps:SpellAvailable(_SoulHarvest, timeShift) then
 		return _SoulHarvest;
 	end
 
@@ -223,11 +196,11 @@ function MaxDps.Warlock.Demonology()
 		return _ThalkielsConsumption;
 	end
 
-	if felstorm then
+	if MaxDps:SpellAvailable(_Felstorm, timeShift) then
 		return _Felstorm;
 	end
 
-	if isDemonbolt then
+	if talents[_Demonbolt] then
 		return _Demonbolt;
 	else
 		return _ShadowBolt;
@@ -237,16 +210,10 @@ end
 ----------------------------------------------
 -- Main rotation: Destruction
 ----------------------------------------------
-function MaxDps.Warlock.Destruction()
-	local timeShift, currentSpell, gcd = MaxDps:EndCast();
-
+function MaxDps.Warlock.Destruction(_, timeShift, currentSpell, gcd, talents)
 	local ss = UnitPower('player', SPELL_POWER_SOUL_SHARDS);
 
-	local drCD, drCharges, drMax = MaxDps:SpellCharges(_DimensionalRift, timeShift);
-	local conCD, conCharges, conMax = MaxDps:SpellCharges(_Conflagrate, timeShift);
-
 	local immo = MaxDps:TargetAura(_Immolate, timeShift + 5);
-	local immo1 = MaxDps:TargetAura(_Immolate, timeShift + 1);
 	local health = UnitHealth('target');
 
 	local era = MaxDps:TargetAura(_Eradication, timeShift + 2);
@@ -258,14 +225,12 @@ function MaxDps.Warlock.Destruction()
 
 	local mana = MaxDps:Mana(0, timeShift);
 
-	local gd = MaxDps:SpellAvailable(_GrimoireDoomguard, timeShift);
 	local doomguard = MaxDps:SpellAvailable(_SummonDoomguard, timeShift);
-	local havoc = MaxDps:SpellAvailable(_Havoc, timeShift);
 
 	local targetPh = MaxDps:TargetPercentHealth();
 	local cata = MaxDps:SpellAvailable(_Cataclysm, timeShift);
 
-	if not isSupremacy then
+	if not talents[_GrimoireofSupremacy] then
 		MaxDps:GlowCooldown(_SummonDoomguard, doomguard);
 	end
 
@@ -274,15 +239,24 @@ function MaxDps.Warlock.Destruction()
 		ss = ss - 2;
 	end
 
-	MaxDps:GlowCooldown(_GrimoireDoomguard, gd);
-	MaxDps:GlowCooldown(_Havoc, havoc);
+	MaxDps:GlowCooldown(_GrimoireDoomguard, MaxDps:SpellAvailable(_GrimoireDoomguard, timeShift));
+	MaxDps:GlowCooldown(_Havoc, MaxDps:SpellAvailable(_Havoc, timeShift));
+
+	if talents[_SoulHarvest] then
+		MaxDps:GlowCooldown(_SoulHarvest, MaxDps:SpellAvailable(_SoulHarvest, timeShift));
+	end
 
 	if mana < 0.1 then
 		return _LifeTap;
 	end
 
+	local immo1 = MaxDps:TargetAura(_Immolate, timeShift + 1);
 	if not immo1 and not MaxDps:SameSpell(currentSpell, _Immolate) then
 		return _Immolate;
+	end
+
+	if talents[_EmpoweredLifeTap] and not MaxDps:Aura(_EmpoweredLifeTap, timeShift) then
+		return _LifeTap;
 	end
 
 	if ss >= 5 then
@@ -293,6 +267,7 @@ function MaxDps.Warlock.Destruction()
 		return _Immolate;
 	end
 
+	local drCD, drCharges, drMax = MaxDps:SpellCharges(_DimensionalRift, timeShift);
 	if drCharges >= 2 then
 		return _DimensionalRift
 	end
@@ -301,15 +276,19 @@ function MaxDps.Warlock.Destruction()
 		return _ChaosBolt;
 	end
 
-	if isShadowburn and health < 500000 and ss > 0 then
-		return _Shadowburn;
+	if talents[_Shadowburn] then
+		local sbCD, sbCharges = MaxDps:SpellCharges(_Shadowburn, timeShift);
+		if sbCharges > 1.5 then
+			return _Shadowburn;
+		end
+	else
+		local conCD, conCharges, conMax = MaxDps:SpellCharges(_Conflagrate, timeShift);
+		if conCharges > 1 or (conCharges >= 1 and conCD < 2) then
+			return _Conflagrate;
+		end
 	end
 
-	if conCharges > 1 or (conCharges >= 1 and conCD < 2) then
-		return _Conflagrate;
-	end
-
-	if isEradication and not era and not willBeEra and ss > 1 and not MaxDps:SameSpell(currentSpell, _ChaosBolt) then
+	if talents[_Eradication] and not era and not willBeEra and ss > 1 and not MaxDps:SameSpell(currentSpell, _ChaosBolt) then
 		return _ChaosBolt;
 	end
 
