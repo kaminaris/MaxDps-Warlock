@@ -186,11 +186,17 @@ function Warlock:Demonology(timeShift, currentSpell, gcd, talents)
 
 	if currentSpell == _CallDreadstalkers then
 		SoulShards = SoulShards - 2;
+	elseif currentSpell == _HandofGuldan then
+		SoulShards = SoulShards - 3;
 	elseif currentSpell == _SummonVilefiend then
 		SoulShards = SoulShards - 1;
 	elseif currentSpell == _ShadowBoltDemonology then
 		SoulShards = SoulShards + 1;
+	elseif currentSpell == _Demonbolt then
+		SoulShards = SoulShards + 2;
 	end
+
+	if SoulShards < 0 then SoulShards = 0; end
 
 	if not UnitExists('pet') then
 		return _SummonFelguard;
@@ -198,19 +204,16 @@ function Warlock:Demonology(timeShift, currentSpell, gcd, talents)
 
 	--Cooldowns
 	MaxDps:GlowCooldown(_SummonDemonicTyrant, MaxDps:SpellAvailable(_SummonDemonicTyrant, timeShift));
+	MaxDps:GlowCooldown(_GrimoireFelguard, SoulShards >= 1 and MaxDps:SpellAvailable(_GrimoireFelguard, timeShift));
 
-	if talents[_NetherPortal] and SoulShards >= 3 then
-		MaxDps:GlowCooldown(_NetherPortal, MaxDps:SpellAvailable(_NetherPortal, timeShift));
+	if talents[_NetherPortal] then
+		MaxDps:GlowCooldown(_NetherPortal, SoulShards >= 3 and MaxDps:SpellAvailable(_NetherPortal, timeShift));
 	end
 
 
-	if MaxDps:SpellAvailable(_CallDreadstalkers, timeShift) and SoulShards >= 2
+	if MaxDps:SpellAvailable(_CallDreadstalkers, timeShift) and SoulShards >= 3
 		and currentSpell ~= _CallDreadstalkers then
 		return _CallDreadstalkers;
-	end
-
-	if talents[_GrimoireFelguard] and MaxDps:SpellAvailable(_GrimoireFelguard, timeShift) and SoulShards >= 1 then
-		return _GrimoireFelguard;
 	end
 
 	if talents[_DemonicStrength] and MaxDps:SpellAvailable(_DemonicStrength, timeShift) then
@@ -227,7 +230,7 @@ function Warlock:Demonology(timeShift, currentSpell, gcd, talents)
 	end
 
 	local dc, dcCount = MaxDps:Aura(_DemonicCoreAura, timeShift);
-	if dcCount >=2 then
+	if dcCount >= 2 then
 		return _Demonbolt;
 	end
 
