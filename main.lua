@@ -3,80 +3,93 @@ if not MaxDps then
 	return ;
 end
 
+local MaxDps = MaxDps;
+local UnitPower = UnitPower;
+local EnumPowerType = Enum.PowerType;
+local UnitExists = UnitExists;
+
 local Warlock = MaxDps:NewModule('Warlock', 'AceEvent-3.0');
 
 -- Shared SPELLS
-local _BloodPact = 6307;
-local _SingeMagic = 89808;
-local _DemonicGateway = 111771;
-local _DemonicCircle = 268358;
+local WS = {
+	BloodPact      = 6307,
+	SingeMagic     = 89808,
+	DemonicGateway = 111771,
+	DemonicCircle  = 268358,
+};
+
 -- Affliction
-local _Agony = 980;
-local _Corruption = 172;
-local _CorruptionAura = 146739;
-local _UnstableAffliction = 30108;
-local _UnstableAfflictionAura = 233490;
-local _Deathbolt = 264106;
-local _SummonDarkglare = 205180;
-local _VileTaint = 278350;
-local _ShadowBolt = 232670;
-local _PhantomSingularity = 205179;
-local _SeedofCorruption = 27243;
-local _SiphonLife = 63106;
-local _Nightfall = 108558;
--- Affliction talents
-local _AbsoluteCorruption = 196103;
-local _DrainSoul = 198590;
-local _Haunt = 48181;
-local _DarkSoulMisery = 113860;
-
-
+local WA = {
+	Agony                  = 980,
+	Corruption             = 172,
+	CorruptionAura         = 146739,
+	UnstableAffliction     = 30108,
+	UnstableAfflictionAura = 233490,
+	Deathbolt              = 264106,
+	SummonDarkglare        = 205180,
+	VileTaint              = 278350,
+	ShadowBolt             = 232670,
+	PhantomSingularity     = 205179,
+	SeedofCorruption       = 27243,
+	SiphonLife             = 63106,
+	Nightfall              = 108558,
+	-- Affliction talents
+	AbsoluteCorruption     = 196103,
+	DrainSoul              = 198590,
+	Haunt                  = 48181,
+	DarkSoulMisery         = 113860,
+};
 
 -- Destruction maybe some wrong talents just copied from Icy Veins
-local _Immolate = 348;
-local _ImmolateAura = 157736;
-local _ChaosBolt = 116858;
-local _Conflagrate = 17962;
-local _ChannelDemonfire = 196447;
-local _Eradication = 196412;
-local _Cataclysm = 152108;
-local _Incinerate = 29722;
-local _SummonInfernal = 1122;
-local _DarkSoulInstability = 113858;
-local _RainofFire = 5740;
-local _Havoc = 80240;
-local _Shadowburn = 17877;
-local _Backdraft = 117828;
-local _FireandBrimstone = 196408;
-local _SummonImp = 688;
-local _SummonVoidwalker = 697;
-local _SummonSuccubus = 712;
-local _SummonFelhunter = 691;
-local _Soulfire = 6353;
+local WD = {
+	Immolate            = 348,
+	ImmolateAura        = 157736,
+	ChaosBolt           = 116858,
+	Conflagrate         = 17962,
+	ChannelDemonfire    = 196447,
+	Eradication         = 196412,
+	Cataclysm           = 152108,
+	Incinerate          = 29722,
+	SummonInfernal      = 1122,
+	DarkSoulInstability = 113858,
+	RainOfFire          = 5740,
+	Havoc               = 80240,
+	Shadowburn          = 17877,
+	Backdraft           = 117828,
+	FireAndBrimstone    = 196408,
+	SummonImp           = 688,
+	SummonVoidwalker    = 697,
+	SummonSuccubus      = 712,
+	SummonFelhunter     = 691,
+	Soulfire            = 6353,
+};
 
 --Demonology maybe some wrong talents just copied from Icy Veins
-local _DemonicCore = 264178;
-local _DemonicCoreAura = 264173;
-local _CallDreadstalkers = 104316;
-local _GrimoireFelguard = 111898;
-local _DemonicStrength = 267171;
-local _SummonVilefiend = 264119;
-local _SummonDemonicTyrant = 265187;
-local _HandofGuldan = 105174;
-local _Demonbolt = 264178;
-local _PowerSiphon = 264130;
-local _ShadowBoltDemonology = 686;
-local _NetherPortal = 267217;
-local _NetherPortalAura = 267218;
-local _Implosion = 196277;
-local _SoulStrike = 264057;
-local _BilescourgeBombers = 267211;
-local _CommandDemon = 119898;
-local _AxeToss = 89766;
-local _Felstorm = 89751;
-local _LegionStrike = 30213;
-local _ThreateningPresence = 134477;
-local _SummonFelguard = 30146;
+local WN = {
+	DemonicCore          = 264178,
+	DemonicCoreAura      = 264173,
+	CallDreadstalkers    = 104316,
+	GrimoireFelguard     = 111898,
+	DemonicStrength      = 267171,
+	SummonVilefiend      = 264119,
+	SummonDemonicTyrant  = 265187,
+	HandOfGuldan         = 105174,
+	Demonbolt            = 264178,
+	PowerSiphon          = 264130,
+	ShadowBoltDemonology = 686,
+	NetherPortal         = 267217,
+	NetherPortalAura     = 267218,
+	Implosion            = 196277,
+	SoulStrike           = 264057,
+	BilescourgeBombers   = 267211,
+	CommandDemon         = 119898,
+	AxeToss              = 89766,
+	Felstorm             = 89751,
+	LegionStrike         = 30213,
+	ThreateningPresence  = 134477,
+	SummonFelguard       = 30146,
+};
+
 
 
 function Warlock:Enable()
@@ -97,225 +110,225 @@ function Warlock:Disable()
 	self:UnregisterAllEvents();
 end
 
-function Warlock:Affliction(timeShift, currentSpell, gcd, talents)
-	local SoulShards = UnitPower('player', Enum.PowerType.SoulShards);
+function Warlock:Affliction()
+	local fd = MaxDps.FrameData;
+	local cooldown, buff, debuff, talents, azerite, currentSpell =
+		fd.cooldown, fd.buff, fd.debuff, fd.talents, fd.azerite, fd.currentSpell;
+
+	local SoulShards = UnitPower('player', EnumPowerType.SoulShards);
 	local THP = MaxDps:TargetPercentHealth();
 
-	if currentSpell == _UnstableAffliction then
+	if currentSpell == WA.UnstableAffliction then
 		SoulShards = SoulShards - 1;
 	end
 
 	-- Cooldowns
-	MaxDps:GlowCooldown(_SummonDarkglare, MaxDps:SpellAvailable(_SummonDarkglare, timeShift));
+	MaxDps:GlowCooldown(WA.SummonDarkglare, cooldown[WA.SummonDarkglare].ready);
 
-	if talents[_DarkSoulMisery] then
-		MaxDps:GlowCooldown(_DarkSoulMisery, MaxDps:SpellAvailable(_DarkSoulMisery, timeShift));
+	if talents[WA.DarkSoulMisery] then
+		MaxDps:GlowCooldown(WA.DarkSoulMisery, cooldown[WA.DarkSoulMisery].ready);
 	end
 
 	--Rotation
 	--1. Cast Agony if not Applied or is about to run out
-	if not MaxDps:TargetAura(_Agony, timeShift + 5) then
-		return _Agony;
+	if debuff[WA.Agony].remains < 5 then
+		return WA.Agony;
 	end
 
 	--2. Cast Corruption if not Applied or is about to run out
-	if not MaxDps:TargetAura(_CorruptionAura, timeShift + 4) then
-		return _Corruption;
+	if debuff[WA.CorruptionAura].remains < 4 then
+		return WA.Corruption;
 	end
 
 
 	--3. Apply SiphonLife if not Applied or is about to run out
-	if talents[_SiphonLife] and not MaxDps:TargetAura(_SiphonLife, timeShift + 4) then
-		return _SiphonLife;
+	if talents[WA.SiphonLife] and debuff[WA.SiphonLife].remains < 4 then
+		return WA.SiphonLife;
 	end
 
 	--4. Cast Drain Soul if Talented and Target Health <= 20%
-	if talents[_DrainSoul] and THP <= 0.2 then
-		return _DrainSoul;
+	if talents[WA.DrainSoul] and THP <= 0.2 then
+		return WA.DrainSoul;
 	end
 
 	--5. Keep Haunted on Target if Talented
-	if talents[_Haunt] and MaxDps:SpellAvailable(_Haunt, timeShift) and currentSpell ~= _Haunt then
-		return _Haunt;
+	if talents[WA.Haunt] and cooldown[WA.Haunt].ready and currentSpell ~= WA.Haunt then
+		return WA.Haunt;
 	end
 
 	--6. Cast Unstable Affliction with 4 - 5 Shards
-	if SoulShards >= 4 and currentSpell ~= _UnstableAffliction then
-		return _UnstableAffliction;
+	if SoulShards >= 4 and currentSpell ~= WA.UnstableAffliction then
+		return WA.UnstableAffliction;
 	end
 
 	--7. Cast Deathbolt if all three debuffs are fresh aplied
-	if Warlock:TargetAuraLeft(_Agony) > 11 and
-		Warlock:TargetAuraLeft(_CorruptionAura) > 9 and
-		Warlock:TargetAuraLeft(_UnstableAfflictionAura) > 3 and
-		MaxDps:SpellAvailable(_Deathbolt, timeShift) then
-		return _Deathbolt;
+	if debuff[WA.Agony].remains > 11 and
+		debuff[WA.CorruptionAura].remains > 9 and
+		debuff[WA.UnstableAfflictionAura].remains > 3 and
+		cooldown[WA.Deathbolt].ready then
+		return WA.Deathbolt;
 	end
 
 	--8 Cast Vile Taint or Phantom Singularity if talented
-	if talents[_VileTaint] and MaxDps:SpellAvailable(_VileTaint, timeShift)
-		and SoulShards >= 1 and currentSpell ~= _VileTaint then
-		return _VileTaint;
+	if talents[WA.VileTaint] and cooldown[WA.VileTaint].ready
+		and SoulShards >= 1 and currentSpell ~= WA.VileTaint then
+		return WA.VileTaint;
 	end
 
-	if talents[_PhantomSingularity] and MaxDps:SpellAvailable(_PhantomSingularity, timeShift) then
-		return _PhantomSingularity;
+	if talents[WA.PhantomSingularity] and cooldown[WA.PhantomSingularity].ready then
+		return WA.PhantomSingularity;
 	end
 
 	-- 9. Remain 1 Unstable Afflicton on target
-	if SoulShards >= 1 and not MaxDps:TargetAura(_UnstableAfflictionAura, timeShift + 2)
-		and currentSpell ~= _UnstableAffliction then
-		return _UnstableAffliction;
+	if SoulShards >= 1 and debuff[WA.UnstableAfflictionAura].remains < 2
+		and currentSpell ~= WA.UnstableAffliction then
+		return WA.UnstableAffliction;
 	end
 
-	if talents[_DrainSoul] then
-		return _DrainSoul;
+	if talents[WA.DrainSoul] then
+		return WA.DrainSoul;
 	else
-		return _ShadowBolt;
+		return WA.ShadowBolt;
 	end
 end
 
-function Warlock:TargetAuraLeft(Aura, timeShift)
-	local hasAura, Stacks, TimeLeft = MaxDps:TargetAura(Aura, timeShift);
-	return TimeLeft;
-end
+function Warlock:Demonology()
+	local fd = MaxDps.FrameData;
+	local cooldown, buff, debuff, talents, azerite, currentSpell =
+		fd.cooldown, fd.buff, fd.debuff, fd.talents, fd.azerite, fd.currentSpell;
 
-function Warlock:Demonology(timeShift, currentSpell, gcd, talents)
+	local SoulShards = UnitPower('player', EnumPowerType.SoulShards);
 
-	local SoulShards = UnitPower('player', Enum.PowerType.SoulShards);
-
-	if currentSpell == _CallDreadstalkers then
+	if currentSpell == WN.CallDreadstalkers then
 		SoulShards = SoulShards - 2;
-	elseif currentSpell == _HandofGuldan then
+	elseif currentSpell == WN.HandOfGuldan then
 		SoulShards = SoulShards - 3;
-	elseif currentSpell == _SummonVilefiend then
+	elseif currentSpell == WN.SummonVilefiend then
 		SoulShards = SoulShards - 1;
-	elseif currentSpell == _ShadowBoltDemonology then
+	elseif currentSpell == WN.ShadowBoltDemonology then
 		SoulShards = SoulShards + 1;
-	elseif currentSpell == _Demonbolt then
+	elseif currentSpell == WN.Demonbolt then
 		SoulShards = SoulShards + 2;
 	end
 
 	if SoulShards < 0 then SoulShards = 0; end
 
 	if not UnitExists('pet') then
-		return _SummonFelguard;
+		return WN.SummonFelguard;
 	end
 
 	--Cooldowns
-	MaxDps:GlowCooldown(_SummonDemonicTyrant, MaxDps:SpellAvailable(_SummonDemonicTyrant, timeShift));
-	MaxDps:GlowCooldown(_GrimoireFelguard, SoulShards >= 1 and MaxDps:SpellAvailable(_GrimoireFelguard, timeShift));
+	MaxDps:GlowCooldown(WN.SummonDemonicTyrant, cooldown[WN.SummonDemonicTyrant].ready);
+	MaxDps:GlowCooldown(WN.GrimoireFelguard, SoulShards >= 1 and cooldown[WN.GrimoireFelguard].ready);
 
-	if talents[_NetherPortal] then
-		MaxDps:GlowCooldown(_NetherPortal, SoulShards >= 3 and MaxDps:SpellAvailable(_NetherPortal, timeShift));
+	if talents[WN.NetherPortal] then
+		MaxDps:GlowCooldown(WN.NetherPortal, SoulShards >= 3 and cooldown[WN.NetherPortal].ready);
 	end
 
 
-	if MaxDps:SpellAvailable(_CallDreadstalkers, timeShift) and SoulShards >= 3
-		and currentSpell ~= _CallDreadstalkers then
-		return _CallDreadstalkers;
+	if cooldown[WN.CallDreadstalkers].ready and SoulShards >= 3
+		and currentSpell ~= WN.CallDreadstalkers then
+		return WN.CallDreadstalkers;
 	end
 
-	if talents[_DemonicStrength] and MaxDps:SpellAvailable(_DemonicStrength, timeShift) then
-		return _DemonicStrength;
+	if talents[WN.DemonicStrength] and cooldown[WN.DemonicStrength].ready then
+		return WN.DemonicStrength;
 	end
 
-	if talents[_SummonVilefiend] and MaxDps:SpellAvailable(_SummonVilefiend, timeShift) and SoulShards >= 1
-		and currentSpell ~= _SummonVilefiend then
-		return _SummonVilefiend;
+	if talents[WN.SummonVilefiend] and cooldown[WN.SummonVilefiend].ready and SoulShards >= 1
+		and currentSpell ~= WN.SummonVilefiend then
+		return WN.SummonVilefiend;
 	end
 
-	if SoulShards >= 4 and currentSpell ~= _HandofGuldan then
-		return _HandofGuldan;
+	if SoulShards >= 4 and currentSpell ~= WN.HandOfGuldan then
+		return WN.HandOfGuldan;
 	end
 
-	local dc, dcCount = MaxDps:Aura(_DemonicCoreAura, timeShift);
-	if dcCount >= 2 then
-		return _Demonbolt;
+	if buff[WN.DemonicCoreAura].count >= 2 then
+		return WN.Demonbolt;
 	end
 
 	local ic = Warlock:ImpsCount()
-	if talents[_PowerSiphon] and MaxDps:SpellAvailable(_PowerSiphon, timeShift) and ic > 2 then
-		return _PowerSiphon;
+	if talents[WN.PowerSiphon] and cooldown[WN.PowerSiphon].ready and ic > 2 then
+		return WN.PowerSiphon;
 	end
 
-	if SoulShards >= 3 and currentSpell ~= _HandofGuldan then
-		return _HandofGuldan;
+	if SoulShards >= 3 and currentSpell ~= WN.HandOfGuldan then
+		return WN.HandOfGuldan;
 	end
 
-	return _ShadowBoltDemonology;
+	return WN.ShadowBoltDemonology;
 end
 
 ----------------------------------------------
 -- Main rotation: Destruction
 ----------------------------------------------
-function Warlock:Destruction(timeShift, currentSpell, gcd, talents)
-	local SoulShards = UnitPower('player', Enum.PowerType.SoulShards, true) / 10;
+function Warlock:Destruction()
+	local fd = MaxDps.FrameData;
+	local cooldown, buff, debuff, timeShift, talents, azerite, currentSpell =
+		fd.cooldown, fd.buff, fd.debuff, fd.timeShift, fd.talents, fd.azerite, fd.currentSpell;
 
-	local immo = MaxDps:TargetAura(_Immolate, timeShift + 5);
-	local health = UnitHealth('target');
-	--local era = MaxDps:TargetAura(_Eradication, timeShift + 2);
+	local SoulShards = UnitPower('player', EnumPowerType.SoulShards, true) / 10;
 
-	if currentSpell == _ChaosBolt then
+	if currentSpell == WD.ChaosBolt then
 		SoulShards = SoulShards - 2;
 	end
 
 	--Cooldowns
-	MaxDps:GlowCooldown(_Havoc, MaxDps:SpellAvailable(_Havoc, timeShift));
-	MaxDps:GlowCooldown(_SummonInfernal, MaxDps:SpellAvailable(_SummonInfernal, timeShift));
+	MaxDps:GlowCooldown(WD.Havoc, cooldown[WD.Havoc].ready);
+	MaxDps:GlowCooldown(WD.SummonInfernal, cooldown[WD.SummonInfernal].ready);
 
-	if talents[_DarkSoulInstability] then
-		MaxDps:GlowCooldown(_DarkSoulInstability, MaxDps:SpellAvailable(_DarkSoulInstability, timeShift));
-	end
-
-	if talents[_Cataclysm] and cata then
-		MaxDps:GlowCooldown(_Cataclysm, MaxDps:SpellAvailable(_Cataclysm, timeShift));
+	if talents[WD.DarkSoulInstability] then
+		MaxDps:GlowCooldown(WD.DarkSoulInstability, cooldown[WD.DarkSoulInstability].ready);
 	end
 
 	--Rotation Start
 
-	--1. Cast Chaosbolt if Backdraft is active and at least 2 seconds left
-	if MaxDps:Aura(_Backdraft, timeShift + 2) and SoulShards >= 2 and currentSpell ~= _ChaosBolt then
-		return _ChaosBolt;
+	if talents[WD.Cataclysm] and cooldown[WD.Cataclysm].ready and currentSpell ~= WD.Cataclysm then
+		return WD.Cataclysm;
+	end
+
+	--1. Cast ChaosBolt if Backdraft is active and at least 2 seconds left
+	if buff[WD.Backdraft].remains < 2 and SoulShards >= 2 and currentSpell ~= WD.ChaosBolt then
+		return WD.ChaosBolt;
 	end
 
 	--2. Cast Soulfire on cd if Talented
-	if talents[_Soulfire] and MaxDps:SpellAvailable(_Soulfire, timeShift) and currentSpell ~= _Soulfire then
-		return _Soulfire;
+	if talents[WD.Soulfire] and cooldown[WD.Soulfire].ready and currentSpell ~= WD.Soulfire then
+		return WD.Soulfire;
 	end
 
 	--3. Apply or Reapply Immolate
-	if not MaxDps:TargetAura(_ImmolateAura, timeShift + 4) and currentSpell ~= _Immolate then
-		return _Immolate;
+	if debuff[WD.ImmolateAura].refreshable and currentSpell ~= WD.Immolate and currentSpell ~= WD.Cataclysm	then
+		return WD.Immolate;
 	end
 
-	--4. Cast Chaosbolt if Capped
+	--4. Cast ChaosBolt if Capped
 	if SoulShards >= 4 then
-		return _ChaosBolt;
+		return WD.ChaosBolt;
 	end
 
 	--5. Cast Conflagrate on CD but keep almost 1 Charge for Burst
-	local conCD, conCharges, conMax = MaxDps:SpellCharges(_Conflagrate, timeShift);
-	if conCharges > 1.5 then
-		return _Conflagrate;
+	if cooldown[WD.Conflagrate].charges > 1.5 then
+		return WD.Conflagrate;
 	end
 
 	--6. Cast Demonfire Whenever Possible and Target has Immolate applied for at least 3 seconds
-	if talents[_ChannelDemonfire] and MaxDps:SpellAvailable(_ChannelDemonfire, timeShift) and
-		MaxDps:TargetAura(_ImmolateAura, timeShift + 3) and currentSpell ~= _ChannelDemonfire then
-		return _ChannelDemonfire;
+	if talents[WD.ChannelDemonfire] and cooldown[WD.ChannelDemonfire].ready and
+		debuff[WD.ImmolateAura].remains >= 3 and currentSpell ~= WD.ChannelDemonfire then
+		return WD.ChannelDemonfire;
 	end
 
 	--7. Cast Shadowburn dont know why cause Talent seems to bee quiet shit...
-	if talents[_Shadowburn] and MaxDps:SpellAvailable(_Shadowburn, timeShift) then
-		return _Shadowburn;
+	if talents[WD.Shadowburn] and cooldown[WD.Shadowburn].ready then
+		return WD.Shadowburn;
 	end
 
-	return _Incinerate;
+	return WD.Incinerate;
 end
 
 function Warlock:UACount(timeShift)
-	local name = _UnstableAffliction;
+	local name = WA.UnstableAffliction;
 	timeShift = timeShift or 0;
 	local spellName = GetSpellInfo(name) or name;
 
