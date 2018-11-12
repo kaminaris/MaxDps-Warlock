@@ -289,7 +289,7 @@ function Warlock:Destruction()
 	end
 
 	--1. Cast ChaosBolt if Backdraft is active and at least 2 seconds left
-	if buff[WD.Backdraft].remains < 2 and SoulShards >= 2 and currentSpell ~= WD.ChaosBolt then
+	if buff[WD.Backdraft].remains >= 2 and SoulShards >= 2 and currentSpell ~= WD.ChaosBolt then
 		return WD.ChaosBolt;
 	end
 
