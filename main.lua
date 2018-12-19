@@ -729,7 +729,7 @@ function Warlock:Demonology()
 	end
 
 	fd.wildImps = wildImps;
-	fd.soulShards = fd.soulShards;
+	fd.soulShards = soulShards;
 	fd.targets = targets;
 
 
