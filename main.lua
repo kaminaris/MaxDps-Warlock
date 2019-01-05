@@ -241,7 +241,7 @@ function Warlock:Affliction()
 	end
 
 	-- haunt,if=spell_targets.seed_of_corruption_aoe<=2+raid_event.invulnerable.up;
-	if cooldown[AF.Haunt].ready and currentSpell ~= AF.Haunt and (targets <= 2) then
+	if talents[AF.Haunt] and cooldown[AF.Haunt].ready and currentSpell ~= AF.Haunt and targets <= 2 then
 		return AF.Haunt;
 	end
 
@@ -330,7 +330,7 @@ function Warlock:Affliction()
 	if result then return result; end
 
 	-- phantom_singularity,if=time<=35;
-	if cooldown[AF.PhantomSingularity].ready then
+	if talents[AF.PhantomSingularity] and cooldown[AF.PhantomSingularity].ready then
 		return AF.PhantomSingularity;
 	end
 
@@ -578,7 +578,7 @@ function Warlock:AfflictionFillers()
 	end
 
 	-- haunt;
-	if cooldown[AF.Haunt].ready and currentSpell ~= AF.Haunt then
+	if talents[AF.Haunt] and cooldown[AF.Haunt].ready and currentSpell ~= AF.Haunt then
 		return AF.Haunt;
 	end
 
