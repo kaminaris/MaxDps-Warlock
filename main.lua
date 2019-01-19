@@ -55,6 +55,7 @@ local UnstableAfflictionAuras = {
 local A = {
 	CascadingCalamity = 275372,
 	InevitableDemise  = 273521,
+	BalefulInvocation = 287059
 }
 
 -- Destruction maybe some wrong talents just copied from Icy Veins
@@ -703,6 +704,7 @@ function Warlock:Demonology()
 	local debuff = fd.debuff;
 	local currentSpell = fd.currentSpell;
 	local talents = fd.talents;
+	local azerite = fd.azerite;
 	local timeShift = fd.timeShift;
 	local targets = MaxDps:SmartAoe();
 	local spellHistory = fd.spellHistory;
@@ -722,6 +724,8 @@ function Warlock:Demonology()
 		soulShards = soulShards + 1;
 	elseif currentSpell == DE.Demonbolt then
 		soulShards = soulShards + 2;
+	elseif currentSpell == DE.SummonDemonicTyrant and azerite[A.BalefulInvocation] > 0 then
+		soulShards = 5;
 	end
 
 	if soulShards < 0 then
@@ -787,7 +791,8 @@ function Warlock:Demonology()
 	end
 
 	-- call_dreadstalkers,if=equipped.132369|(cooldown.summon_demonic_tyrant.remains<9&buff.demonic_calling.remains)|(cooldown.summon_demonic_tyrant.remains<11&!buff.demonic_calling.remains)|cooldown.summon_demonic_tyrant.remains>14;
-	if cooldown[DE.CallDreadstalkers].ready and soulShards >= 2 and currentSpell ~= DE.CallDreadstalkers and (
+	if cooldown[DE.CallDreadstalkers].ready and (soulShards >= 2 or soulShards >= 1 and buff[DE.DemonicCalling].up)
+		and currentSpell ~= DE.CallDreadstalkers and (
 		hasWilfredsSigil or
 		(cooldown[DE.SummonDemonicTyrant].remains < 9 and buff[DE.DemonicCalling].up) or
 		(cooldown[DE.SummonDemonicTyrant].remains < 11 and not buff[DE.DemonicCalling].up) or
