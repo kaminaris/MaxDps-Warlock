@@ -1,5 +1,5 @@
 ## Title: MaxDps_Warlock
-## Version: 8.1.0
+## Version: 8.1.1
 ## Author: Kaminaris
 ## Interface: 80100
 ## Dependencies: MaxDps
@@ -7,4 +7,7 @@
 ## X-Curse-Project-ID: 91983
 ## X-WoWI-ID: 24639
 
-main.lua
+Main.lua
+Specialization\Affliction.lua
+Specialization\Demonology.lua
+Specialization\Destruction.lua
