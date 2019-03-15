@@ -33,6 +33,7 @@ local DE = {
 	ShadowBolt          = 686,
 	Implosion           = 196277,
 	SummonFelguard      = 30146,
+	SummonWrathguard    = 112870,
 	ExplosivePotential  = 275398
 };
 
@@ -70,8 +71,13 @@ function Warlock:Demonology()
 		soulShards = soulShards + 1;
 	elseif currentSpell == DE.Demonbolt then
 		soulShards = soulShards + 2;
-	elseif currentSpell == DE.SummonDemonicTyrant and azerite[A.BalefulInvocation] > 0 then
-		soulShards = 5;
+	elseif currentSpell == DE.SummonDemonicTyrant then
+		if azerite[A.BalefulInvocation] > 0 then
+			soulShards = 5;
+		end
+		if talents[DE.DemonicConsumption] then
+			wildImps = 0;
+		end
 	end
 
 	if soulShards < 0 then
@@ -93,16 +99,40 @@ function Warlock:Demonology()
 	--end
 
 	--Cooldowns
-	MaxDps:GlowCooldown(
-		DE.SummonDemonicTyrant,
-		cooldown[DE.SummonDemonicTyrant].ready and currentSpell ~= DE.SummonDemonicTyrant and (
-			soulShards < 3 and (not talents[DE.DemonicConsumption] or wildImps > 0)
-		)
-	);
+	if talents[DE.DemonicConsumption] then
+		local hogCount = 0;
+		for i = 1, 5 do
+			if spellHistory[i] == DE.HandOfGuldan then
+				hogCount = hogCount + 1;
+			end
+		end
+		MaxDps:GlowCooldown(
+			DE.SummonDemonicTyrant,
+			cooldown[DE.SummonDemonicTyrant].ready and currentSpell ~= DE.SummonDemonicTyrant and (
+				wildImps >= 6 and hogCount >= 2 and
+					cooldown[DE.CallDreadstalkers].remains > 10
+			)
+		);
+	else
+		MaxDps:GlowCooldown(
+			DE.SummonDemonicTyrant,
+			cooldown[DE.SummonDemonicTyrant].ready and currentSpell ~= DE.SummonDemonicTyrant and (
+				soulShards < 3 and (not talents[DE.DemonicConsumption] or wildImps > 0) and
+					cooldown[DE.CallDreadstalkers].remains > 10
+			)
+		);
+	end
 
-	MaxDps:GlowCooldown(DE.GrimoireFelguard,
-		soulShards >= 1 and cooldown[DE.GrimoireFelguard].ready and cooldown[DE.SummonDemonicTyrant].remains < 13
-	);
+
+	if talents[DE.GrimoireFelguard] then
+		MaxDps:GlowCooldown(DE.GrimoireFelguard,
+			soulShards >= 1 and cooldown[DE.GrimoireFelguard].ready and cooldown[DE.SummonDemonicTyrant].remains < 13
+		);
+	end
+
+	if azerite[A.ExplosivePotential] then
+		MaxDps:GlowCooldown(DE.Implosion, wildImps > 2 and buff[DE.ExplosivePotential].remains < 1.4);
+	end
 
 	-- nether_portal,if=soul_shard>=5&(!talent.power_siphon.enabled|buff.demonic_core.up);
 	--if talents[DE.NetherPortal] and cooldown[DE.NetherPortal].ready and soulShards >= 1 and currentSpell ~= DE.NetherPortal and (soulShards >= 5 and ( not talents[DE.PowerSiphon] or buff[DE.DemonicCoreAura].up )) then
@@ -117,7 +147,7 @@ function Warlock:Demonology()
 	end
 
 	if not UnitExists('pet') then
-		return DE.SummonFelguard;
+		return MaxDps:FindSpell(DE.SummonWrathguard) and DE.SummonWrathguard or DE.SummonFelguard;
 	end
 
 	-- call_action_list,name=dcon_ep_opener,if=azerite.explosive_potential.rank&talent.demonic_consumption.enabled&time<30&!cooldown.summon_demonic_tyrant.remains;
@@ -130,32 +160,25 @@ function Warlock:Demonology()
 	--end
 
 	-- hand_of_guldan,if=azerite.explosive_potential.rank&time<5&soul_shard>2&buff.explosive_potential.down&buff.wild_imps.stack<3&!prev_gcd.1.hand_of_guldan&&!prev_gcd.2.hand_of_guldan;
-	if soulShards >= 1 and currentSpell ~= DE.HandOfGuldan and (azerite[A.ExplosivePotential] > 0 and 5 and
+	if currentSpell ~= DE.HandOfGuldan and azerite[A.ExplosivePotential] > 0 and
 		soulShards > 2 and
 		not buff[DE.ExplosivePotential].up and
 		wildImps < 3 and
 		spellHistory[1] ~= DE.HandOfGuldan and
 		spellHistory[2] ~= DE.HandOfGuldan
-	) then
+	then
 		return DE.HandOfGuldan;
 	end
 
 	-- demonbolt,if=soul_shard<=3&buff.demonic_core.up&buff.demonic_core.stack=4;
-	if currentSpell ~= DE.Demonbolt and soulShards <= 3 and buff[DE.DemonicCoreAura].up and buff[DE.DemonicCoreAura].count == 4 then
+	if currentSpell ~= DE.Demonbolt and soulShards <= 3 and buff[DE.DemonicCoreAura].count == 4 then
 		return DE.Demonbolt;
 	end
 
-	-- implosion,if=azerite.explosive_potential.rank&buff.wild_imps.stack>2&buff.explosive_potential.remains<action.shadow_bolt.execute_time;
-	if azerite[A.ExplosivePotential] and wildImps > 2 and buff[DE.ExplosivePotential].remains < 2 then
-		return DE.Implosion;
-	end
-
-	-- implosion,if=azerite.explosive_potential.rank&buff.wild_imps.stack>2&buff.explosive_potential.remains<cooldown.summon_demonic_tyrant.remains&cooldown.summon_demonic_tyrant.remains<11&talent.demonic_consumption.enabled;
-	if azerite[A.ExplosivePotential] and wildImps > 2 and
-		buff[DE.ExplosivePotential].remains < cooldown[DE.SummonDemonicTyrant].remains and
-		cooldown[DE.SummonDemonicTyrant].remains < 11 and
-		talents[DE.DemonicConsumption]
-	then
+	-- implosion,if=azerite.explosive_potential.rank&buff.wild_imps.stack>2&buff.explosive_potential.remains<action.shadow_bolt.execute_time&(!talent.demonic_consumption.enabled|cooldown.summon_demonic_tyrant.remains>12);
+	if azerite[A.ExplosivePotential] > 0 and wildImps > 2 and buff[DE.ExplosivePotential].remains < 1.4 and (
+		not talents[DE.DemonicConsumption] or cooldown[DE.SummonDemonicTyrant].remains > 12
+	) then
 		return DE.Implosion;
 	end
 
@@ -165,14 +188,11 @@ function Warlock:Demonology()
 	end
 
 	-- bilescourge_bombers,if=azerite.explosive_potential.rank>0&time<10&spell_targets.implosion<2&buff.dreadstalkers.remains&talent.nether_portal.enabled;
-	--local dreadstalkersUp = cooldown[DE.CallDreadstalkers].remains > 8;
-	--if talents[DE.BilescourgeBombers] and cooldown[DE.BilescourgeBombers].ready and soulShards >= 2 and
-	--	azerite[A.ExplosivePotential] > 0 and
-	--	10 and -- @TODO: figure out how to handle this
-	--	targets < 2 and
-	--	dreadstalkersUp and
-	--	talents[DE.NetherPortal]
-	--then
+	--if cooldown[DE.BilescourgeBombers].ready and soulShards >= 2 and (
+	--	azerite[DE.ExplosivePotential] > 0 and time < 10 and
+	--		targets < 2 and not buff[DE.Dreadstalkers].ready and
+	--		talents[DE.NetherPortal]
+	--) then
 	--	return DE.BilescourgeBombers;
 	--end
 
@@ -210,8 +230,8 @@ function Warlock:Demonology()
 	-- call_dreadstalkers,if=(cooldown.summon_demonic_tyrant.remains<9&buff.demonic_calling.remains)|(cooldown.summon_demonic_tyrant.remains<11&!buff.demonic_calling.remains)|cooldown.summon_demonic_tyrant.remains>14;
 	if cooldown[DE.CallDreadstalkers].ready and (soulShards >= 2 or soulShards >= 1 and buff[DE.DemonicCalling].up) and
 		currentSpell ~= DE.CallDreadstalkers and (
-		(cooldown[DE.SummonDemonicTyrant].remains < 9 and buff[DE.DemonicCalling].remains) or
-			(cooldown[DE.SummonDemonicTyrant].remains < 11 and not buff[DE.DemonicCalling].remains) or
+		(cooldown[DE.SummonDemonicTyrant].remains < 9 and buff[DE.DemonicCalling].up) or
+			(cooldown[DE.SummonDemonicTyrant].remains < 11 and not buff[DE.DemonicCalling].up) or
 			cooldown[DE.SummonDemonicTyrant].remains > 14
 	) then
 		return DE.CallDreadstalkers;
@@ -240,7 +260,7 @@ function Warlock:Demonology()
 			soulShards >= 3 and cooldown[DE.CallDreadstalkers].remains > 4 and (
 				cooldown[DE.SummonDemonicTyrant].remains > 20 or (
 					cooldown[DE.SummonDemonicTyrant].remains < gcd * 2 and talents[DE.DemonicConsumption] or
-						cooldown[DE.SummonDemonicTyrant].remains < gcd * 4 and not talents[DE.DemonicConsumption]
+					cooldown[DE.SummonDemonicTyrant].remains < gcd * 4 and not talents[DE.DemonicConsumption]
 				)
 			) and (not talents[DE.SummonVilefiend] or cooldown[DE.SummonVilefiend].remains > 3)
 		)
@@ -259,10 +279,9 @@ function Warlock:Demonology()
 	if currentSpell ~= DE.Demonbolt and (
 		soulShards <= 3 and buff[DE.DemonicCoreAura].up and (
 			cooldown[DE.SummonDemonicTyrant].remains < 6 or
-				cooldown[DE.SummonDemonicTyrant].remains > 22 or
+				cooldown[DE.SummonDemonicTyrant].remains > 22 and buff[DE.DemonicCoreAura].count > 2 or
 				buff[DE.DemonicCoreAura].count >= 3 or
-				buff[DE.DemonicCoreAura].remains < 5 or
-				timeToDie < 25
+				buff[DE.DemonicCoreAura].remains < buff[DE.DemonicCoreAura].count * 4
 		)
 	) then
 		return DE.Demonbolt;
@@ -351,7 +370,7 @@ function Warlock:DemonologyDconEpOpener()
 	end
 
 	-- demonbolt,if=soul_shard<=3&buff.demonic_core.remains;
-	if currentSpell ~= DE.Demonbolt and (soulShards <= 3 and buff[DE.DemonicCoreAura].remains) then
+	if currentSpell ~= DE.Demonbolt and (soulShards <= 3 and buff[DE.DemonicCoreAura].remains > 0) then
 		return DE.Demonbolt;
 	end
 
@@ -595,9 +614,18 @@ local ImpIds = {
 
 function Warlock:CLEU()
 	local compTime = GetTime();
-	local expTime = MaxDps:AttackHaste() * 2 * 5;
+	local expTime = 20;
 
 	local _, event, _, sourceGuid, sourceName, _, _, destGuid, destName, _, _, spellId, spellName = CombatLogGetCurrentEventInfo();
+
+	local imp = self.WildImps[sourceGuid];
+	if imp and event == 'SPELL_CAST_SUCCESS' then
+		imp.casts = imp.casts - 1;
+
+		if imp.casts <= 0 then
+			self.WildImps[sourceGuid] = nil;
+		end
+	end
 
 	if sourceGuid == UnitGUID('player') then
 		if event == 'SPELL_SUMMON' then
@@ -605,7 +633,10 @@ function Warlock:CLEU()
 			unitId = tonumber(unitId);
 
 			if ImpIds[unitId] then
-				self.WildImps[destGuid] = compTime + expTime;
+				self.WildImps[destGuid] = {
+					expTime = compTime + expTime,
+					casts = 5
+				};
 			end
 		elseif event == 'SPELL_CAST_SUCCESS' and spellId == DE.Implosion then
 			wipe(self.WildImps);
@@ -621,11 +652,11 @@ function Warlock:ImpsCount()
 	local c = 0;
 	local compTime = GetTime();
 
-	for guid, timeLeft in pairs(self.WildImps) do
-		if timeLeft > compTime then
-			c = c + 1;
+	for guid, imp in pairs(Warlock.WildImps) do
+		if compTime > imp.expTime then
+			Warlock.WildImps[guid] = nil;
 		else
-			self.WildImps[guid] = nil;
+			c = c + 1;
 		end
 	end
 
