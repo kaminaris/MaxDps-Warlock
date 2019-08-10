@@ -98,6 +98,8 @@ function Warlock:Demonology()
 	--	return DE.SummonDemonicTyrant;
 	--end
 
+	MaxDps:GlowEssences();
+
 	--Cooldowns
 	if talents[DE.DemonicConsumption] then
 		local hogCount = 0;
@@ -109,8 +111,7 @@ function Warlock:Demonology()
 		MaxDps:GlowCooldown(
 			DE.SummonDemonicTyrant,
 			cooldown[DE.SummonDemonicTyrant].ready and currentSpell ~= DE.SummonDemonicTyrant and (
-				wildImps >= 6 and hogCount >= 2 and
-					cooldown[DE.CallDreadstalkers].remains > 10
+				wildImps >= 6 and currentSpell == DE.HandOfGuldan
 			)
 		);
 	else
@@ -130,7 +131,7 @@ function Warlock:Demonology()
 		);
 	end
 
-	if azerite[A.ExplosivePotential] then
+	if azerite[A.ExplosivePotential] > 0 then
 		MaxDps:GlowCooldown(DE.Implosion, wildImps > 2 and buff[DE.ExplosivePotential].remains < 1.4);
 	end
 

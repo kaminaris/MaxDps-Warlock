@@ -95,6 +95,7 @@ function Warlock:Affliction()
 	fd.timeToShard = timeToShard;
 	fd.activeAgonies = activeAgonies;
 
+	MaxDps:GlowEssences();
 	MaxDps:GlowCooldown(
 		AF.SummonDarkglare,
 		cooldown[AF.SummonDarkglare].ready and

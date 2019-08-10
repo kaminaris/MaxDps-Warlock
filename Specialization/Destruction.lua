@@ -42,6 +42,7 @@ function Warlock:Destruction()
 	end
 
 	--Cooldowns
+	MaxDps:GlowEssences();
 	MaxDps:GlowCooldown(WD.Havoc, cooldown[WD.Havoc].ready);
 	MaxDps:GlowCooldown(WD.SummonInfernal, cooldown[WD.SummonInfernal].ready);
 
