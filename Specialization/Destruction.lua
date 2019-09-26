@@ -45,6 +45,7 @@ function Warlock:Destruction()
 	MaxDps:GlowEssences();
 	MaxDps:GlowCooldown(WD.Havoc, cooldown[WD.Havoc].ready);
 	MaxDps:GlowCooldown(WD.SummonInfernal, cooldown[WD.SummonInfernal].ready);
+	MaxDps:GlowCooldown(WD.Cataclysm, talents[WD.Cataclysm] and cooldown[WD.Cataclysm].ready and currentSpell ~= WD.Cataclysm);
 
 	if talents[WD.DarkSoulInstability] then
 		MaxDps:GlowCooldown(WD.DarkSoulInstability, cooldown[WD.DarkSoulInstability].ready);
@@ -52,9 +53,9 @@ function Warlock:Destruction()
 
 	--Rotation Start
 
-	if talents[WD.Cataclysm] and cooldown[WD.Cataclysm].ready and currentSpell ~= WD.Cataclysm then
-		return WD.Cataclysm;
-	end
+	--if talents[WD.Cataclysm] and cooldown[WD.Cataclysm].ready and currentSpell ~= WD.Cataclysm then
+	--	return WD.Cataclysm;
+	--end
 
 	--1. Cast ChaosBolt if Backdraft is active and at least 2 seconds left
 	if buff[WD.Backdraft].remains >= 2 and SoulShards >= 2 and currentSpell ~= WD.ChaosBolt then
