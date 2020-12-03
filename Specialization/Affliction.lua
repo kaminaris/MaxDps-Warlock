@@ -13,6 +13,8 @@ local Venthyr = Enum.CovenantType.Venthyr;
 local NightFae = Enum.CovenantType.NightFae;
 local Kyrian = Enum.CovenantType.Kyrian;
 
+local darkglareAsCooldown = true;
+
 local AF = {
 	GrimoireOfSacrifice  = 108503,
 	SeedOfCorruption     = 27243,
@@ -64,6 +66,19 @@ function Warlock:Affliction()
 	fd.targets = targets;
 	fd.soulShards = soulShards;
 
+	MaxDps:GlowCooldown(
+		AF.SummonDarkglare,
+		cooldown[AF.SummonDarkglare].ready and
+		debuff[AF.Agony].up and
+		debuff[AF.CorruptionAura].up and
+		debuff[AF.UnstableAffliction].up and
+		(not talents[AF.PhantomSingularity] or cooldown[AF.PhantomSingularity].remains > 0)
+	);
+
+	if talents[AF.DarkSoulMisery] then
+		MaxDps:GlowCooldown(AF.DarkSoulMisery, cooldown[AF.DarkSoulMisery].ready);
+	end
+
 	-- call_action_list,name=aoe,if=active_enemies>3;
 	if targets > 3 then
 		local result = Warlock:AfflictionAoe();
@@ -77,39 +92,41 @@ function Warlock:Affliction()
 		return AF.PhantomSingularity;
 	end
 
-	-- call_action_list,name=darkglare_prep,if=covenant.venthyr&dot.impending_catastrophe_dot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if covenantId == Venthyr and
-		debuff[AF.ImpendingCatastropheDot].up and
-		cooldown[AF.SummonDarkglare].remains < 2 and (
-		debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity]
-	) then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+	--- as cooldown
+	if not darkglareAsCooldown then
+		-- call_action_list,name=darkglare_prep,if=covenant.venthyr&dot.impending_catastrophe_dot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if covenantId == Venthyr and
+			debuff[AF.ImpendingCatastropheDot].up and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- call_action_list,name=darkglare_prep,if=covenant.night_fae&dot.soul_rot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if covenantId == NightFae and
-		debuff[AF.SoulRot].up and
-		cooldown[AF.SummonDarkglare].remains < 2 and (
-		debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity]
-	) then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+		-- call_action_list,name=darkglare_prep,if=covenant.night_fae&dot.soul_rot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if covenantId == NightFae and
+			debuff[AF.SoulRot].up and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- call_action_list,name=darkglare_prep,if=(covenant.necrolord|covenant.kyrian|covenant.none)&dot.phantom_singularity.ticking&dot.phantom_singularity.remains<2;
-	if (
-		covenantId == Necrolord or
-			covenantId == Kyrian or
-			covenantId == 0
-	) and debuff[AF.PhantomSingularity].up and debuff[AF.PhantomSingularity].remains < 2 then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+		-- call_action_list,name=darkglare_prep,if=(covenant.necrolord|covenant.kyrian|covenant.none)&dot.phantom_singularity.ticking&dot.phantom_singularity.remains<2;
+		if (covenantId == Necrolord or covenantId == Kyrian or covenantId == 0) and
+			debuff[AF.PhantomSingularity].up and
+			debuff[AF.PhantomSingularity].remains < 2
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
 	end
 
@@ -180,7 +197,7 @@ function Warlock:Affliction()
 		targets > 2 and
 		talents[AF.SiphonLife] and
 		not debuff[AF.SeedOfCorruption].up and
-		not debuff[AF.CorruptionAura].remains < 4
+		not (debuff[AF.CorruptionAura].remains < 4)
 	then
 		return AF.SeedOfCorruption;
 	end
@@ -190,8 +207,8 @@ function Warlock:Affliction()
 		cooldown[AF.VileTaint].ready and
 		soulShards >= 1 and
 		currentSpell ~= AF.VileTaint and
-		(soulShards > 1 or targets > 2) and
-		cooldown[AF.SummonDarkglare].remains > 12
+		(soulShards > 1 or targets > 2) --and
+		--cooldown[AF.SummonDarkglare].remains > 12 -- probably not
 	then
 		return AF.VileTaint;
 	end
@@ -244,44 +261,47 @@ function Warlock:Affliction()
 		return AF.MaleficRapture;
 	end
 
-	-- call_action_list,name=darkglare_prep,if=covenant.venthyr&(cooldown.impending_catastrophe.ready|dot.impending_catastrophe_dot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if covenantId == Venthyr and
-		(cooldown[AF.ImpendingCatastrophe].ready or debuff[AF.ImpendingCatastropheDot].up) and
-		cooldown[AF.SummonDarkglare].remains < 2 and
-		(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
-	then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+	--- as cooldown
+	if not darkglareAsCooldown then
+		-- call_action_list,name=darkglare_prep,if=covenant.venthyr&(cooldown.impending_catastrophe.ready|dot.impending_catastrophe_dot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if covenantId == Venthyr and
+			(cooldown[AF.ImpendingCatastrophe].ready or debuff[AF.ImpendingCatastropheDot].up) and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- call_action_list,name=darkglare_prep,if=(covenant.necrolord|covenant.kyrian|covenant.none)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if (covenantId == Necrolord or covenantId == Kyrian or covenantId == 0) and
-		cooldown[AF.SummonDarkglare].remains < 2 and
-		(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
-	then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+		-- call_action_list,name=darkglare_prep,if=(covenant.necrolord|covenant.kyrian|covenant.none)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if (covenantId == Necrolord or covenantId == Kyrian or covenantId == 0) and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- call_action_list,name=darkglare_prep,if=covenant.night_fae&(cooldown.soul_rot.ready|dot.soul_rot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if covenantId == NightFae and
-		(cooldown[AF.SoulRot].ready or debuff[AF.SoulRot].up) and
-		cooldown[AF.SummonDarkglare].remains < 2 and
-		(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
-	then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+		-- call_action_list,name=darkglare_prep,if=covenant.night_fae&(cooldown.soul_rot.ready|dot.soul_rot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if covenantId == NightFae and
+			(cooldown[AF.SoulRot].ready or debuff[AF.SoulRot].up) and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- dark_soul,if=cooldown.summon_darkglare.remains>time_to_die;
-	if cooldown[AF.SummonDarkglare].remains > timeToDie then
-		return AF.DarkSoulMisery;
+		-- dark_soul,if=cooldown.summon_darkglare.remains>time_to_die;
+		--if cooldown[AF.SummonDarkglare].remains > timeToDie then
+		--	return AF.DarkSoulMisery;
+		--end
 	end
 
 	-- call_action_list,name=se,if=debuff.shadow_embrace.stack<(2-action.shadow_bolt.in_flight)|debuff.shadow_embrace.remains<3;
@@ -399,42 +419,46 @@ function Warlock:AfflictionAoe()
 		return AF.Haunt;
 	end
 
-	-- call_action_list,name=darkglare_prep,if=covenant.venthyr&dot.impending_catastrophe_dot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if covenantId == Venthyr and
-		debuff[AF.ImpendingCatastropheDot].up and
-		cooldown[AF.SummonDarkglare].remains < 2 and
-		(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
-	then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+	--- as cooldown
+	if not darkglareAsCooldown then
+		-- call_action_list,name=darkglare_prep,if=covenant.venthyr&dot.impending_catastrophe_dot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if covenantId == Venthyr and
+			debuff[AF.ImpendingCatastropheDot].up and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- call_action_list,name=darkglare_prep,if=covenant.night_fae&dot.soul_rot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if covenantId == NightFae and
-		debuff[AF.SoulRot].up and
-		cooldown[AF.SummonDarkglare].remains < 2 and
-		(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
-	then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+		-- call_action_list,name=darkglare_prep,if=covenant.night_fae&dot.soul_rot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if covenantId == NightFae and
+			debuff[AF.SoulRot].up and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- call_action_list,name=darkglare_prep,if=(covenant.necrolord|covenant.kyrian|covenant.none)&dot.phantom_singularity.ticking&dot.phantom_singularity.remains<2;
-	if (covenantId == Necrolord or covenantId == Kyrian or covenantId == 0) and
-		debuff[AF.PhantomSingularity].up and
-		debuff[AF.PhantomSingularity].remains < 2
-	then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+		-- call_action_list,name=darkglare_prep,if=(covenant.necrolord|covenant.kyrian|covenant.none)&dot.phantom_singularity.ticking&dot.phantom_singularity.remains<2;
+		if (covenantId == Necrolord or covenantId == Kyrian or covenantId == 0) and
+			debuff[AF.PhantomSingularity].up and
+			debuff[AF.PhantomSingularity].remains < 2
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
 	end
 
 	-- seed_of_corruption,if=talent.sow_the_seeds.enabled&can_seed;
+	local canSeed = true;
 	if soulShards >= 1 and currentSpell ~= AF.SeedOfCorruption and talents[AF.SowTheSeeds] and canSeed then
 		return AF.SeedOfCorruption;
 	end
@@ -444,9 +468,14 @@ function Warlock:AfflictionAoe()
 		currentSpell ~= AF.SeedOfCorruption and
 		not talents[AF.SowTheSeeds] and
 		not debuff[AF.SeedOfCorruption].up and
-		not debuff[AF.CorruptionAura].refreshable
+		debuff[AF.CorruptionAura].refreshable
 	then
 		return AF.SeedOfCorruption;
+	end
+
+	-- fix for non cycling rotation
+	if debuff[AF.Agony].refreshable then
+		return AF.Agony;
 	end
 
 	--- multidot not possible
@@ -479,63 +508,66 @@ function Warlock:AfflictionAoe()
 		end
 	end
 
-	-- call_action_list,name=darkglare_prep,if=covenant.venthyr&(cooldown.impending_catastrophe.ready|dot.impending_catastrophe_dot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if covenantId == Venthyr and
-		(cooldown[AF.ImpendingCatastrophe].ready or debuff[AF.ImpendingCatastropheDot].up) and
-		cooldown[AF.SummonDarkglare].remains < 2 and
-		(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
-	then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+	--- as cooldown
+	if not darkglareAsCooldown then
+		-- call_action_list,name=darkglare_prep,if=covenant.venthyr&(cooldown.impending_catastrophe.ready|dot.impending_catastrophe_dot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if covenantId == Venthyr and
+			(cooldown[AF.ImpendingCatastrophe].ready or debuff[AF.ImpendingCatastropheDot].up) and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- call_action_list,name=darkglare_prep,if=(covenant.necrolord|covenant.kyrian|covenant.none)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if (covenantId == Necrolord or covenantId == Kyrian or covenantId == 0) and
-		cooldown[AF.SummonDarkglare].remains < 2 and
-		(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
-	then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+		-- call_action_list,name=darkglare_prep,if=(covenant.necrolord|covenant.kyrian|covenant.none)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if (covenantId == Necrolord or covenantId == Kyrian or covenantId == 0) and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- call_action_list,name=darkglare_prep,if=covenant.night_fae&(cooldown.soul_rot.ready|dot.soul_rot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
-	if covenantId == NightFae and
-		(cooldown[AF.SoulRot].ready or debuff[AF.SoulRot].up) and
-		cooldown[AF.SummonDarkglare].remains < 2 and
-		(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
-	then
-		local result = Warlock:AfflictionDarkglarePrep();
-		if result then
-			return result;
+		-- call_action_list,name=darkglare_prep,if=covenant.night_fae&(cooldown.soul_rot.ready|dot.soul_rot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled);
+		if covenantId == NightFae and
+			(cooldown[AF.SoulRot].ready or debuff[AF.SoulRot].up) and
+			cooldown[AF.SummonDarkglare].remains < 2 and
+			(debuff[AF.PhantomSingularity].remains > 2 or not talents[AF.PhantomSingularity])
+		then
+			local result = Warlock:AfflictionDarkglarePrep();
+			if result then
+				return result;
+			end
 		end
-	end
 
-	-- dark_soul,if=cooldown.summon_darkglare.remains>time_to_die;
-	if cooldown[AF.SummonDarkglare].remains > timeToDie then
-		return AF.DarkSoulMisery;
+		-- dark_soul,if=cooldown.summon_darkglare.remains>time_to_die;
+		--if cooldown[AF.SummonDarkglare].remains > timeToDie then
+		--	return AF.DarkSoulMisery;
+		--end
 	end
 
 	-- malefic_rapture,if=dot.vile_taint.ticking;
-	if soulShards >= 1 and currentSpell ~= AF.MaleficRapture and (debuff[AF.VileTaint].up) then
+	if soulShards >= 1 and currentSpell ~= AF.MaleficRapture and debuff[AF.VileTaint].up then
 		return AF.MaleficRapture;
 	end
 
 	-- malefic_rapture,if=dot.soul_rot.ticking&!talent.sow_the_seeds.enabled;
-	if soulShards >= 1 and currentSpell ~= AF.MaleficRapture and (debuff[AF.SoulRot].up and not talents[AF.SowTheSeeds]) then
+	if soulShards >= 1 and currentSpell ~= AF.MaleficRapture and debuff[AF.SoulRot].up and not talents[AF.SowTheSeeds] then
 		return AF.MaleficRapture;
 	end
 
 	-- malefic_rapture,if=!talent.vile_taint.enabled;
-	if soulShards >= 1 and currentSpell ~= AF.MaleficRapture and (not talents[AF.VileTaint]) then
+	if soulShards >= 1 and currentSpell ~= AF.MaleficRapture and not talents[AF.VileTaint] then
 		return AF.MaleficRapture;
 	end
 
 	-- malefic_rapture,if=soul_shard>4;
-	if soulShards >= 1 and currentSpell ~= AF.MaleficRapture and (soulShards > 4) then
+	if currentSpell ~= AF.MaleficRapture and soulShards > 4 then
 		return AF.MaleficRapture;
 	end
 
@@ -579,8 +611,8 @@ function Warlock:AfflictionCovenant()
 	-- impending_catastrophe,if=cooldown.summon_darkglare.remains<10|cooldown.summon_darkglare.remains>50;
 	if covenantId == Venthyr and
 		cooldown[AF.ImpendingCatastrophe].ready and
-		currentSpell ~= AF.ImpendingCatastrophe and
-		(cooldown[AF.SummonDarkglare].remains < 10 or cooldown[AF.SummonDarkglare].remains > 50)
+		currentSpell ~= AF.ImpendingCatastrophe --and
+		--(cooldown[AF.SummonDarkglare].remains < 10 or cooldown[AF.SummonDarkglare].remains > 50)
 	then
 		return AF.ImpendingCatastrophe;
 	end
@@ -589,7 +621,7 @@ function Warlock:AfflictionCovenant()
 	if covenantId == Necrolord and
 		cooldown[AF.DecimatingBolt].ready and
 		currentSpell ~= AF.DecimatingBolt and
-		cooldown[AF.SummonDarkglare].remains > 5 and
+		--cooldown[AF.SummonDarkglare].remains > 5 and
 		(debuff[AF.Haunt].remains > 4 or not talents[AF.Haunt])
 	then
 		return AF.DecimatingBolt;
@@ -598,12 +630,12 @@ function Warlock:AfflictionCovenant()
 	-- soul_rot,if=cooldown.summon_darkglare.remains<5|cooldown.summon_darkglare.remains>50|cooldown.summon_darkglare.remains>25&conduit.corrupting_leer.enabled;
 	if covenantId == NightFae and
 		cooldown[AF.SoulRot].ready and
-		currentSpell ~= AF.SoulRot and
-		(
-			cooldown[AF.SummonDarkglare].remains < 5 or
-			cooldown[AF.SummonDarkglare].remains > 50 --or
-			--cooldown[AF.SummonDarkglare].remains > 25 and conduit[AF.CorruptingLeer] TODO
-		)
+		currentSpell ~= AF.SoulRot --and
+		--(
+		--	cooldown[AF.SummonDarkglare].remains < 5 or
+		--	cooldown[AF.SummonDarkglare].remains > 50 --or
+		--	--cooldown[AF.SummonDarkglare].remains > 25 and conduit[AF.CorruptingLeer] TODO
+		--)
 	then
 		return AF.SoulRot;
 	end
@@ -629,16 +661,16 @@ function Warlock:AfflictionDarkglarePrep()
 	if talents[AF.VileTaint] and
 		cooldown[AF.VileTaint].ready and 
 		soulShards >= 1 and 
-		currentSpell ~= AF.VileTaint and 
-		cooldown[AF.SummonDarkglare].remains < 2 
+		currentSpell ~= AF.VileTaint and
+		cooldown[AF.SummonDarkglare].remains < 2
 	then
 		return AF.VileTaint;
 	end
 
 	-- dark_soul;
-	if talents[AF.DarkSoulMisery] and cooldown[AF.DarkSoulMisery].ready then
-		return AF.DarkSoulMisery;
-	end
+	--if talents[AF.DarkSoulMisery] and cooldown[AF.DarkSoulMisery].ready then
+	--	return AF.DarkSoulMisery;
+	--end
 
 	-- call_action_list,name=covenant,if=!covenant.necrolord&cooldown.summon_darkglare.remains<2;
 	if covenantId ~= Necrolord and cooldown[AF.SummonDarkglare].remains < 2 then

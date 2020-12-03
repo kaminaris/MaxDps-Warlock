@@ -7,9 +7,10 @@ local Warlock = addonTable.Warlock;
 local MaxDps = MaxDps;
 local UnitPower = UnitPower;
 local GetTime = GetTime;
-local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo;
-local UnitGUID = UnitGUID;
-local strsplit = strsplit;
+local Necrolord = Enum.CovenantType.Necrolord;
+local Venthyr = Enum.CovenantType.Venthyr;
+local NightFae = Enum.CovenantType.NightFae;
+local Kyrian = Enum.CovenantType.Kyrian;
 
 local DE = {
 	InnerDemons          = 267216,
@@ -78,6 +79,7 @@ function Warlock:Demonology()
 	elseif currentSpell == DE.Demonbolt then
 		soulShards = soulShards + 2;
 	elseif currentSpell == DE.SummonDemonicTyrant then
+		soulShards = 5;
 		if talents[DE.DemonicConsumption] then
 			wildImps = 0;
 		end
@@ -185,7 +187,7 @@ function Warlock:Demonology()
 	end
 
 	-- call_action_list,name=covenant,if=(covenant.necrolord|covenant.night_fae)&!talent.nether_portal.enabled;
-	if (covenantId == Enum.CovenantType.Necrolord or covenantId == Enum.CovenantType.NightFae) and
+	if (covenantId == Necrolord or covenantId == NightFae) and
 		not talents[DE.NetherPortal]
 	then
 		local result = Warlock:DemonologyCovenant();
@@ -236,7 +238,7 @@ function Warlock:DemonologyCovenant()
 	local targets = fd.targets;
 	local covenantId = fd.covenant.covenantId;
 
-	if covenantId == Enum.CovenantType.Venthyr then
+	if covenantId == Venthyr then
 		-- impending_catastrophe,if=!talent.sacrificed_souls.enabled|active_enemies>1;
 		if cooldown[DE.ImpendingCatastrophe].ready and currentSpell ~= DE.ImpendingCatastrophe and
 			(not talents[DE.SacrificedSouls] or targets > 1)
@@ -245,7 +247,7 @@ function Warlock:DemonologyCovenant()
 		end
 	end
 
-	if covenantId == Enum.CovenantType.Kyrian then
+	if covenantId == Kyrian then
 		-- scouring_tithe,if=talent.sacrificed_souls.enabled&active_enemies=1;
 		if cooldown[DE.ScouringTithe].ready and currentSpell ~= DE.ScouringTithe and
 			(talents[DE.SacrificedSouls] and targets <= 1)
@@ -261,14 +263,14 @@ function Warlock:DemonologyCovenant()
 		end
 	end
 
-	if covenantId == Enum.CovenantType.NightFae then
+	if covenantId == NightFae then
 		-- soul_rot;
 		if cooldown[DE.SoulRot].ready and currentSpell ~= DE.SoulRot then
 			return DE.SoulRot;
 		end
 	end
 
-	if covenantId == Enum.CovenantType.Necrolord then
+	if covenantId == Necrolord then
 		-- decimating_bolt;
 		if cooldown[DE.DecimatingBolt].ready and currentSpell ~= DE.DecimatingBolt then
 			return DE.DecimatingBolt;
@@ -310,7 +312,7 @@ function Warlock:DemonologySummonTyrant()
 	end
 
 	-- hand_of_guldan;
-	if soulShards >= 1 and currentSpell ~= DE.HandOfGuldan then
+	if soulShards >= 3 and currentSpell ~= DE.HandOfGuldan then
 		return DE.HandOfGuldan;
 	end
 
@@ -342,8 +344,7 @@ function Warlock:DemonologySummonTyrant()
 	-- summon_demonic_tyrant;
 	if cooldown[DE.SummonDemonicTyrant].ready and currentSpell ~= DE.SummonDemonicTyrant then
 		forceTyrant = true;
-		tyrantTimeLimit = GetTime() + 3;
-		print('forcing tyrant for', tyrantTimeLimit)
+		tyrantTimeLimit = GetTime() + 2;
 		return DE.SummonDemonicTyrant;
 	end
 
