@@ -81,7 +81,6 @@ function Warlock:Destruction()
 	fd.targetHp = targetHp;
 	fd.canChaosBolt = canChaosBolt;
 	fd.targets = targets;
-	print(petInfernal, petInfernalRemains);
 
 	-- summon_infernal;
 	MaxDps:GlowCooldown(DS.SummonInfernal, cooldown[DS.SummonInfernal].ready);
