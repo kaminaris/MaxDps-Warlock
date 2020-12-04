@@ -339,7 +339,7 @@ function Warlock:DemonologySummonTyrant()
 	end
 
 	-- variable,name=tyrant_ready,value=!cooldown.summon_demonic_tyrant.ready;
-	tyrantReady = not cooldown[DE.SummonDemonicTyrant].ready;
+	tyrantReady = false;
 
 	-- summon_demonic_tyrant;
 	if cooldown[DE.SummonDemonicTyrant].ready and currentSpell ~= DE.SummonDemonicTyrant then
