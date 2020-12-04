@@ -1,5 +1,5 @@
 ## Title: MaxDps_Warlock
-## Version: 9.0.2
+## Version: 9.0.3
 ## Author: Kaminaris
 ## Interface: 90002
 ## Dependencies: MaxDps
