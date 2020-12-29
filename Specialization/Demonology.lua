@@ -201,7 +201,10 @@ function Warlock:Demonology()
 	end
 
 	-- demonbolt,if=buff.demonic_core.react&soul_shard<4;
-	if buff[DE.DemonicCoreAura].up and soulShards < 4 then
+	if (
+		buff[DE.DemonicCoreAura].count > 2 and soulShards < 4 or
+		buff[DE.DemonicCoreAura].up and buff[DE.DemonicCoreAura].remains < 4
+	) then
 		return DE.Demonbolt;
 	end
 
@@ -298,9 +301,12 @@ function Warlock:DemonologySummonTyrant()
 	end
 
 	-- demonbolt,if=buff.demonic_core.up&(talent.demonic_consumption.enabled|buff.nether_portal.down),line_cd=20;
-	--if buff[DE.DemonicCoreAura].up and (talents[DE.DemonicConsumption] or not buff[DE.NetherPortal].up) then
-	--	return DE.Demonbolt;
-	--end
+	if buff[DE.DemonicCoreAura].up and
+		soulShards < 4 and
+		(talents[DE.DemonicConsumption] or not buff[DE.NetherPortal].up)
+	then
+		return DE.Demonbolt;
+	end
 
 	-- shadow_bolt,if=buff.wild_imps.stack+incoming_imps<4&(talent.demonic_consumption.enabled|buff.nether_portal.down),line_cd=20;
 	--if --currentSpell ~= DE.ShadowBolt and
@@ -411,7 +417,7 @@ function Warlock:DemonologyTyrantPrep()
 
 	-- demonbolt,if=buff.demonic_core.up&soul_shard<4&(talent.demonic_consumption.enabled|buff.nether_portal.down);
 	if currentSpell ~= DE.Demonbolt and
-		buff[DE.DemonicCoreAura].up and
+		(buff[DE.DemonicCoreAura].count > 2 or buff[DE.DemonicCoreAura].up and buff[DE.DemonicCoreAura].remains < 4) and
 		soulShards < 4 and
 		(talents[DE.DemonicConsumption] or not buff[DE.NetherPortal].up)
 	then
