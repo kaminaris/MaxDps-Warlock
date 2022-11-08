@@ -64,7 +64,7 @@ function Warlock:Affliction()
 	if soulShards < 0 then soulShards = 0; end
 	fd.soulShards = soulShards;
 
-	MaxDps:GlowCooldown(DE.InquisitorsGaze, talents[AF.InquisitorsGaze] and cooldown[AF.InquisitorsGaze].ready and not buff[DE.InquisitorsGazeBuff].up)
+	MaxDps:GlowCooldown(AF.InquisitorsGaze, talents[AF.InquisitorsGaze] and cooldown[AF.InquisitorsGaze].ready and not buff[AF.InquisitorsGazeBuff].up)
 
 	-- call_action_list,name=aoe,if=active_enemies>3
 	if targets > 3 then
