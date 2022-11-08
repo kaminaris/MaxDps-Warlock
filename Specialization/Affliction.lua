@@ -119,7 +119,7 @@ function Warlock:Affliction()
 	end
 
 	-- vile_taint,if=(soul_shard>1|active_enemies>2)&cooldown.summon_darkglare.remains>12
-	if talents[AF.VileTaint] and cooldown[AF.VileTaint].ready and soulShards >= 1 and currentSpell ~= AF.VileTaint and (( soulShards > 1 or targets > 2 ) and (not talents[AF.SummonDarkglare] or cooldown[AF.SummonDarkglare].remains) > 12) then
+	if talents[AF.VileTaint] and cooldown[AF.VileTaint].ready and soulShards >= 1 and currentSpell ~= AF.VileTaint and (( soulShards > 1 or targets > 2 ) and (not talents[AF.SummonDarkglare] or cooldown[AF.SummonDarkglare].remains > 12)) then
 		return AF.VileTaint
 	end
 
