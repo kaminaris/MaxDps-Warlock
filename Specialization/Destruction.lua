@@ -1,3 +1,4 @@
+
 local _, addonTable = ...
 
 --- @type MaxDps
@@ -6,360 +7,164 @@ if not MaxDps then return end
 local Warlock = addonTable.Warlock
 local MaxDps = MaxDps
 local UnitPower = UnitPower
-local GetTotemInfo = GetTotemInfo
+local UnitHealth = UnitHealth
+local UnitAura = UnitAura
+local GetSpellDescription = GetSpellDescription
+local UnitHealthMax = UnitHealthMax
+local UnitPowerMax = UnitPowerMax
+local PowerTypeRage = Enum.PowerType.Rage
 
-local DS = {
-	Backdraft = 196406,
-	Cataclysm = 152108,
-	ChannelDemonfire = 196447,
-	ChaosBolt = 116858,
-	Conflagrate = 17962,
-	DarkSoulInstability = 113858,
-	Eradication = 196412,
-	FireAndBrimstone = 196408,
-	Flashover = 267115,
-	GrimoireOfSacrifice = 108503,
-	Havoc = 80240,
-	Immolate = 348,
-	ImmolateDebuff = 157736,
-	Incinerate = 29722,
-	Inferno = 270545,
-	InquisitorsGaze = 386344,
-	InquisitorsGazeBuff = 388068,
-	InternalCombustion = 266134,
-	RainOfChaos = 266086,
-	RainOfFire = 5740,
-	RitualOfRuin = 387156,
-	RoaringBlaze = 205184,
-	Shadowburn = 17877,
-	SoulFire = 6353,
-	SummonInfernal = 1122,
-}
+local fd
+local cooldown
+local buff
+local debuff
+local talents
+local targets
+local soulShards
+local targetHP
+local targetmaxHP
+local targethealthPerc
+local curentHP
+local maxHP
+local healthPerc
+local timeToDie
+
+local className, classFilename, classId = UnitClass('player')
+local currentSpec = GetSpecialization()
+local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "None"
+local classtable
+
+--setmetatable(classtable, Warrior.spellMeta)
 
 function Warlock:Destruction()
-	local fd = MaxDps.FrameData
-	local cooldown = fd.cooldown
-	local buff = fd.buff
-	local debuff = fd.debuff
-	local currentSpell = fd.currentSpell
-	local talents = fd.talents
-	local targets = MaxDps:SmartAoe()
-	fd.targets = targets
-	local timeToDie = fd.timeToDie
-	local soulShards = UnitPower('player', Enum.PowerType.SoulShards, true) / 10
-	
-	local havocActive = cooldown[DS.Havoc].remains > 18
-	local petInfernal = GetTotemInfo(1)
-	local petBlasphemy = petInfernal
-	local timeShift = fd.timeShift
-	local gcd = fd.gcd
+    fd = MaxDps.FrameData
+    cooldown = fd.cooldown
+    buff = fd.buff
+    debuff = fd.debuff
+    talents = fd.talents
+    targets = MaxDps:SmartAoe()
+    soulShards = UnitPower('player', Enum.PowerType.SoulShards)
+    targetHP = UnitHealth('target')
+    targetmaxHP = UnitHealthMax('target')
+    targethealthPerc = (targetHP / targetmaxHP) * 100
+    curentHP = UnitHealth('player')
+    maxHP = UnitHealthMax('player')
+    healthPerc = (curentHP / maxHP) * 100
+    timeToDie = fd.timeToDie
+    classtable = MaxDps.SpellTable
+    classtable.ImmolateDot = 157736
 
-	if currentSpell == DS.ChaosBolt then
-		soulShards = soulShards - 2
-	elseif currentSpell == DS.Incinerate then
-		soulShards = soulShards + 0.2
-	end
-	if soulShards < 0 then
-		soulShards = 0
-	end
-	fd.soulShards = soulShards
-	fd.petInfernal = petInfernal
+    MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
 
-	Warlock:DestructionCooldowns()
-	
-	-- call_action_list,name=havoc,if=havoc_active&active_enemies>1&active_enemies<5-talent.inferno.enabled+(talent.inferno.enabled&talent.internal_combustion.enabled)
-	if havocActive and targets > 1 and targets < 5 - (talents[DS.Inferno] and 1 or 0) + ( (talents[DS.Inferno] and talents[DS.InternalCombustion]) and 1 or 0 ) then
-		local result = Warlock:DestructionHavoc()
-		if result then
-			return result
-		end
-	end
-
-	-- conflagrate,if=talent.roaring_blaze.enabled&debuff.roaring_blaze.remains<1.5
-	if talents[DS.Conflagrate] and cooldown[DS.Conflagrate].ready and (talents[DS.RoaringBlaze] and debuff[DS.RoaringBlaze].remains < 1.5) then
-		return DS.Conflagrate
-	end
-
-	-- cataclysm
-	if talents[DS.Cataclysm] and cooldown[DS.Cataclysm].ready and currentSpell ~= DS.Cataclysm then
-		return DS.Cataclysm
-	end
-
-	-- call_action_list,name=aoe,if=active_enemies>2-set_bonus.tier28_4pc
-	if targets > 2 then
-		local result = Warlock:DestructionAoe()
-		if result then
-			return result
-		end
-	end
-
-	-- soul_fire,cycle_targets=1,if=refreshable&soul_shard<=4&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>remains)
-	if talents[DS.SoulFire] and cooldown[DS.SoulFire].ready and currentSpell ~= DS.SoulFire and (debuff[DS.ImmolateDebuff].refreshable and soulShards <= 4 and ( not talents[DS.Cataclysm] or cooldown[DS.Cataclysm].remains > debuff[DS.ImmolateDebuff].remains )) then
-		return DS.SoulFire
-	end
-
-	-- immolate,cycle_targets=1,if=remains<3&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>remains)
-	if currentSpell ~= DS.Immolate and (debuff[DS.ImmolateDebuff].remains < 3 and ( not talents[DS.Cataclysm] or cooldown[DS.Cataclysm].remains > debuff[DS.ImmolateDebuff].remains )) then
-		return DS.Immolate
-	end
-
-	-- immolate,if=talent.internal_combustion.enabled&action.chaos_bolt.in_flight&remains<duration*0.5
-	if currentSpell ~= DS.Immolate and (talents[DS.InternalCombustion] and debuff[DS.ImmolateDebuff].remains < 9) then
-		return DS.Immolate
-	end
-
-	-- chaos_bolt,if=(pet.infernal.active|pet.blasphemy.active)&soul_shard>=4
-	if talents[DS.ChaosBolt] and soulShards >= 2 and currentSpell ~= DS.ChaosBolt and (( petInfernal or petBlasphemy ) and soulShards >= 4) then
-		return DS.ChaosBolt
-	end
-
-	-- channel_demonfire
-	if talents[DS.ChannelDemonfire] and cooldown[DS.ChannelDemonfire].ready and currentSpell ~= DS.ChannelDemonfire then
-		return DS.ChannelDemonfire
-	end
-
-	-- scouring_tithe
-	--return DS.ScouringTithe
-
-	-- decimating_bolt
-	--return DS.DecimatingBolt
-
-	-- havoc,cycle_targets=1,if=!(target=self.target)&(dot.immolate.remains>dot.immolate.duration*0.5|!talent.internal_combustion.enabled)
-	--[[
-	if talents[DS.Havoc] and cooldown[DS.Havoc].ready and (not ( target == ) and ( debuff[DS.ImmolateDebuff].remains > debuff[DS.ImmolateDebuff].duration * 0.5 or not talents[DS.InternalCombustion] )) then
-		return DS.Havoc
-	end
-	--]]
-
-	-- impending_catastrophe
-	--return DS.ImpendingCatastrophe
-
-	-- soul_rot
-	--return DS.SoulRot
-
-	-- havoc,if=runeforge.odr_shawl_of_the_ymirjar.equipped
-	--[[if talents[DS.Havoc] and cooldown[DS.Havoc].ready and (runeforge[DS.OdrShawlOfTheYmirjar]) then
-	return DS.Havoc
-	end
-	--]]
-
-	-- variable,name=pool_soul_shards,value=active_enemies>1&cooldown.havoc.remains<=10|buff.ritual_of_ruin.up&talent.rain_of_chaos
-	local poolSoulShards = targets > 1 and cooldown[DS.Havoc].remains <= 10 or buff[DS.RitualOfRuin].up and talents[DS.RainOfChaos]
-
-	-- conflagrate,if=buff.backdraft.down&soul_shard>=1.5-0.3*talent.flashover.enabled&!variable.pool_soul_shards
-	if talents[DS.Conflagrate] and cooldown[DS.Conflagrate].ready and (not buff[DS.Backdraft].up and soulShards >= 1.5 - 0.3 * (talents[DS.Flashover] and 1 or 0) and not poolSoulShards) then
-		return DS.Conflagrate
-	end
-
-	-- chaos_bolt,if=pet.infernal.active|buff.rain_of_chaos.remains>cast_time
-	if talents[DS.ChaosBolt] and soulShards >= 2 and currentSpell ~= DS.ChaosBolt and (petInfernal or buff[DS.RainOfChaos].remains > timeShift) then
-		return DS.ChaosBolt
-	end
-
-	-- chaos_bolt,if=buff.backdraft.up&!variable.pool_soul_shards
-	if talents[DS.ChaosBolt] and soulShards >= 2 and currentSpell ~= DS.ChaosBolt and (buff[DS.Backdraft].up and not poolSoulShards) then
-		return DS.ChaosBolt
-	end
-
-	-- chaos_bolt,if=talent.eradication&!variable.pool_soul_shards&debuff.eradication.remains<cast_time
-	if talents[DS.ChaosBolt] and soulShards >= 2 and currentSpell ~= DS.ChaosBolt and (talents[DS.Eradication] and not poolSoulShards and debuff[DS.Eradication].remains < timeShift) then
-		return DS.ChaosBolt
-	end
-
-	-- shadowburn,if=!variable.pool_soul_shards|soul_shard>=4.5
-	if talents[DS.Shadowburn] and cooldown[DS.Shadowburn].ready and soulShards >= 1 and (not poolSoulShards or soulShards >= 4.5) then
-		return DS.Shadowburn
-	end
-
-	-- chaos_bolt,if=soul_shard>3.5
-	if talents[DS.ChaosBolt] and soulShards >= 2 and currentSpell ~= DS.ChaosBolt and (soulShards > 3.5) then
-		return DS.ChaosBolt
-	end
-
-	-- chaos_bolt,if=time_to_die<5&time_to_die>cast_time+travel_time
-	if talents[DS.ChaosBolt] and soulShards >= 2 and currentSpell ~= DS.ChaosBolt and (timeToDie < 5 and timeToDie > timeShift) then
-		return DS.ChaosBolt
-	end
-
-	-- conflagrate,if=charges>1|time_to_die<gcd
-	if talents[DS.Conflagrate] and cooldown[DS.Conflagrate].ready and (cooldown[DS.Conflagrate].charges > 1 or timeToDie < gcd) then
-		return DS.Conflagrate
-	end
-
-	-- incinerate
-	return DS.Incinerate
+    if targets > 1  then
+        return Warlock:DestructionMultiTarget()
+    end
+    return Warlock:DestructionSingleTarget()
 end
 
-function Warlock:DestructionAoe()
-	local fd = MaxDps.FrameData
-	local cooldown = fd.cooldown
-	local debuff = fd.debuff
-	local buff = fd.buff
-	local currentSpell = fd.currentSpell
-	local talents = fd.talents
-	local timeShift = fd.timeShift
-	local targets = fd.targets
-	local soulShards = fd.soulShards
-	local petInfernal = fd.petInfernal
-	local targetHp = MaxDps:TargetPercentHealth()
+--optional abilities list
 
-	-- rain_of_fire,if=pet.infernal.active&(!cooldown.havoc.ready|active_enemies>3)
-	if soulShards >= 3 and (petInfernal and ( not cooldown[DS.Havoc].ready or targets > 3 )) then
-		return DS.RainOfFire
-	end
-	
-	-- soul_rot
-	--return DS.SoulRot
 
-	-- impending_catastrophe
-	--return DS.ImpendingCatastrophe
-
-	-- channel_demonfire,if=dot.immolate.remains>cast_time
-	if talents[DS.ChannelDemonfire] and cooldown[DS.ChannelDemonfire].ready and currentSpell ~= DS.ChannelDemonfire and (debuff[DS.ImmolateDebuff].remains > timeShift) then
-		return DS.ChannelDemonfire
-	end
-
-	-- immolate,cycle_targets=1,if=active_enemies<5&remains<5&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>remains)
-	if currentSpell ~= DS.Immolate and (targets < 5 and debuff[DS.ImmolateDebuff].remains < 5 and ( not talents[DS.Cataclysm] or cooldown[DS.Cataclysm].remains > debuff[DS.ImmolateDebuff].remains )) then
-		return DS.Immolate
-	end
-
-	-- havoc,cycle_targets=1,if=!(target=self.target)&active_enemies<4
-	--[[
-	if talents[DS.Havoc] and cooldown[DS.Havoc].ready and (not ( target == ) and targets < 4) then
-		return DS.Havoc
-	end
-	--]]
-
-	-- rain_of_fire
-	if soulShards >= 3 then
-		return DS.RainOfFire
-	end
-
-	-- havoc,cycle_targets=1,if=!(self.target=target)
-	--[[
-	if talents[DS.Havoc] and cooldown[DS.Havoc].ready and (not ( == target )) then
-	return DS.Havoc
-	end
-	--]]
-
-	-- decimating_bolt
-	--return DS.DecimatingBolt
-
-	-- incinerate,if=talent.fire_and_brimstone.enabled&buff.backdraft.up&soul_shard<5-0.2*active_enemies
-	if currentSpell ~= DS.Incinerate and (talents[DS.FireAndBrimstone] and buff[DS.Backdraft].up and soulShards < 5 - 0.2 * targets) then
-		return DS.Incinerate
-	end
-
-	-- soul_fire
-	if talents[DS.SoulFire] and cooldown[DS.SoulFire].ready and currentSpell ~= DS.SoulFire then
-		return DS.SoulFire
-	end
-
-	-- conflagrate,if=buff.backdraft.down
-	if talents[DS.Conflagrate] and cooldown[DS.Conflagrate].ready and (not buff[DS.Backdraft].up) then
-		return DS.Conflagrate
-	end
-
-	-- shadowburn,if=target.health.pct<20
-	if talents[DS.Shadowburn] and cooldown[DS.Shadowburn].ready and soulShards >= 1 and (targetHp < 20) then
-		return DS.Shadowburn
-	end
-
-	-- immolate,if=refreshable
-	if currentSpell ~= DS.Immolate and (debuff[DS.ImmolateDebuff].refreshable) then
-		return DS.Immolate
-	end
-
-	-- scouring_tithe
-	--return DS.ScouringTithe
-
-	-- incinerate
-	return DS.Incinerate
+--Single-Target Rotation
+function Warlock:DestructionSingleTarget()
+    --Maintain  Immolate at all times.
+    if not debuff[classtable.ImmolateDot].up and cooldown[classtable.Immolate].ready then
+        return classtable.Immolate
+    end
+    --Cast  Chaos Bolt if you are about to cap Soul Shards.
+    if soulShards >= 4 and cooldown[classtable.ChaosBolt].ready then
+        return classtable.ChaosBolt
+    end
+    --Cast  Soul Fire during Roaring Blaze debuff on the target, when available, if below 4 shards
+    if talents[classtable.SoulFire] and debuff[classtable.RoaringBlaze].up and soulShards < 4 and cooldown[classtable.SoulFire].ready then
+        return classtable.SoulFire
+    end
+    --Cast  Cataclysm when available.
+    if talents[classtable.Cataclysm] and cooldown[classtable.Cataclysm].ready then
+        return classtable.Cataclysm
+    end
+    --Cast  Channel Demonfire during Roaring Blaze debuff on the target whenever available.
+    if talents[classtable.ChannelDemonfire] and debuff[classtable.RoaringBlaze].up and cooldown[classtable.ChannelDemonfire].ready then
+        return classtable.ChannelDemonfire
+    end
+    --Cast  Conflagrate if you have 2 charges, possibly to hasten a long cast such as Chaos Bolt Icon Chaos Bolt.
+    if cooldown[classtable.Conflagrate].charges == 2 and cooldown[classtable.Conflagrate].ready then
+        return classtable.Conflagrate
+    end
+    --Cast  Chaos Bolt to keep the Eradication debuff applied.
+    if soulShards >= 2 and (not debuff[classtable.Eradication].up or debuff[classtable.Eradication].duration < 2) and cooldown[classtable.ChaosBolt].ready then
+        return classtable.ChaosBolt
+    end
+    --Cast  Dimensional Rift at 3 charges to avoid overcapping.
+    if talents[classtable.DimensionalRift] and cooldown[classtable.Conflagrate].charges == 3 and cooldown[classtable.DimensionalRift].ready then
+        return classtable.DimensionalRift
+    end
+    --Cast  Conflagrate to generate Soul Shards.
+    if cooldown[classtable.Conflagrate].ready then
+        return classtable.Conflagrate
+    end
+    --Cast  Incinerate to generate Soul Shards.
+    if cooldown[classtable.Incinerate].ready then
+        return classtable.Incinerate
+    end
 end
 
-function Warlock:DestructionCooldowns()
-	local fd = MaxDps.FrameData
-	local cooldown = fd.cooldown
-	local talents = fd.talents
-	local buff = fd.buff
-	local timeToDie = fd.timeToDie
-	local petInfernal = fd.petInfernal
-	local targets = fd.targets
-
-	MaxDps:GlowCooldown(DS.Havoc, targets > 1 and talents[DS.Havoc] and cooldown[DS.Havoc].ready);
-
-	-- summon_infernal;
-	MaxDps:GlowCooldown(DS.SummonInfernal, talents[DS.SummonInfernal] and cooldown[DS.SummonInfernal].ready);
-
-	-- dark_soul_instability,if=pet.infernal.active|cooldown.summon_infernal.remains_expected>time_to_die
-	MaxDps:GlowCooldown(DS.DarkSoulInstability, talents[DS.DarkSoulInstability] and cooldown[DS.DarkSoulInstability].ready and (petInfernal or not talents[DS.SummonInfernal] or cooldown[DS.SummonInfernal].remains > timeToDie));
-
-	MaxDps:GlowCooldown(DS.InquisitorsGaze, talents[DS.InquisitorsGaze] and cooldown[DS.InquisitorsGaze].ready and not buff[DS.InquisitorsGazeBuff].up)
-end
-
-function Warlock:DestructionHavoc()
-	local fd = MaxDps.FrameData
-	local cooldown = fd.cooldown
-	local buff = fd.buff
-	local debuff = fd.debuff
-	local currentSpell = fd.currentSpell
-	local talents = fd.talents
-	local timeShift = fd.timeShift
-	local targets = fd.targets
-	local soulShards = fd.soulShards
-
-	local havocRemains = 10 + (cooldown[DS.Havoc].remains - 30);
-	if havocRemains < 0 then havocRemains = 0; end
-
-	-- conflagrate,if=buff.backdraft.down&soul_shard>=1&soul_shard<=4
-	if talents[DS.Conflagrate] and cooldown[DS.Conflagrate].ready and (not buff[DS.Backdraft].up and soulShards >= 1 and soulShards <= 4) then
-		return DS.Conflagrate
-	end
-
-	-- soul_fire,if=cast_time<havoc_remains
-	if talents[DS.SoulFire] and cooldown[DS.SoulFire].ready and currentSpell ~= DS.SoulFire and (timeShift < havocRemains) then
-		return DS.SoulFire
-	end
-
-	-- decimating_bolt,if=cast_time<havoc_remains&soulbind.lead_by_example.enabled
-	--[[
-	if timeShift < havocRemains and covenant.soulbindAbilities[DS.LeadByExample] then
-		return DS.DecimatingBolt
-	end
-	--]]
-
-	-- scouring_tithe,if=cast_time<havoc_remains
-	--[[
-	if timeShift < havocRemains then
-		return DS.ScouringTithe
-	end
-	--]]
-
-	-- immolate,if=talent.internal_combustion.enabled&remains<duration*0.5|!talent.internal_combustion.enabled&refreshable
-	if currentSpell ~= DS.Immolate and (talents[DS.InternalCombustion] and debuff[DS.ImmolateDebuff].remains < 9 or not talents[DS.InternalCombustion] and debuff[DS.ImmolateDebuff].refreshable) then
-		return DS.Immolate
-	end
-
-	-- chaos_bolt,if=cast_time<havoc_remains&!(set_bonus.tier28_4pc&active_enemies>1&talent.inferno.enabled)
-	if talents[DS.ChaosBolt] and soulShards >= 2 and currentSpell ~= DS.ChaosBolt and (timeShift < havocRemains and not (targets > 1 and talents[DS.Inferno] )) then
-		return DS.ChaosBolt
-	end
-
-	-- rain_of_fire,if=set_bonus.tier28_4pc&active_enemies>1&talent.inferno.enabled
-	--[[
-	if soulShards >= 3 and (__SETBONUS_REMOVE__ and targets > 1 and talents[DS.Inferno]) then
-		return DS.RainOfFire
-	end
-	--]]
-
-	-- shadowburn
-	if talents[DS.Shadowburn] and cooldown[DS.Shadowburn].ready and soulShards >= 1 then
-		return DS.Shadowburn
-	end
-
-	-- incinerate,if=cast_time<havoc_remains
-	if currentSpell ~= DS.Incinerate and (timeShift < havocRemains) then
-		return DS.Incinerate
-	end
+--Multiple-Target Rotation
+function Warlock:DestructionMultiTarget()
+    --Maintain  Immolate on the main target.
+    if not debuff[classtable.ImmolateDot].up and cooldown[classtable.Immolate].ready then
+        return classtable.Immolate
+    end
+    --Apply  Immolate on any secondary target that will last a minimum of 10 seconds.
+    --if cooldown[classtable.Immolate].ready then
+    --    return classtable.Immolate
+    --end
+    --Cast  Soul Fire on cooldown.
+    if talents[classtable.SoulFire] and cooldown[classtable.SoulFire].ready then
+        return classtable.SoulFire
+    end
+    --Cast  Cataclysm on cooldown unless it can be delayed a few seconds to hit additional targets.
+    if talents[classtable.Cataclysm] and cooldown[classtable.Cataclysm].ready then
+        return classtable.Cataclysm
+    end
+    --Cast  Rain of Fire if there are 5+ targets with  Havoc  up, or 3+ if on cooldown.
+    if cooldown[classtable.RainofFire].ready then
+        return classtable.RainofFire
+    end
+    --Cast  Chaos Bolt if you have 5 Soul Shards.
+    if soulShards == 5 and cooldown[classtable.ChaosBolt].ready then
+        return classtable.ChaosBolt
+    end
+    --Cast  Cataclysm.
+    if talents[classtable.Cataclysm] and cooldown[classtable.Cataclysm].ready then
+        return classtable.Cataclysm
+    end
+    --Apply  Havoc if a secondary target is present.
+    if cooldown[classtable.Havoc].ready then
+        return classtable.Havoc
+    end
+    --Cast  Shadowburn if the target will die within 5 seconds.
+    if talents[classtable.Shadowburn] and cooldown[classtable.Shadowburn].ready and timeToDie <=5 then
+        return classtable.Shadowburn
+    end
+    --Cast  Channel Demonfire
+    if talents[classtable.ChannelDemonfire] and cooldown[classtable.ChannelDemonfire].ready then
+        return classtable.ChannelDemonfire
+    end
+    --Cast  Chaos Bolt to spend Soul Shards.
+    if soulShards >= 2 and cooldown[classtable.ChaosBolt].ready then
+        return classtable.ChaosBolt
+    end
+    --Cast  Conflagrate to generate Soul Shards and Backdraft stacks.
+    if cooldown[classtable.Conflagrate].ready then
+        return classtable.Conflagrate
+    end
+    --Cast  Dimensional Rift at 3 charges to avoid overcapping.
+    if talents[classtable.DimensionalRift] and cooldown[classtable.Conflagrate].charges == 3 and cooldown[classtable.DimensionalRift].ready then
+        return classtable.DimensionalRift
+    end
+    --Cast  Incinerate to generate Soul Shards.
+    if cooldown[classtable.Incinerate].ready then
+        return classtable.Incinerate
+    end
 end
