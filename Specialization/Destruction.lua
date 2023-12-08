@@ -34,8 +34,6 @@ local currentSpec = GetSpecialization()
 local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "None"
 local classtable
 
---setmetatable(classtable, Warrior.spellMeta)
-
 function Warlock:Destruction()
     fd = MaxDps.FrameData
     cooldown = fd.cooldown
@@ -54,6 +52,7 @@ function Warlock:Destruction()
     classtable = MaxDps.SpellTable
     classtable.ImmolateDot = 157736
     classtable.RitualofRuinBuff = 387157
+    setmetatable(classtable, Warlock.spellMeta)
 
     MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
 
