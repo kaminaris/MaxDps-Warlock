@@ -52,7 +52,7 @@ function Warlock:Destruction()
     classtable = MaxDps.SpellTable
     classtable.ImmolateDot = 157736
     classtable.RitualofRuinBuff = 387157
-    setmetatable(classtable, Warlock.spellMeta)
+    --setmetatable(classtable, Warlock.spellMeta)
 
     MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
 

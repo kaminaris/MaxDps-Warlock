@@ -50,7 +50,7 @@ function Warlock:Affliction()
     classtable = MaxDps.SpellTable
     classtable.CorruptioneDot = 146739
     classtable.ShadowEmbraceDebuff = 32390
-    setmetatable(classtable, Warlock.spellMeta)
+    --setmetatable(classtable, Warlock.spellMeta)
 
     MaxDps:GlowCooldown(classtable.SummonDarkglare, cooldown[classtable.SummonDarkglare].ready)
 
