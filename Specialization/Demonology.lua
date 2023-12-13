@@ -27,6 +27,7 @@ local targethealthPerc
 local curentHP
 local maxHP
 local healthPerc
+local wildImps
 
 local className, classFilename, classId = UnitClass('player')
 local currentSpec = GetSpecialization()
@@ -49,6 +50,8 @@ function Warlock:Demonology()
     healthPerc = (curentHP / maxHP) * 100
     classtable = MaxDps.SpellTable
     classtable.SoulStrike = 267964
+    classtable.DemonicCoreBuff = 264173
+    wildImps = GetSpellCount(classtable.Implosion)
     --setmetatable(classtable, Warlock.spellMeta)
 
     MaxDps:GlowCooldown(classtable.SummonDemonicTyrant, (cooldown[classtable.CallDreadstalkers].duration >= 12 or cooldown[classtable.SummonVilefiend].duration >= 30 or cooldown[classtable.GrimoireFelguard].duration >= 12) and cooldown[classtable.SummonDemonicTyrant].ready)
@@ -96,12 +99,12 @@ function Warlock:DemonologySingleTarget()
     if talents[classtable.Doom] and cooldown[classtable.Doom].ready then
         return classtable.Doom
     end
-    --Cast  Demonbolt if you have 2+ stacks of Demonic Core Icon Demonic Core.
-    if cooldown[classtable.Demonbolt].ready then
+    --Cast  Demonbolt if you have 2+ stacks of Demonic Core.
+    if talents[classtable.Demoniac] and buff[classtable.DemonicCoreBuff].count >= 2 and cooldown[classtable.Demonbolt].ready then
         return classtable.Demonbolt
     end
-    --Cast Power Siphon with 2 or less Demonic Core Icon Demonic Core.
-    if talents[classtable.PowerSiphon] and cooldown[classtable.PowerSiphon].ready then
+    --Cast Power Siphon with 2 or less Demonic Core.
+    if talents[classtable.PowerSiphon] and buff[classtable.DemonicCoreBuff].count <= 2 and cooldown[classtable.PowerSiphon].ready then
         return classtable.PowerSiphon
     end
     --Cast  Hand of Gul'dan with 3 Soul Shards.
@@ -109,7 +112,7 @@ function Warlock:DemonologySingleTarget()
         return classtable.HandofGuldan
     end
     --Cast  Soul Strike whenever available when at 4 or less Soul Shards.
-    if talents[classtable.SoulStrike] and cooldown[classtable.SoulStrike].ready then
+    if talents[classtable.SoulStrike] and soulShards <= 4 and cooldown[classtable.SoulStrike].ready then
         return classtable.SoulStrike
     end
     --Cast  Shadow Bolt to generate Soul Shards.
@@ -157,7 +160,7 @@ function Warlock:DemonologyMultiTarget()
         return classtable.Implosion
     end
     --Cast  Demonbolt if you have 3+ stacks of  Demonic Core.
-    if cooldown[classtable.Demonbolt].ready then
+    if talents[classtable.Demoniac] and buff[classtable.DemonicCoreBuff].count >= 3 and cooldown[classtable.Demonbolt].ready then
         return classtable.Demonbolt
     end
     --Cast  Power Siphon to generate  Demonic Core.
