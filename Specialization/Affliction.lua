@@ -50,6 +50,10 @@ function Warlock:Affliction()
     classtable = MaxDps.SpellTable
     classtable.CorruptioneDot = 146739
     classtable.ShadowEmbraceDebuff = 32390
+    classtable.PhantomSingularityDot = 205179
+    classtable.VileTaintDot = 386931
+    classtable.SiphonLifeDot = 63106
+    classtable.DreadTouchDebuff = 389868
     --setmetatable(classtable, Warlock.spellMeta)
 
     MaxDps:GlowCooldown(classtable.SummonDarkglare, cooldown[classtable.SummonDarkglare].ready)
@@ -69,18 +73,18 @@ function Warlock:AfflictionSingleTarget()
     if not debuff[classtable.Agony].up and cooldown[classtable.Agony].ready then
         return classtable.Agony
     end
-    if not debuff[classtable.UnstableAffliction].up and cooldown[classtable.UnstableAffliction].ready then
+    if talents[classtable.UnstableAffliction] and not debuff[classtable.UnstableAffliction].up and cooldown[classtable.UnstableAffliction].ready then
         return classtable.UnstableAffliction
     end
     if not debuff[classtable.CorruptioneDot].up and cooldown[classtable.Corruption].ready then
         return classtable.Corruption
     end
     --Maintain your Siphon Life
-    if talents[classtable.SiphonLife] and not debuff[classtable.SiphonLife].up and cooldown[classtable.SiphonLife].ready then
+    if talents[classtable.SiphonLife] and not debuff[classtable.SiphonLifeDot].up and cooldown[classtable.SiphonLife].ready then
         return classtable.SiphonLife
     end
     --Maintain 3 stacks of Shadow Embrace.
-    if talents[classtable.ShadowEmbrace] and not debuff[classtable.ShadowEmbraceDebuff].count == 3 or debuff[classtable.ShadowEmbraceDebuff].duration < 2 and cooldown[classtable.DrainSoul].ready then
+    if talents[classtable.ShadowEmbrace] and not debuff[classtable.ShadowEmbraceDebuff].count == 3 or debuff[classtable.ShadowEmbraceDebuff].refreshable and cooldown[classtable.DrainSoul].ready then
         return (talents[classtable.DrainSoul] and classtable.DrainSoul or classtable.ShadowBolt)
     end
     --Apply  Malefic Rapture if you are at maximum Soul Shards.
@@ -92,7 +96,7 @@ function Warlock:AfflictionSingleTarget()
         return classtable.Haunt
     end
     --Cast Malefic Rapture to maintain Dread Touch uptime as high as possible.
-    if soulShards >= 1 and (not debuff[classtable.DreadTouch].up or debuff[classtable.DreadTouch].duration < 2) and cooldown[classtable.MaleficRapture].ready then
+    if soulShards >= 1 and (talents[classtable.DreadTouch] and not debuff[classtable.DreadTouchDebuff].up or debuff[classtable.DreadTouchDebuff].refreshable) and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
     --Cast Vile Taint whenever available.
@@ -104,19 +108,19 @@ function Warlock:AfflictionSingleTarget()
         return classtable.PhantomSingularity
     end
     --Cast Soul Rot whenever available with either Phantom Singularity or Vile Taint active on target.
-    if talents[classtable.SoulRot] and debuff[classtable.PhantomSingularity].up or debuff[classtable.VileTaint].up and cooldown[classtable.SoulRot].ready then
+    if talents[classtable.SoulRot] and (debuff[classtable.PhantomSingularityDot].up or debuff[classtable.VileTaintDot].up) and cooldown[classtable.SoulRot].ready then
         return classtable.SoulRot
     end
     --Cast Malefic Rapture during Phantom Singularity window.
-    if soulShards >= 1 and debuff[classtable.PhantomSingularity].up and cooldown[classtable.MaleficRapture].ready then
+    if soulShards >= 1 and debuff[classtable.PhantomSingularityDot].up and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
     --Cast Malefic Rapture during Vile Taint window.
-    if soulShards >= 1 and debuff[classtable.VileTaint].up and cooldown[classtable.MaleficRapture].ready then
+    if soulShards >= 1 and debuff[classtable.VileTaintDot].up and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
     --Cast  Malefic Rapture to avoid capping shards.
-    if soulShards >= 3 and cooldown[classtable.MaleficRapture].ready then
+    if soulShards >= 1 and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
     --Cast  Drain Soul as a filler.
@@ -135,15 +139,18 @@ function Warlock:AfflictionMultiTarget()
     if not debuff[classtable.Agony].up and cooldown[classtable.Agony].ready then
         return classtable.Agony
     end
+    if talents[classtable.SeedofCorruption] and soulShards >= 1 and cooldown[classtable.SeedofCorruption].ready then
+        return classtable.SeedofCorruption
+    end
     if not debuff[classtable.CorruptioneDot].up and cooldown[classtable.Corruption].ready then
         return classtable.Corruption
     end
     --Maintain  Unstable Affliction on the primary target.
-    if not debuff[classtable.UnstableAffliction].up and cooldown[classtable.UnstableAffliction].ready then
+    if talents[classtable.UnstableAffliction] and not debuff[classtable.UnstableAffliction].up and cooldown[classtable.UnstableAffliction].ready then
         return classtable.UnstableAffliction
     end
     --Cast Seed of Corruption over Malefic Rapture to spend shards.
-    if soulShards >= 1 and cooldown[classtable.SeedofCorruption].ready then
+    if talents[classtable.SeedofCorruption] and soulShards >= 1 and cooldown[classtable.SeedofCorruption].ready then
         return classtable.SeedofCorruption
     end
     --Cast  Malefic Rapture if already at 5 Soul Shards to avoid capping.
@@ -159,11 +166,11 @@ function Warlock:AfflictionMultiTarget()
         return classtable.SoulRot
     end
     --Cast Malefic Rapture during Phantom Singularity window.
-    if soulShards >= 1 and debuff[classtable.PhantomSingularity].up and cooldown[classtable.MaleficRapture].ready then
+    if soulShards >= 1 and debuff[classtable.PhantomSingularityDot].up and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
     --Cast Malefic Rapture during Vile Taint window.
-    if soulShards >= 1 and debuff[classtable.VileTaint].up and cooldown[classtable.MaleficRapture].ready then
+    if soulShards >= 1 and debuff[classtable.VileTaintDot].up and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
     --Cast Drain Soul as a filler.
