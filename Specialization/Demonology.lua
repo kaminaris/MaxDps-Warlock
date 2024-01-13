@@ -156,7 +156,7 @@ function Warlock:DemonologyMultiTarget()
         return classtable.HandofGuldan
     end
     --Cast  Implosion to detonate Wild Imps on 2+ targets.
-    if talents[classtable.Implosion] and cooldown[classtable.Implosion].ready then
+    if talents[classtable.Implosion] and wildImps >= 6 and cooldown[classtable.Implosion].ready then
         return classtable.Implosion
     end
     --Cast  Demonbolt if you have 3+ stacks of  Demonic Core.
