@@ -1,7 +1,7 @@
 ## Title: MaxDps_Warlock
-## Version: 10.0.12
+## Version: 10.0.13
 ## Author: Kaminaris
-## Interface: 100200
+## Interface: 100205
 ## Dependencies: MaxDps
 ## LoadOnDemand: 1
 ## X-Curse-Project-ID: 91983
