@@ -1,36 +1,36 @@
-﻿local addonName, addonTable = ...;
-_G[addonName] = addonTable;
+﻿local addonName, addonTable = ...
+_G[addonName] = addonTable
 
 --- @type MaxDps
 if not MaxDps then return end
 
-local Warlock = MaxDps:NewModule('Warlock', 'AceEvent-3.0');
-addonTable.Warlock = Warlock;
+local Warlock = MaxDps:NewModule('Warlock', 'AceEvent-3.0')
+addonTable.Warlock = Warlock
 
-local MaxDps = MaxDps;
+local MaxDps = MaxDps
 
 Warlock.spellMeta = {
 	__index = function(t, k)
-		print('Spell Key ' .. k .. ' not found!');
+		print('Spell Key ' .. k .. ' not found!')
 	end
 }
 
 function Warlock:Enable()
-	MaxDps:Print(MaxDps.Colors.Info .. 'Warlock [Affliction, Demonology, Destruction]');
+	MaxDps:Print(MaxDps.Colors.Info .. 'Warlock [Affliction, Demonology, Destruction]', "info")
 
 	if MaxDps.Spec == 1 then
-		MaxDps.NextSpell = Warlock.Affliction;
+		MaxDps.NextSpell = Warlock.Affliction
 	elseif MaxDps.Spec == 2 then
-		MaxDps.NextSpell = Warlock.Demonology;
-		--self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', 'CLEU');
+		MaxDps.NextSpell = Warlock.Demonology
+		--self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', 'CLEU')
 	elseif MaxDps.Spec == 3 then
-		MaxDps.NextSpell = Warlock.Destruction;
+		MaxDps.NextSpell = Warlock.Destruction
 	end
 
-	Warlock.playerLevel = UnitLevel('player');
-	return true;
+	Warlock.playerLevel = UnitLevel('player')
+	return true
 end
 
 function Warlock:Disable()
-	self:UnregisterAllEvents();
+	self:UnregisterAllEvents()
 end
