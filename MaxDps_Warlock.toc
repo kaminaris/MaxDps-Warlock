@@ -6,6 +6,7 @@
 ## LoadOnDemand: 1
 ## X-Curse-Project-ID: 91983
 ## X-WoWI-ID: 24639
+## X-Wago-ID: qGYM9RGg
 
 Main.lua
 Specialization\Affliction.lua
