@@ -52,7 +52,7 @@ function Warlock:Demonology()
     classtable = MaxDps.SpellTable
     classtable.SoulStrike = 267964
     classtable.DemonicCoreBuff = 264173
-    wildImps = GetSpellCount(classtable.Implosion)
+    wildImps = C_Spell.GetSpellCastCount(classtable.Implosion)
     --setmetatable(classtable, Warlock.spellMeta)
 
     MaxDps:GlowCooldown(classtable.SummonDemonicTyrant, (cooldown[classtable.CallDreadstalkers].duration >= 12 or cooldown[classtable.SummonVilefiend].duration >= 30 or cooldown[classtable.GrimoireFelguard].duration >= 12) and cooldown[classtable.SummonDemonicTyrant].ready)
