@@ -582,7 +582,7 @@ function Warlock:Destruction()
     classtable.ConflagrateDeBuff = 0
     classtable.RainofChaosBuff = 266087
     classtable.EradicationDeBuff = 196414
-    local havoc_count, havoc_totalRemains = MaxDps:DebuffCounter(classtable.ImmolateDeBuff,1)
+    local havoc_count, havoc_totalRemains = MaxDps:DebuffCounter(classtable.Havoc,1)
     havoc_active = havoc_count >= 1
     havoc_remains = havoc_totalRemains or 0
 
