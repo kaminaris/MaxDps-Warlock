@@ -446,7 +446,7 @@ end
 
 function Destruction:callaction()
     if (MaxDps:FindSpell(classtable.SpellLock) and CheckSpellCosts(classtable.SpellLock, 'SpellLock')) and cooldown[classtable.SpellLock].ready then
-        MaxDps:GlowCooldown(classtable.SpellLock, select(8,UnitCastingInfo('target') == false) and cooldown[classtable.SpellLock].ready)
+        MaxDps:GlowCooldown(classtable.SpellLock, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
     infernal_active = ( UnitExists('pet') and UnitName('pet')  == 'infernal' ) or ( cooldown[classtable.SummonInfernal].duration - cooldown[classtable.SummonInfernal].remains ) <20
     aoe_condition = ( targets >= 3 - ( talents[classtable.Inferno] and not talents[classtable.Chaosbringer] and 1 or 0) ) and not ( not talents[classtable.Inferno] and talents[classtable.Chaosbringer] and talents[classtable.ChaosIncarnate] and targets <4 ) and not cleave_apl

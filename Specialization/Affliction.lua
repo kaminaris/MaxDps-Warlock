@@ -387,7 +387,7 @@ end
 
 function Affliction:callaction()
     if (MaxDps:FindSpell(classtable.SpellLock) and CheckSpellCosts(classtable.SpellLock, 'SpellLock')) and cooldown[classtable.SpellLock].ready then
-        MaxDps:GlowCooldown(classtable.SpellLock, select(8,UnitCastingInfo('target') == false) and cooldown[classtable.SpellLock].ready)
+        MaxDps:GlowCooldown(classtable.SpellLock, ( select(8,UnitCastingInfo('target')) ~= nil and not select(8,UnitCastingInfo('target')) or select(7,UnitChannelInfo('target')) ~= nil and not select(7,UnitChannelInfo('target'))) )
     end
     ps_up = debuff[classtable.PhantomSingularityDeBuff].count  >0 or cooldown[classtable.PhantomSingularity].remains >35 or not talents[classtable.PhantomSingularity]
     vt_up = debuff[classtable.VileTaintDotDeBuff].count  >0 or cooldown[classtable.VileTaint].remains >20 or not talents[classtable.VileTaint]
