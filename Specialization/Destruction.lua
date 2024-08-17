@@ -355,7 +355,7 @@ function Destruction:cleave()
     if (MaxDps:FindSpell(classtable.SummonInfernal) and CheckSpellCosts(classtable.SummonInfernal, 'SummonInfernal')) and cooldown[classtable.SummonInfernal].ready then
         MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
     end
-    if (MaxDps:FindSpell(classtable.ChannelDemonfire) and CheckSpellCosts(classtable.ChannelDemonfire, 'ChannelDemonfire')) and (talents[classtable.Ruin] >1 and not ( talents[classtable.DiabolicEmbers] and talents[classtable.AvatarofDestruction] and ( talents[classtable.BurnToAshes] or talents[classtable.ChaosIncarnate] ) )) and cooldown[classtable.ChannelDemonfire].ready then
+    if (MaxDps:FindSpell(classtable.ChannelDemonfire) and CheckSpellCosts(classtable.ChannelDemonfire, 'ChannelDemonfire')) and ((talents[classtable.Ruin] and talents[classtable.Ruin] or 0) >1 and not ( talents[classtable.DiabolicEmbers] and talents[classtable.AvatarofDestruction] and ( talents[classtable.BurnToAshes] or talents[classtable.ChaosIncarnate] ) )) and cooldown[classtable.ChannelDemonfire].ready then
         return classtable.ChannelDemonfire
     end
     if (MaxDps:FindSpell(classtable.Shadowburn) and CheckSpellCosts(classtable.Shadowburn, 'Shadowburn')) and (ttd <5 and targetHP <20) and cooldown[classtable.Shadowburn].ready then
@@ -505,7 +505,7 @@ function Destruction:callaction()
     if (MaxDps:FindSpell(classtable.ChaosBolt) and CheckSpellCosts(classtable.ChaosBolt, 'ChaosBolt')) and (( UnitExists('pet') and UnitName('pet')  == 'infernal' ) or ( UnitExists('pet') and UnitName('pet')  == 'blasphemy' ) or SoulShards >= 4) and cooldown[classtable.ChaosBolt].ready then
         return classtable.ChaosBolt
     end
-    if (MaxDps:FindSpell(classtable.ChannelDemonfire) and CheckSpellCosts(classtable.ChannelDemonfire, 'ChannelDemonfire')) and (talents[classtable.Ruin] >1 and not ( talents[classtable.DiabolicEmbers] and talents[classtable.AvatarofDestruction] and ( talents[classtable.BurnToAshes] or talents[classtable.ChaosIncarnate] ) ) and debuff[classtable.ImmolateDeBuff].remains >( classtable and classtable.ChannelDemonfire and GetSpellInfo(classtable.ChannelDemonfire).castTime /1000 )) and cooldown[classtable.ChannelDemonfire].ready then
+    if (MaxDps:FindSpell(classtable.ChannelDemonfire) and CheckSpellCosts(classtable.ChannelDemonfire, 'ChannelDemonfire')) and ((talents[classtable.Ruin] and talents[classtable.Ruin] or 0) >1 and not ( talents[classtable.DiabolicEmbers] and talents[classtable.AvatarofDestruction] and ( talents[classtable.BurnToAshes] or talents[classtable.ChaosIncarnate] ) ) and debuff[classtable.ImmolateDeBuff].remains >( classtable and classtable.ChannelDemonfire and GetSpellInfo(classtable.ChannelDemonfire).castTime /1000 )) and cooldown[classtable.ChannelDemonfire].ready then
         return classtable.ChannelDemonfire
     end
     if (MaxDps:FindSpell(classtable.Shadowburn) and CheckSpellCosts(classtable.Shadowburn, 'Shadowburn')) and (ttd <5 and targetHP <20) and cooldown[classtable.Shadowburn].ready then
