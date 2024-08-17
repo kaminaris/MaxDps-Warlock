@@ -210,6 +210,23 @@ local function CheckPrevSpell(spell)
 end
 
 
+local function boss()
+    if UnitExists('boss1')
+    or UnitExists('boss2')
+    or UnitExists('boss3')
+    or UnitExists('boss4')
+    or UnitExists('boss5')
+    or UnitExists('boss6')
+    or UnitExists('boss7')
+    or UnitExists('boss8')
+    or UnitExists('boss9')
+    or UnitExists('boss10') then
+        return true
+    end
+    return false
+end
+
+
 function Affliction:precombat()
     --if (MaxDps:FindSpell(classtable.FelDomination) and CheckSpellCosts(classtable.FelDomination, 'FelDomination')) and (timeInCombat >0 and not UnitExists('pet')) and cooldown[classtable.FelDomination].ready then
     --    return classtable.FelDomination
@@ -246,7 +263,7 @@ function Affliction:aoe()
     if (MaxDps:FindSpell(classtable.Agony) and CheckSpellCosts(classtable.Agony, 'Agony')) and (debuff[classtable.AgonyDebuff].count <8 and ( (debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.VileTaint].remains and 1 or 0) + ( classtable and classtable.VileTaint and GetSpellInfo(classtable.VileTaint).castTime / 1000 and 1 or 0 ) or not talents[classtable.VileTaint] ) and ( gcd + ( classtable and classtable.SoulRot and GetSpellInfo(classtable.SoulRot).castTime / 1000 or 0) + gcd ) <( ( min_vt * (talents[classtable.VileTaint] and talents[classtable.VileTaint] or 0) ) <( min_ps * (talents[classtable.PhantomSingularity] and talents[classtable.PhantomSingularity] or 0) ) and 1 or 0) and debuff[classtable.AgonyDeBuff].remains <5) and cooldown[classtable.Agony].ready then
         return classtable.Agony
     end
-    if (MaxDps:FindSpell(classtable.SiphonLife) and CheckSpellCosts(classtable.SiphonLife, 'SiphonLife')) and (debuff[classtable.SiphonLifeDebuff].count  <6 and cooldown[classtable.SummonDarkglare].ready and timeInCombat <20 and ( gcd + ( classtable and classtable.SoulRot and GetSpellInfo(classtable.SoulRot).castTime / 1000 ) + gcd ) <( ( min_vt * (talents[classtable.VileTaint] and talents[classtable.VileTaint] or 0) ) <( min_ps * (talents[classtable.PhantomSingularity] and talents[classtable.PhantomSingularity] or 0) ) ) and debuff[classtable.AgonyDeBuff].up) and cooldown[classtable.SiphonLife].ready then
+    if (MaxDps:FindSpell(classtable.SiphonLife) and CheckSpellCosts(classtable.SiphonLife, 'SiphonLife')) and (debuff[classtable.SiphonLifeDeBuff].count  <6 and cooldown[classtable.SummonDarkglare].ready and timeInCombat <20 and ( gcd + ( classtable and classtable.SoulRot and GetSpellInfo(classtable.SoulRot).castTime / 1000 ) + gcd ) <( ( min_vt * (talents[classtable.VileTaint] and talents[classtable.VileTaint] or 0) ) <( min_ps * (talents[classtable.PhantomSingularity] and talents[classtable.PhantomSingularity] or 0) ) ) and debuff[classtable.AgonyDeBuff].up) and cooldown[classtable.SiphonLife].ready then
         return classtable.SiphonLife
     end
     if (MaxDps:FindSpell(classtable.SoulRot) and CheckSpellCosts(classtable.SoulRot, 'SoulRot')) and (vt_up and ( ps_up or talents[classtable.SouleatersGluttony] ~= 1 ) and debuff[classtable.AgonyDeBuff].up) and cooldown[classtable.SoulRot].ready then
@@ -279,7 +296,7 @@ function Affliction:aoe()
     if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (buff[classtable.NightfallBuff].up and talents[classtable.ShadowEmbrace] and ( debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 )) and cooldown[classtable.DrainSoul].ready then
         return classtable.DrainSoul
     end
-    if (MaxDps:FindSpell(classtable.SiphonLife) and CheckSpellCosts(classtable.SiphonLife, 'SiphonLife')) and (debuff[classtable.SiphonLifeDeBuff].remains <5 and debuff[classtable.SiphonLifeDebuff].count  <5 and ( targets <8 or not talents[classtable.DoomBlossom] )) and cooldown[classtable.SiphonLife].ready then
+    if (MaxDps:FindSpell(classtable.SiphonLife) and CheckSpellCosts(classtable.SiphonLife, 'SiphonLife')) and (debuff[classtable.SiphonLifeDeBuff].remains <5 and debuff[classtable.SiphonLifeDeBuff].count  <5 and ( targets <8 or not talents[classtable.DoomBlossom] )) and cooldown[classtable.SiphonLife].ready then
         return classtable.SiphonLife
     end
     if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (( talents[classtable.ShadowEmbrace] and ( debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) ) or not talents[classtable.ShadowEmbrace]) and cooldown[classtable.DrainSoul].ready then
@@ -293,10 +310,10 @@ function Affliction:cleave()
     if (MaxDps:FindSpell(classtable.VileTaint) and CheckSpellCosts(classtable.VileTaint, 'VileTaint')) and (not talents[classtable.SoulRot] or ( min_agony <1.5 or cooldown[classtable.SoulRot].remains <= timeShift + gcd ) or (talents[classtable.SouleatersGluttony] and talents[classtable.SouleatersGluttony] or 0) <1 and cooldown[classtable.SoulRot].remains >= 12) and cooldown[classtable.VileTaint].ready then
         return classtable.VileTaint
     end
-    if (MaxDps:FindSpell(classtable.PhantomSingularity) and CheckSpellCosts(classtable.PhantomSingularity, 'PhantomSingularity')) and (( cooldown[classtable.SoulRot].remains <= timeShift or (talents[classtable.SouleatersGluttony] and talents[classtable.SouleatersGluttony] or 0) <1 and ( not talents[classtable.SoulRot] or cooldown[classtable.SoulRot].remains <= timeShift or cooldown[classtable.SoulRot].remains >= 25 ) ) and debuff[classtable.AgonyDebuff].count  == 2) and cooldown[classtable.PhantomSingularity].ready then
+    if (MaxDps:FindSpell(classtable.PhantomSingularity) and CheckSpellCosts(classtable.PhantomSingularity, 'PhantomSingularity')) and (( cooldown[classtable.SoulRot].remains <= timeShift or (talents[classtable.SouleatersGluttony] and talents[classtable.SouleatersGluttony] or 0) <1 and ( not talents[classtable.SoulRot] or cooldown[classtable.SoulRot].remains <= timeShift or cooldown[classtable.SoulRot].remains >= 25 ) ) and debuff[classtable.AgonyDeBuff].count  == 2) and cooldown[classtable.PhantomSingularity].ready then
         return classtable.PhantomSingularity
     end
-    if (MaxDps:FindSpell(classtable.SoulRot) and CheckSpellCosts(classtable.SoulRot, 'SoulRot')) and (( vt_up and ( ps_up or talents[classtable.SouleatersGluttony] ~= 1 ) ) and debuff[classtable.AgonyDebuff].count  == 2) and cooldown[classtable.SoulRot].ready then
+    if (MaxDps:FindSpell(classtable.SoulRot) and CheckSpellCosts(classtable.SoulRot, 'SoulRot')) and (( vt_up and ( ps_up or talents[classtable.SouleatersGluttony] ~= 1 ) ) and debuff[classtable.AgonyDeBuff].count  == 2) and cooldown[classtable.SoulRot].ready then
         return classtable.SoulRot
     end
     if (MaxDps:FindSpell(classtable.Agony) and CheckSpellCosts(classtable.Agony, 'Agony')) and (( debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.VileTaint].remains + ( classtable and classtable.VileTaint and GetSpellInfo(classtable.VileTaint).castTime / 1000 ) or not talents[classtable.VileTaint] ) and debuff[classtable.AgonyDeBuff].remains <5 and ttd >5) and cooldown[classtable.Agony].ready then
@@ -341,7 +358,7 @@ function Affliction:cleave()
     if (MaxDps:FindSpell(classtable.MaleficRapture) and CheckSpellCosts(classtable.MaleficRapture, 'MaleficRapture')) and (SoulShards >3) and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
-    if (MaxDps:FindSpell(classtable.DrainLife) and CheckSpellCosts(classtable.DrainLife, 'DrainLife')) and (buff[classtable.InevitableDemiseBuff].count >48 or buff[classtable.InevitableDemiseBuff].count >20 and ttd <4) and cooldown[classtable.DrainLife].ready then
+    if (MaxDps:FindSpell(classtable.DrainLife) and CheckSpellCosts(classtable.DrainLife, 'DrainLife')) and (buff[classtable.InevitableDemiseBuff].count >48 or buff[classtable.InevitableDemiseBuff].count >20 and boss and ttd <4) and cooldown[classtable.DrainLife].ready then
         return classtable.DrainLife
     end
     if (MaxDps:FindSpell(classtable.DrainLife) and CheckSpellCosts(classtable.DrainLife, 'DrainLife')) and (buff[classtable.SoulRotBuff].up and buff[classtable.InevitableDemiseBuff].count >30) and cooldown[classtable.DrainLife].ready then
@@ -372,9 +389,9 @@ function Affliction:callaction()
     if (MaxDps:FindSpell(classtable.SpellLock) and CheckSpellCosts(classtable.SpellLock, 'SpellLock')) and cooldown[classtable.SpellLock].ready then
         MaxDps:GlowCooldown(classtable.SpellLock, select(8,UnitCastingInfo('target') == false) and cooldown[classtable.SpellLock].ready)
     end
-    ps_up = debuff[classtable.PhantomSingularityDebuff].count  >0 or cooldown[classtable.PhantomSingularity].remains >35 or not talents[classtable.PhantomSingularity]
-    vt_up = debuff[classtable.VileTaintDotDebuff].count  >0 or cooldown[classtable.VileTaint].remains >20 or not talents[classtable.VileTaint]
-    vt_ps_up = debuff[classtable.VileTaintDotDebuff].count  >0 or cooldown[classtable.VileTaint].remains >20 or debuff[classtable.PhantomSingularityDebuff].count  >0 or cooldown[classtable.PhantomSingularity].remains >35 or ( not talents[classtable.VileTaint] and not talents[classtable.PhantomSingularity] )
+    ps_up = debuff[classtable.PhantomSingularityDeBuff].count  >0 or cooldown[classtable.PhantomSingularity].remains >35 or not talents[classtable.PhantomSingularity]
+    vt_up = debuff[classtable.VileTaintDotDeBuff].count  >0 or cooldown[classtable.VileTaint].remains >20 or not talents[classtable.VileTaint]
+    vt_ps_up = debuff[classtable.VileTaintDotDeBuff].count  >0 or cooldown[classtable.VileTaint].remains >20 or debuff[classtable.PhantomSingularityDeBuff].count  >0 or cooldown[classtable.PhantomSingularity].remains >35 or ( not talents[classtable.VileTaint] and not talents[classtable.PhantomSingularity] )
     sr_up = debuff[classtable.SoulRotDeBuff].up or cooldown[classtable.SoulRot].remains >48 or not talents[classtable.SoulRot]
     cd_dots_up = ps_up and vt_up and sr_up
     has_cds = talents[classtable.PhantomSingularity] or talents[classtable.VileTaint] or talents[classtable.SoulRot] or talents[classtable.SummonDarkglare]
@@ -415,7 +432,7 @@ function Affliction:callaction()
             return Affliction:aoe()
         end
     end
-    if (MaxDps:FindSpell(classtable.MaleficRapture) and CheckSpellCosts(classtable.MaleficRapture, 'MaleficRapture')) and (ttd <4) and cooldown[classtable.MaleficRapture].ready then
+    if (MaxDps:FindSpell(classtable.MaleficRapture) and CheckSpellCosts(classtable.MaleficRapture, 'MaleficRapture')) and (boss and ttd <4) and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
     if (MaxDps:FindSpell(classtable.VileTaint) and CheckSpellCosts(classtable.VileTaint, 'VileTaint')) and (not talents[classtable.SoulRot] or ( min_agony <1.5 or cooldown[classtable.SoulRot].remains <= timeShift + gcd ) or (talents[classtable.SouleatersGluttony] and talents[classtable.SouleatersGluttony] or 0) <1 and cooldown[classtable.SoulRot].remains >= 12) and cooldown[classtable.VileTaint].ready then
@@ -469,7 +486,7 @@ function Affliction:callaction()
     if (MaxDps:FindSpell(classtable.MaleficRapture) and CheckSpellCosts(classtable.MaleficRapture, 'MaleficRapture')) and (talents[classtable.TormentedCrescendo] and talents[classtable.Nightfall] and buff[classtable.TormentedCrescendoBuff].up and buff[classtable.NightfallBuff].up) and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
-    if (MaxDps:FindSpell(classtable.DrainLife) and CheckSpellCosts(classtable.DrainLife, 'DrainLife')) and (buff[classtable.InevitableDemiseBuff].count >48 or buff[classtable.InevitableDemiseBuff].count >20 and ttd <4) and cooldown[classtable.DrainLife].ready then
+    if (MaxDps:FindSpell(classtable.DrainLife) and CheckSpellCosts(classtable.DrainLife, 'DrainLife')) and (buff[classtable.InevitableDemiseBuff].count >48 or buff[classtable.InevitableDemiseBuff].count >20 and boss and ttd <4) and cooldown[classtable.DrainLife].ready then
         return classtable.DrainLife
     end
     if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (buff[classtable.NightfallBuff].up) and cooldown[classtable.DrainSoul].ready then
