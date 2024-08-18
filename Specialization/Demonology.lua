@@ -82,6 +82,7 @@ local pet_expire
 local np
 local impl
 local pool_cores_for_tyrant
+local wildImps
 
 local function CheckSpellCosts(spell,spellstring)
     if not IsSpellKnownOrOverridesKnown(spell) then return false end
@@ -247,7 +248,7 @@ function Demonology:tyrant()
     if (MaxDps:FindSpell(classtable.SummonDemonicTyrant) and CheckSpellCosts(classtable.SummonDemonicTyrant, 'SummonDemonicTyrant')) and (pet_expire >0 and pet_expire <2 + ( not buff[classtable.DemonicCoreBuff].up * 2 + buff[classtable.DemonicCoreBuff].duration * gcd ) + gcd) and cooldown[classtable.SummonDemonicTyrant].ready then
         return classtable.SummonDemonicTyrant
     end
-    if (MaxDps:FindSpell(classtable.Implosion) and CheckSpellCosts(classtable.Implosion, 'Implosion')) and (cooldown[classtable.Implosion].charges >2 and ( not buff[classtable.DreadstalkersBuff].up and not buff[classtable.GrimoireFelguardBuff].up and not buff[classtable.VilefiendBuff].up ) and ( targets >3 or targets >2 and talents[classtable.GrandWarlocksDesign] ) and not (MaxDps.spellHistory[1] == classtable.Implosion)) and cooldown[classtable.Implosion].ready then
+    if (MaxDps:FindSpell(classtable.Implosion) and CheckSpellCosts(classtable.Implosion, 'Implosion')) and (wildImps >2 and ( not buff[classtable.DreadstalkersBuff].up and not buff[classtable.GrimoireFelguardBuff].up and not buff[classtable.VilefiendBuff].up ) and ( targets >3 or targets >2 and talents[classtable.GrandWarlocksDesign] ) and not (MaxDps.spellHistory[1] == classtable.Implosion)) and cooldown[classtable.Implosion].ready then
         return classtable.Implosion
     end
     if (MaxDps:FindSpell(classtable.ShadowBolt) and CheckSpellCosts(classtable.ShadowBolt, 'ShadowBolt')) and ((MaxDps.spellHistory[1] == classtable.GrimoireFelguard) and timeInCombat >30 and not buff[classtable.DemonicCoreBuff].up) and cooldown[classtable.ShadowBolt].ready then
@@ -355,7 +356,7 @@ function Demonology:callaction()
     if (MaxDps:FindSpell(classtable.CallDreadstalkers) and CheckSpellCosts(classtable.CallDreadstalkers, 'CallDreadstalkers')) and (cooldown[classtable.SummonDemonicTyrant].remains >25) and cooldown[classtable.CallDreadstalkers].ready then
         return classtable.CallDreadstalkers
     end
-    if (MaxDps:FindSpell(classtable.Implosion) and CheckSpellCosts(classtable.Implosion, 'Implosion')) and ((cooldown[classtable.Implosion].charges >=2 and 1 or 0) >0 and impl and not (MaxDps.spellHistory[1] == classtable.Implosion) and (targets <2) or (cooldown[classtable.Implosion].charges >=2 and 1 or 0) >0 and impl and not (MaxDps.spellHistory[1] == classtable.Implosion) and (targets >1) and ( targets >3 or targets <= 3 and not (MaxDps.spellHistory[1] == classtable.Implosion) )) and cooldown[classtable.Implosion].ready then
+    if (MaxDps:FindSpell(classtable.Implosion) and CheckSpellCosts(classtable.Implosion, 'Implosion')) and ((wildImps >=2 and 1 or 0) >0 and impl and not (MaxDps.spellHistory[1] == classtable.Implosion) and (targets <2) or (wildImps >=2 and 1 or 0) >0 and impl and not (MaxDps.spellHistory[1] == classtable.Implosion) and (targets >1) and ( targets >3 or targets <= 3 and not (MaxDps.spellHistory[1] == classtable.Implosion) )) and cooldown[classtable.Implosion].ready then
         return classtable.Implosion
     end
     if (MaxDps:FindSpell(classtable.DemonicStrength) and CheckSpellCosts(classtable.DemonicStrength, 'DemonicStrength')) and (( ttd >63 and not ( ttd >cooldown[classtable.SummonDemonicTyrant].remains + 69 ) or cooldown[classtable.SummonDemonicTyrant].remains >30 or buff[classtable.RiteofRuvaraadBuff].up or 1 or not talents[classtable.SummonDemonicTyrant] or not talents[classtable.GrimoireFelguard] )) and cooldown[classtable.DemonicStrength].ready then
@@ -442,6 +443,7 @@ function Warlock:Demonology()
     classtable.DoomBrandDeBuff = 423583
     classtable.RiteofRuvaraadBuff = 0
     classtable.Demonbolt = 264178
+    wildImps = C_Spell.GetSpellCastCount(classtable.Implosion)
 
     local precombatCheck = Demonology:precombat()
     if precombatCheck then
