@@ -87,6 +87,7 @@ local min_vt
 local min_ps
 local min_agony
 local min_psone
+local ShadowEmbraceDeBuffmaxStacks
 
 local function CheckSpellCosts(spell,spellstring)
     if not IsSpellKnownOrOverridesKnown(spell) then return false end
@@ -293,13 +294,13 @@ function Affliction:aoe()
     if (MaxDps:FindSpell(classtable.DrainLife) and CheckSpellCosts(classtable.DrainLife, 'DrainLife')) and (( buff[classtable.SoulRotBuff].up or not talents[classtable.SoulRot] ) and buff[classtable.InevitableDemiseBuff].count >30) and cooldown[classtable.DrainLife].ready then
         return classtable.DrainLife
     end
-    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (buff[classtable.NightfallBuff].up and talents[classtable.ShadowEmbrace] and ( debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 )) and cooldown[classtable.DrainSoul].ready then
+    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (buff[classtable.NightfallBuff].up and talents[classtable.ShadowEmbrace] and ( ShadowEmbraceDeBuffmaxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 )) and cooldown[classtable.DrainSoul].ready then
         return classtable.DrainSoul
     end
     if (MaxDps:FindSpell(classtable.SiphonLife) and CheckSpellCosts(classtable.SiphonLife, 'SiphonLife')) and (debuff[classtable.SiphonLifeDeBuff].remains <5 and debuff[classtable.SiphonLifeDeBuff].count  <5 and ( targets <8 or not talents[classtable.DoomBlossom] )) and cooldown[classtable.SiphonLife].ready then
         return classtable.SiphonLife
     end
-    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (( talents[classtable.ShadowEmbrace] and ( debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) ) or not talents[classtable.ShadowEmbrace]) and cooldown[classtable.DrainSoul].ready then
+    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (( talents[classtable.ShadowEmbrace] and ( ShadowEmbraceDeBuffmaxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) ) or not talents[classtable.ShadowEmbrace]) and cooldown[classtable.DrainSoul].ready then
         return classtable.DrainSoul
     end
     if (MaxDps:FindSpell(classtable.ShadowBolt) and CheckSpellCosts(classtable.ShadowBolt, 'ShadowBolt')) and cooldown[classtable.ShadowBolt].ready then
@@ -334,19 +335,19 @@ function Affliction:cleave()
     if (MaxDps:FindSpell(classtable.SiphonLife) and CheckSpellCosts(classtable.SiphonLife, 'SiphonLife')) and (debuff[classtable.SiphonLifeDeBuff].refreshable and ttd >5) and cooldown[classtable.SiphonLife].ready then
         return classtable.SiphonLife
     end
-    if (MaxDps:FindSpell(classtable.SummonDarkglare) and CheckSpellCosts(classtable.SummonDarkglare, 'SummonDarkglare')) and (( not talents[classtable.ShadowEmbrace] or debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 == 100 ) and ps_up and vt_up and sr_up) and cooldown[classtable.SummonDarkglare].ready then
+    if (MaxDps:FindSpell(classtable.SummonDarkglare) and CheckSpellCosts(classtable.SummonDarkglare, 'SummonDarkglare')) and (( not talents[classtable.ShadowEmbrace] or ShadowEmbraceDeBuffmaxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 == 100 ) and ps_up and vt_up and sr_up) and cooldown[classtable.SummonDarkglare].ready then
         return classtable.SummonDarkglare
     end
     if (MaxDps:FindSpell(classtable.MaleficRapture) and CheckSpellCosts(classtable.MaleficRapture, 'MaleficRapture')) and (talents[classtable.TormentedCrescendo] and buff[classtable.TormentedCrescendoBuff].count == 1 and SoulShards >3) and cooldown[classtable.MaleficRapture].ready then
         return classtable.MaleficRapture
     end
-    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (talents[classtable.ShadowEmbrace] and ( debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 )) and cooldown[classtable.DrainSoul].ready then
+    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (talents[classtable.ShadowEmbrace] and ( ShadowEmbraceDeBuffmaxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 )) and cooldown[classtable.DrainSoul].ready then
         return classtable.DrainSoul
     end
-    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (buff[classtable.NightfallBuff].up and ( talents[classtable.ShadowEmbrace] and ( debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) or not talents[classtable.ShadowEmbrace] )) and cooldown[classtable.DrainSoul].ready then
+    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (buff[classtable.NightfallBuff].up and ( talents[classtable.ShadowEmbrace] and ( ShadowEmbraceDeBuffmaxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) or not talents[classtable.ShadowEmbrace] )) and cooldown[classtable.DrainSoul].ready then
         return classtable.DrainSoul
     end
-    if (MaxDps:FindSpell(classtable.ShadowBolt) and CheckSpellCosts(classtable.ShadowBolt, 'ShadowBolt')) and (buff[classtable.NightfallBuff].up and ( talents[classtable.ShadowEmbrace] and ( debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) or not talents[classtable.ShadowEmbrace] )) and cooldown[classtable.ShadowBolt].ready then
+    if (MaxDps:FindSpell(classtable.ShadowBolt) and CheckSpellCosts(classtable.ShadowBolt, 'ShadowBolt')) and (buff[classtable.NightfallBuff].up and ( talents[classtable.ShadowEmbrace] and ( ShadowEmbraceDeBuffmaxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) or not talents[classtable.ShadowEmbrace] )) and cooldown[classtable.ShadowBolt].ready then
         return classtable.ShadowBolt
     end
     if (MaxDps:FindSpell(classtable.MaleficRapture) and CheckSpellCosts(classtable.MaleficRapture, 'MaleficRapture')) and (buff[classtable.TormentedCrescendoBuff].up) and cooldown[classtable.MaleficRapture].ready then
@@ -459,13 +460,13 @@ function Affliction:callaction()
     if (MaxDps:FindSpell(classtable.SiphonLife) and CheckSpellCosts(classtable.SiphonLife, 'SiphonLife')) and (debuff[classtable.SiphonLifeDeBuff].refreshable and ttd >5) and cooldown[classtable.SiphonLife].ready then
         return classtable.SiphonLife
     end
-    if (MaxDps:FindSpell(classtable.SummonDarkglare) and CheckSpellCosts(classtable.SummonDarkglare, 'SummonDarkglare')) and (( not talents[classtable.ShadowEmbrace] or debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 == 100 ) and ps_up and vt_up and sr_up or cooldown[classtable.InvokePowerInfusion0].duration >0 and cooldown[classtable.InvokePowerInfusion0].ready and not talents[classtable.SoulRot]) and cooldown[classtable.SummonDarkglare].ready then
+    if (MaxDps:FindSpell(classtable.SummonDarkglare) and CheckSpellCosts(classtable.SummonDarkglare, 'SummonDarkglare')) and (( not talents[classtable.ShadowEmbrace] or ShadowEmbraceDeBuffmaxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 == 100 ) and ps_up and vt_up and sr_up or cooldown[classtable.InvokePowerInfusion0].duration >0 and cooldown[classtable.InvokePowerInfusion0].ready and not talents[classtable.SoulRot]) and cooldown[classtable.SummonDarkglare].ready then
         return classtable.SummonDarkglare
     end
-    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (talents[classtable.ShadowEmbrace] and ( debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 )) and cooldown[classtable.DrainSoul].ready then
+    if (MaxDps:FindSpell(classtable.DrainSoul) and CheckSpellCosts(classtable.DrainSoul, 'DrainSoul')) and (talents[classtable.ShadowEmbrace] and ( ShadowEmbraceDeBuffmaxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 )) and cooldown[classtable.DrainSoul].ready then
         return classtable.DrainSoul
     end
-    if (MaxDps:FindSpell(classtable.ShadowBolt) and CheckSpellCosts(classtable.ShadowBolt, 'ShadowBolt')) and (talents[classtable.ShadowEmbrace] and ( debuff[classtable.ShadowEmbraceDeBuff].maxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 )) and cooldown[classtable.ShadowBolt].ready then
+    if (MaxDps:FindSpell(classtable.ShadowBolt) and CheckSpellCosts(classtable.ShadowBolt, 'ShadowBolt')) and (talents[classtable.ShadowEmbrace] and ( ShadowEmbraceDeBuffmaxStacks / debuff[classtable.ShadowEmbraceDeBuff].count * 100 <100 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 )) and cooldown[classtable.ShadowBolt].ready then
         return classtable.ShadowBolt
     end
     if (MaxDps:FindSpell(classtable.Oblivion) and CheckSpellCosts(classtable.Oblivion, 'Oblivion')) and (SoulShards == 2 and ( sr_up or cooldown[classtable.SoulRot].remains >cooldown[classtable.Oblivion].remains ) and ( ps_up or cooldown[classtable.PhantomSingularity].remains >cooldown[classtable.Oblivion].remains )) and cooldown[classtable.Oblivion].ready then
@@ -546,6 +547,12 @@ function Warlock:Affliction()
     classtable.VileTaintDotDeBuff = 386931
     classtable.SoulRotDeBuff = 386997
     classtable.VileTaintDeBuff = 386931
+
+    if talents[classtable.DrainSoul] then
+        ShadowEmbraceDeBuffmaxStacks = 4
+    else
+        ShadowEmbraceDeBuffmaxStacks = 2
+    end
 
     local precombatCheck = Affliction:precombat()
     if precombatCheck then
