@@ -89,26 +89,6 @@ local pool_soul_shards
 local function CheckSpellCosts(spell,spellstring)
     if not IsSpellKnown(spell) then return false end
     if not C_Spell.IsSpellUsable(spell) then return false end
-    if spellstring == 'TouchofDeath' then
-        if targethealthPerc > 15 then
-            return false
-        end
-    end
-    if spellstring == 'KillShot' then
-        if (classtable.SicEmBuff and not buff[classtable.SicEmBuff].up) or (classtable.HuntersPreyBuff and not buff[classtable.HuntersPreyBuff].up) and targethealthPerc > 15 then
-            return false
-        end
-    end
-    if spellstring == 'HammerofWrath' then
-        if ( (classtable.AvengingWrathBuff and not buff[classtable.AvengingWrathBuff].up) or (classtable.FinalVerdictBuff and not buff[classtable.FinalVerdictBuff].up) ) and targethealthPerc > 20 then
-            return false
-        end
-    end
-    if spellstring == 'Execute' then
-        if (classtable.SuddenDeathBuff and not buff[classtable.SuddenDeathBuff].up) and targethealthPerc > 35 then
-            return false
-        end
-    end
     local costs = C_Spell.GetSpellPowerCost(spell)
     if type(costs) ~= 'table' and spellstring then return true end
     for i,costtable in pairs(costs) do
@@ -290,7 +270,7 @@ function Destruction:aoe()
     if (CheckSpellCosts(classtable.ChannelDemonfire, 'ChannelDemonfire')) and (debuff[classtable.ImmolateDeBuff].remains >( classtable and classtable.ChannelDemonfire and GetSpellInfo(classtable.ChannelDemonfire).castTime /1000 )) and cooldown[classtable.ChannelDemonfire].ready then
         return classtable.ChannelDemonfire
     end
-    if (CheckSpellCosts(classtable.Immolate, 'Immolate')) and (( ( debuff[classtable.ImmolateDeBuff].refreshable and ( not talents[classtable.Cataclysm] or cooldown[classtable.Cataclysm].remains >debuff[classtable.ImmolateDeBuff].remains ) )  ) and ttd >10 and not havoc_active) and cooldown[classtable.Immolate].ready then
+    if (CheckSpellCosts(classtable.Immolate, 'Immolate')) and (( ( debuff[classtable.ImmolateDeBuff].refreshable and ( not talents[classtable.Cataclysm] or cooldown[classtable.Cataclysm].remains >debuff[classtable.ImmolateDeBuff].remains ) ) or 1 >debuff[classtable.ImmolateDeBuff].count  ) and ttd >10 and not havoc_active) and cooldown[classtable.Immolate].ready then
         return classtable.Immolate
     end
     if (CheckSpellCosts(classtable.DimensionalRift, 'DimensionalRift')) and cooldown[classtable.DimensionalRift].ready then
@@ -355,7 +335,7 @@ function Destruction:cleave()
     if (CheckSpellCosts(classtable.SummonInfernal, 'SummonInfernal')) and cooldown[classtable.SummonInfernal].ready then
         MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
     end
-    if (CheckSpellCosts(classtable.ChannelDemonfire, 'ChannelDemonfire')) and ((talents[classtable.Ruin] and talents[classtable.Ruin] or 0) >1 and not ( talents[classtable.DiabolicEmbers] and talents[classtable.AvatarofDestruction] and ( talents[classtable.BurnToAshes] or talents[classtable.ChaosIncarnate] ) )) and cooldown[classtable.ChannelDemonfire].ready then
+    if (CheckSpellCosts(classtable.ChannelDemonfire, 'ChannelDemonfire')) and (talents[classtable.Ruin] >1 and not ( talents[classtable.DiabolicEmbers] and talents[classtable.AvatarofDestruction] and ( talents[classtable.BurnToAshes] or talents[classtable.ChaosIncarnate] ) )) and cooldown[classtable.ChannelDemonfire].ready then
         return classtable.ChannelDemonfire
     end
     if (CheckSpellCosts(classtable.Shadowburn, 'Shadowburn')) and (ttd <5 and targetHP <20) and cooldown[classtable.Shadowburn].ready then
@@ -505,7 +485,7 @@ function Destruction:callaction()
     if (CheckSpellCosts(classtable.ChaosBolt, 'ChaosBolt')) and (( UnitExists('pet') and UnitName('pet')  == 'infernal' ) or ( UnitExists('pet') and UnitName('pet')  == 'blasphemy' ) or SoulShards >= 4) and cooldown[classtable.ChaosBolt].ready then
         return classtable.ChaosBolt
     end
-    if (CheckSpellCosts(classtable.ChannelDemonfire, 'ChannelDemonfire')) and ((talents[classtable.Ruin] and talents[classtable.Ruin] or 0) >1 and not ( talents[classtable.DiabolicEmbers] and talents[classtable.AvatarofDestruction] and ( talents[classtable.BurnToAshes] or talents[classtable.ChaosIncarnate] ) ) and debuff[classtable.ImmolateDeBuff].remains >( classtable and classtable.ChannelDemonfire and GetSpellInfo(classtable.ChannelDemonfire).castTime /1000 )) and cooldown[classtable.ChannelDemonfire].ready then
+    if (CheckSpellCosts(classtable.ChannelDemonfire, 'ChannelDemonfire')) and (talents[classtable.Ruin] >1 and not ( talents[classtable.DiabolicEmbers] and talents[classtable.AvatarofDestruction] and ( talents[classtable.BurnToAshes] or talents[classtable.ChaosIncarnate] ) ) and debuff[classtable.ImmolateDeBuff].remains >( classtable and classtable.ChannelDemonfire and GetSpellInfo(classtable.ChannelDemonfire).castTime /1000 )) and cooldown[classtable.ChannelDemonfire].ready then
         return classtable.ChannelDemonfire
     end
     if (CheckSpellCosts(classtable.Shadowburn, 'Shadowburn')) and (ttd <5 and targetHP <20) and cooldown[classtable.Shadowburn].ready then
@@ -589,10 +569,10 @@ function Warlock:Destruction()
     SpellHaste = UnitSpellHaste('player')
     SpellCrit = GetCritChance()
     SoulShards = UnitPower('player', SoulShardsPT)
+    classtable.SpellLock = 19647
     local havoc_count, havoc_totalRemains = MaxDps:DebuffCounter(classtable.Havoc,1)
     havoc_active = havoc_count >= 1
     havoc_remains = havoc_totalRemains or 0
-    classtable.SpellLock = 19647
     for spellId in pairs(MaxDps.Flags) do
         self.Flags[spellId] = false
         self:ClearGlowIndependent(spellId, spellId)

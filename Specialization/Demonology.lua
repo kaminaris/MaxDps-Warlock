@@ -87,26 +87,6 @@ local wildImps
 local function CheckSpellCosts(spell,spellstring)
     if not IsSpellKnown(spell) then return false end
     if not C_Spell.IsSpellUsable(spell) then return false end
-    if spellstring == 'TouchofDeath' then
-        if targethealthPerc > 15 then
-            return false
-        end
-    end
-    if spellstring == 'KillShot' then
-        if (classtable.SicEmBuff and not buff[classtable.SicEmBuff].up) or (classtable.HuntersPreyBuff and not buff[classtable.HuntersPreyBuff].up) and targethealthPerc > 15 then
-            return false
-        end
-    end
-    if spellstring == 'HammerofWrath' then
-        if ( (classtable.AvengingWrathBuff and not buff[classtable.AvengingWrathBuff].up) or (classtable.FinalVerdictBuff and not buff[classtable.FinalVerdictBuff].up) ) and targethealthPerc > 20 then
-            return false
-        end
-    end
-    if spellstring == 'Execute' then
-        if (classtable.SuddenDeathBuff and not buff[classtable.SuddenDeathBuff].up) and targethealthPerc > 35 then
-            return false
-        end
-    end
     local costs = C_Spell.GetSpellPowerCost(spell)
     if type(costs) ~= 'table' and spellstring then return true end
     for i,costtable in pairs(costs) do
@@ -356,7 +336,7 @@ function Demonology:callaction()
     if (CheckSpellCosts(classtable.CallDreadstalkers, 'CallDreadstalkers')) and (cooldown[classtable.SummonDemonicTyrant].remains >25) and cooldown[classtable.CallDreadstalkers].ready then
         return classtable.CallDreadstalkers
     end
-    if (CheckSpellCosts(classtable.Implosion, 'Implosion')) and ((wildImps >=2 and 1 or 0) >0 and impl and not (MaxDps.spellHistory[1] == classtable.Implosion) and (targets <2) or (wildImps >=2 and 1 or 0) >0 and impl and not (MaxDps.spellHistory[1] == classtable.Implosion) and (targets >1) and ( targets >3 or targets <= 3 and not (MaxDps.spellHistory[1] == classtable.Implosion) )) and cooldown[classtable.Implosion].ready then
+    if (CheckSpellCosts(classtable.Implosion, 'Implosion')) and ((cooldown[classtable.Implosion].charges >=2 and 1 or 0) >0 and impl and not (MaxDps.spellHistory[1] == classtable.Implosion) and (targets <2) or (cooldown[classtable.Implosion].charges >=2 and 1 or 0) >0 and impl and not (MaxDps.spellHistory[1] == classtable.Implosion) and (targets >1) and ( targets >3 or targets <= 3 )) and cooldown[classtable.Implosion].ready then
         return classtable.Implosion
     end
     if (CheckSpellCosts(classtable.DemonicStrength, 'DemonicStrength')) and (( ttd >63 and not ( ttd >cooldown[classtable.SummonDemonicTyrant].remains + 69 ) or cooldown[classtable.SummonDemonicTyrant].remains >30 or buff[classtable.RiteofRuvaraadBuff].up or 1 or not talents[classtable.SummonDemonicTyrant] or not talents[classtable.GrimoireFelguard] )) and cooldown[classtable.DemonicStrength].ready then
@@ -430,6 +410,7 @@ function Warlock:Demonology()
     SpellCrit = GetCritChance()
     SoulShards = UnitPower('player', SoulShardsPT)
     classtable.SpellLock = 19647
+    classtable.AxeToss = 119914
     for spellId in pairs(MaxDps.Flags) do
         self.Flags[spellId] = false
         self:ClearGlowIndependent(spellId, spellId)
