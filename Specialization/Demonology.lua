@@ -429,6 +429,7 @@ function Warlock:Demonology()
     SpellHaste = UnitSpellHaste('player')
     SpellCrit = GetCritChance()
     SoulShards = UnitPower('player', SoulShardsPT)
+    classtable.SpellLock = 19647
     for spellId in pairs(MaxDps.Flags) do
         self.Flags[spellId] = false
         self:ClearGlowIndependent(spellId, spellId)

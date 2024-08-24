@@ -592,6 +592,7 @@ function Warlock:Destruction()
     local havoc_count, havoc_totalRemains = MaxDps:DebuffCounter(classtable.Havoc,1)
     havoc_active = havoc_count >= 1
     havoc_remains = havoc_totalRemains or 0
+    classtable.SpellLock = 19647
     for spellId in pairs(MaxDps.Flags) do
         self.Flags[spellId] = false
         self:ClearGlowIndependent(spellId, spellId)
