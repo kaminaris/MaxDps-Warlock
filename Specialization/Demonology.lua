@@ -225,7 +225,7 @@ function Demonology:tyrant()
     if (CheckSpellCosts(classtable.HandofGuldan, 'HandofGuldan')) and (pet_expire >gcd + ( classtable and classtable.SummonDemonicTyrant and GetSpellInfo(classtable.SummonDemonicTyrant).castTime / 1000 or 0) and (pet_expire <gcd * 4 and 1 or 0)) and cooldown[classtable.HandofGuldan].ready then
         return classtable.HandofGuldan
     end
-    if (CheckSpellCosts(classtable.SummonDemonicTyrant, 'SummonDemonicTyrant')) and (pet_expire >0 and pet_expire <2 + ( not buff[classtable.DemonicCoreBuff].up * 2 + buff[classtable.DemonicCoreBuff].duration * gcd ) + gcd) and cooldown[classtable.SummonDemonicTyrant].ready then
+    if (CheckSpellCosts(classtable.SummonDemonicTyrant, 'SummonDemonicTyrant')) and (pet_expire >0 and pet_expire <2 + ( (not buff[classtable.DemonicCoreBuff].up and 1 or 0) * 2 + buff[classtable.DemonicCoreBuff].duration * gcd ) + gcd) and cooldown[classtable.SummonDemonicTyrant].ready then
         return classtable.SummonDemonicTyrant
     end
     if (CheckSpellCosts(classtable.Implosion, 'Implosion')) and (wildImps >2 and ( not buff[classtable.DreadstalkersBuff].up and not buff[classtable.GrimoireFelguardBuff].up and not buff[classtable.VilefiendBuff].up ) and ( targets >3 or targets >2 and talents[classtable.GrandWarlocksDesign] ) and not (MaxDps.spellHistory[1] == classtable.Implosion)) and cooldown[classtable.Implosion].ready then
