@@ -426,6 +426,11 @@ function Warlock:Demonology()
     classtable.RiteofRuvaraadBuff = 0
     classtable.Demonbolt = 264178
     wildImps = C_Spell.GetSpellCastCount(classtable.Implosion)
+    if talents[classtable.MarkofFharg] then
+        classtable.Vilefiend = 1709931
+    else
+        classtable.Vilefiend = 1616211
+    end
 
     local precombatCheck = Demonology:precombat()
     if precombatCheck then
