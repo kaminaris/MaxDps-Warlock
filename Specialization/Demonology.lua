@@ -85,7 +85,7 @@ local pool_cores_for_tyrant
 local wildImps
 
 local function CheckSpellCosts(spell,spellstring)
-    if not IsSpellKnown(spell) then return false end
+    if not IsSpellKnownOrOverridesKnown(spell) then return false end
     if not C_Spell.IsSpellUsable(spell) then return false end
     local costs = C_Spell.GetSpellPowerCost(spell)
     if type(costs) ~= 'table' and spellstring then return true end
@@ -258,9 +258,9 @@ function Demonology:tyrant()
     if (CheckSpellCosts(classtable.PowerSiphon, 'PowerSiphon')) and (buff[classtable.DemonicCoreBuff].count <3 and pet_expire >2 + gcd * 3 or pet_expire == 0) and cooldown[classtable.PowerSiphon].ready then
         return classtable.PowerSiphon
     end
-    if (CheckSpellCosts(classtable.ShadowBolt, 'ShadowBolt')) and cooldown[classtable.ShadowBolt].ready then
-        return classtable.ShadowBolt
-    end
+    --if (CheckSpellCosts(classtable.ShadowBolt, 'ShadowBolt')) and cooldown[classtable.ShadowBolt].ready then
+    --    return classtable.ShadowBolt
+    --end
 end
 
 function Demonology:callaction()
@@ -427,9 +427,11 @@ function Warlock:Demonology()
     classtable.Demonbolt = 264178
     wildImps = C_Spell.GetSpellCastCount(classtable.Implosion)
     if talents[classtable.MarkofFharg] then
-        classtable.Vilefiend = 1709931
+        classtable.SummonVilefiend = 455476
+    elseif talents[classtable.MarkofShatug] then
+        classtable.SummonVilefiend = 455465
     else
-        classtable.Vilefiend = 1616211
+        classtable.SummonVilefiend = 264119
     end
 
     local precombatCheck = Demonology:precombat()
