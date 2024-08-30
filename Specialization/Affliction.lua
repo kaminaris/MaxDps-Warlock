@@ -88,6 +88,17 @@ local sr_up
 local cd_dots_up
 local has_cds
 local cds_active
+
+
+local function GetTotemDuration(name)
+    for index=1,MAX_TOTEMS do
+        local arg1, totemName, startTime, duration, icon = GetTotemInfo(index)
+        local est_dur = math.floor(startTime+duration-GetTime())
+        if (totemName == name and est_dur and est_dur > 0) then return est_dur else return 0 end
+    end
+end
+
+
 function Affliction:precombat()
     --if (MaxDps:CheckSpellUsable(classtable.FelDomination, 'FelDomination')) and (timeInCombat >0 and not UnitExists('pet')) and cooldown[classtable.FelDomination].ready then
     --    return classtable.FelDomination
@@ -102,6 +113,10 @@ function Affliction:precombat()
     --if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and cooldown[classtable.Haunt].ready then
     --    return classtable.Haunt
     --end
+    min_agony = debuff[classtable.AgonyDeBuff].remains
+    min_vt = debuff[classtable.VileTaintDeBuff].remains
+    min_ps = debuff[classtable.PhantomSingularityDeBuff].remains
+    min_psone = ( min_vt * (talents[classtable.VileTaint] and talents[classtable.VileTaint] or 0) ) <( min_ps * (talents[classtable.PhantomSingularity] and talents[classtable.PhantomSingularity] or 0) )
 end
 function Affliction:aoe()
     min_agony = debuff[classtable.AgonyDeBuff].remains
