@@ -483,7 +483,7 @@ function Warlock:Destruction()
     buff = fd.buff
     debuff = fd.debuff
     talents = fd.talents
-    targets = 2--MaxDps:SmartAoe()
+    targets = MaxDps:SmartAoe()
     Mana = UnitPower('player', ManaPT)
     ManaMax = UnitPowerMax('player', ManaPT)
     ManaDeficit = ManaMax - Mana
