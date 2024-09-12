@@ -16,14 +16,15 @@ Warlock.spellMeta = {
 }
 
 function Warlock:Enable()
-	MaxDps:Print(MaxDps.Colors.Info .. 'Warlock [Affliction, Demonology, Destruction]', "info")
-
 	if MaxDps.Spec == 1 then
+		MaxDps:Print(MaxDps.Colors.Info .. 'Warlock Affliction', "info")
 		MaxDps.NextSpell = Warlock.Affliction
 	elseif MaxDps.Spec == 2 then
+		MaxDps:Print(MaxDps.Colors.Info .. 'Warlock Demonology', "info")
 		MaxDps.NextSpell = Warlock.Demonology
 		--self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', 'CLEU')
 	elseif MaxDps.Spec == 3 then
+		MaxDps:Print(MaxDps.Colors.Info .. 'Warlock Destruction', "info")
 		MaxDps.NextSpell = Warlock.Destruction
 	end
 
