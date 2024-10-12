@@ -330,10 +330,10 @@ function Destruction:havoc()
     if (MaxDps:CheckSpellUsable(classtable.Shadowburn, 'Shadowburn')) and (havoc_remains <= gcd * 3) and cooldown[classtable.Shadowburn].ready then
         return classtable.Shadowburn
     end
-    if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and (( classtable and classtable.ChaosBolt and GetSpellInfo(classtable.ChaosBolt).castTime /1000 ) <havoc_remains and ( targets <= 2 - ( (talents[classtable.Inferno] and talents[classtable.Inferno] or 0) - (talents[classtable.ImprovedChaosBolt] and talents[classtable.ImprovedChaosBolt] or 0) - (talents[classtable.Cataclysm] and talents[classtable.Cataclysm] or 0) ) * (talents[classtable.Wither] and talents[classtable.Wither] or 0) + ( talents[classtable.Cataclysm] and talents[classtable.ImprovedChaosBolt] ) * (not talents[classtable.Wither] and 2 or 1) )) and cooldown[classtable.ChaosBolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and (( classtable and classtable.ChaosBolt and GetSpellInfo(classtable.ChaosBolt).castTime /1000 ) <havoc_remains and ( targets <= 2 - ( (talents[classtable.Inferno] and talents[classtable.Inferno] or 0) - (talents[classtable.ImprovedChaosBolt] and talents[classtable.ImprovedChaosBolt] or 0) - (talents[classtable.Cataclysm] and talents[classtable.Cataclysm] or 0) ) * (talents[classtable.Wither] and talents[classtable.Wither] or 0) + ( (talents[classtable.Cataclysm] and talents[classtable.Cataclysm] or 0) + (talents[classtable.ImprovedChaosBolt] and talents[classtable.ImprovedChaosBolt] or 0 ) ) * (not talents[classtable.Wither] and 2 or 1) )) and cooldown[classtable.ChaosBolt].ready then
         return classtable.ChaosBolt
     end
-    if (MaxDps:CheckSpellUsable(classtable.RainofFire, 'RainofFire')) and (targets >= 3 - talents[classtable.Wither]) and cooldown[classtable.RainofFire].ready then
+    if (MaxDps:CheckSpellUsable(classtable.RainofFire, 'RainofFire')) and (targets >= 3 - (talents[classtable.Wither] and talents[classtable.Wither] or 0 )) and cooldown[classtable.RainofFire].ready then
         return classtable.RainofFire
     end
     if (MaxDps:CheckSpellUsable(classtable.ChannelDemonfire, 'ChannelDemonfire')) and (SoulShards <4.5) and cooldown[classtable.ChannelDemonfire].ready then
