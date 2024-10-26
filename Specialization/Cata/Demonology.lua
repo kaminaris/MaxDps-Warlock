@@ -81,10 +81,10 @@ local function ClearCDs()
 end
 
 function Demonology:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and cooldown[classtable.FelArmor].ready then
-        if not setSpell then setSpell = classtable.FelArmor end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (not in_combat) and cooldown[classtable.SummonFelguard].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and cooldown[classtable.FelArmor].ready then
+    --    if not setSpell then setSpell = classtable.FelArmor end
+    --end
+    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (not UnitAffectingCombat("player")) and cooldown[classtable.SummonFelguard].ready then
         if not setSpell then setSpell = classtable.SummonFelguard end
     end
     if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and cooldown[classtable.DarkIntent].ready then
@@ -102,28 +102,28 @@ function Demonology:callaction()
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (timeInCombat >10) and cooldown[classtable.SummonDoomguard].ready then
         if not setSpell then setSpell = classtable.SummonDoomguard end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Felguard:felstorm, 'Felguard:felstorm')) and cooldown[classtable.Felguard:felstorm].ready then
-        if not setSpell then setSpell = classtable.Felguard:felstorm end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and (( UnitExists('pet') and UnitName('pet')  == 'felguard' ) and not pet.felguard.debuff.felstorm.ticking) and cooldown[classtable.Soulburn].ready then
-        if not setSpell then setSpell = classtable.Soulburn end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SummonFelhunter, 'SummonFelhunter')) and (not pet.felguard.debuff.felstorm.ticking and ( UnitExists('pet') and UnitName('pet')  == 'felguard' )) and cooldown[classtable.SummonFelhunter].ready then
-        if not setSpell then setSpell = classtable.SummonFelhunter end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.Felguard:felstorm, 'Felguard:felstorm')) and cooldown[classtable.Felguard:felstorm].ready then
+    --    if not setSpell then setSpell = classtable.Felguard:felstorm end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and (( UnitExists('pet') and UnitName('pet')  == 'felguard' ) and not pet.felguard.debuff.felstorm.ticking) and cooldown[classtable.Soulburn].ready then
+    --    if not setSpell then setSpell = classtable.Soulburn end
+    --end
+    --if (MaxDps:CheckSpellUsable(classtable.SummonFelhunter, 'SummonFelhunter')) and (not pet.felguard.debuff.felstorm.ticking and ( UnitExists('pet') and UnitName('pet')  == 'felguard' )) and cooldown[classtable.SummonFelhunter].ready then
+    --    if not setSpell then setSpell = classtable.SummonFelhunter end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and (( UnitExists('pet') and UnitName('pet')  == 'felhunter' )) and cooldown[classtable.Soulburn].ready then
         if not setSpell then setSpell = classtable.Soulburn end
     end
     if (MaxDps:CheckSpellUsable(classtable.SoulFire, 'SoulFire')) and (( UnitExists('pet') and UnitName('pet')  == 'felhunter' ) and buff[classtable.SoulburnBuff].up) and cooldown[classtable.SoulFire].ready then
         if not setSpell then setSpell = classtable.SoulFire end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up and ttd >= 4 and miss_up) and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up and ttd >= 4) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (( not debuff[classtable.BaneofDoomDeBuff].up or ( buff[classtable.MetamorphosisBuff].up and debuff[classtable.BaneofDoomDeBuff].remains <45 ) ) and ttd >= 15 and miss_up) and cooldown[classtable.BaneofDoom].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (( not debuff[classtable.BaneofDoomDeBuff].up or ( buff[classtable.MetamorphosisBuff].up and debuff[classtable.BaneofDoomDeBuff].remains <45 ) ) and ttd >= 15) and cooldown[classtable.BaneofDoom].ready then
         if not setSpell then setSpell = classtable.BaneofDoom end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (( debuff[classtable.CorruptionDeBuff].remains <buff[classtable.CorruptionBuff].duration or not debuff[classtable.CorruptionDeBuff].up ) and ttd >= 6 and miss_up) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (( debuff[classtable.CorruptionDeBuff].remains <buff[classtable.CorruptionBuff].duration or not debuff[classtable.CorruptionDeBuff].up ) and ttd >= 6) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
     if (MaxDps:CheckSpellUsable(classtable.Shadowflame, 'Shadowflame')) and cooldown[classtable.Shadowflame].ready then
@@ -141,19 +141,19 @@ function Demonology:callaction()
     if (MaxDps:CheckSpellUsable(classtable.SoulFire, 'SoulFire')) and (buff[classtable.DecimationBuff].up) and cooldown[classtable.SoulFire].ready then
         if not setSpell then setSpell = classtable.SoulFire end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (mana_pct <= 30 and MaxDps:Bloodlust() and not buff[classtable.MetamorphosisBuff].up and not buff[classtable.DemonSoulFelguardBuff].up) and cooldown[classtable.LifeTap].ready then
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <= 30 and MaxDps:Bloodlust() and not buff[classtable.MetamorphosisBuff].up and not buff[classtable.DemonSoulFelguardBuff].up) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
     if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and cooldown[classtable.Incinerate].ready then
         if not setSpell then setSpell = classtable.Incinerate end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (mana_pct <80 and mana_pct <targetHP) and cooldown[classtable.LifeTap].ready then
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <80 and ManaPerc <targetHP) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
     if (MaxDps:CheckSpellUsable(classtable.FelFlame, 'FelFlame')) and cooldown[classtable.FelFlame].ready then
         if not setSpell then setSpell = classtable.FelFlame end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (mana_pct_nonproc <100) and cooldown[classtable.LifeTap].ready then
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <100) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
 end
@@ -170,6 +170,7 @@ function Warlock:Demonology()
     Mana = UnitPower('player', ManaPT)
     ManaMax = UnitPowerMax('player', ManaPT)
     ManaDeficit = ManaMax - Mana
+    ManaPerc = (Mana / ManaMax) * 100
     targetHP = UnitHealth('target')
     targetmaxHP = UnitHealthMax('target')
     targethealthPerc = (targetHP >0 and targetmaxHP >0 and (targetHP / targetmaxHP) * 100) or 100
