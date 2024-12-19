@@ -501,6 +501,7 @@ function Warlock:Destruction()
     havoc_active = havoc_count >= 1
     havoc_remains = havoc_totalRemains or 0
     classtable.Wither = 445468
+    classtable.InfernalBolt = 434506
     classtable.demonic_art_mother_of_chaos = 432794
     classtable.demonic_art_overlord = 428524
     classtable.demonic_art_pit_lord = 432795
