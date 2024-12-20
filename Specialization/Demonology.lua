@@ -203,7 +203,7 @@ end
 function Demonology:items()
 end
 function Demonology:opener()
-    if (MaxDps:CheckSpellUsable(classtable.GrimoireFelguard, 'GrimoireFelguard')) and (SoulShards >= 5 - talents[classtable.FelInvocation]) and cooldown[classtable.GrimoireFelguard].ready then
+    if (MaxDps:CheckSpellUsable(classtable.GrimoireFelguard, 'GrimoireFelguard')) and (SoulShards >= 5 - (talents[classtable.FelInvocation] and talents[classtable.FelInvocation] or 0)) and cooldown[classtable.GrimoireFelguard].ready then
         if not setSpell then setSpell = classtable.GrimoireFelguard end
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonVilefiend, 'SummonVilefiend')) and (SoulShards == 5) and cooldown[classtable.SummonVilefiend].ready then
@@ -264,7 +264,7 @@ function Demonology:tyrant()
     if (MaxDps:CheckSpellUsable(classtable.CallDreadstalkers, 'CallDreadstalkers')) and (cooldown[classtable.SummonDemonicTyrant].remains <12 - 2 * gcd and ( buff[classtable.VilefiendBuff].up or cooldown[classtable.SummonVilefiend].remains <12 - 2 * gcd or not talents[classtable.SummonVilefiend] )) and cooldown[classtable.CallDreadstalkers].ready then
         if not setSpell then setSpell = classtable.CallDreadstalkers end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SummonDemonicTyrant, 'SummonDemonicTyrant')) and (( ( ( imp_despawn() and imp_despawn() <timeInCombat + gcd * 2 + ( classtable and classtable.SummonDemonicTyrant and GetSpellInfo(classtable.SummonDemonicTyrant).castTime /1000 ) ) or ( buff[classtable.WildImpsBuff].count >9 and SoulShards <2 ) ) and buff[classtable.DreadstalkersBuff].up and ( buff[classtable.VilefiendBuff].up or not talents[classtable.SummonVilefiend] ) ) or ( buff[classtable.DreadstalkersBuff].up and buff[classtable.DreadstalkersBuff].remains <gcd * 2 + ( classtable and classtable.SummonDemonicTyrant and GetSpellInfo(classtable.SummonDemonicTyrant).castTime /1000 ) and ( ( buff[classtable.VilefiendBuff].up and buff[classtable.VilefiendBuff].remains >2 * gcd ) or not talents[classtable.SummonVilefiend] ) and ( ( buff[classtable.GrimoireFelguardBuff].up and buff[classtable.GrimoireFelguardBuff].remains >2 * gcd ) or not talents[classtable.GrimoireFelguard] or cooldown[classtable.GrimoireFelguard].remains >20 ) )) and cooldown[classtable.SummonDemonicTyrant].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonDemonicTyrant, 'SummonDemonicTyrant')) and (( ( ( imp_despawn() and imp_despawn() <timeInCombat + gcd * 2 + ( classtable and classtable.SummonDemonicTyrant and GetSpellInfo(classtable.SummonDemonicTyrant).castTime /1000 ) ) or ( cooldown[classtable.WildImpsBuff].charges >9 and SoulShards <2 ) ) and buff[classtable.DreadstalkersBuff].up and ( buff[classtable.VilefiendBuff].up or not talents[classtable.SummonVilefiend] ) ) or ( buff[classtable.DreadstalkersBuff].up and buff[classtable.DreadstalkersBuff].remains <gcd * 2 + ( classtable and classtable.SummonDemonicTyrant and GetSpellInfo(classtable.SummonDemonicTyrant).castTime /1000 ) and ( ( buff[classtable.VilefiendBuff].up and buff[classtable.VilefiendBuff].remains >2 * gcd ) or not talents[classtable.SummonVilefiend] ) and ( ( buff[classtable.GrimoireFelguardBuff].up and buff[classtable.GrimoireFelguardBuff].remains >2 * gcd ) or not talents[classtable.GrimoireFelguard] or cooldown[classtable.GrimoireFelguard].remains >20 ) )) and cooldown[classtable.SummonDemonicTyrant].ready then
         if not setSpell then setSpell = classtable.SummonDemonicTyrant end
     end
     if (MaxDps:CheckSpellUsable(classtable.HandofGuldan, 'HandofGuldan')) and (( imp_despawn() or buff[classtable.DreadstalkersBuff].remains ) and SoulShards >= 3 or SoulShards == 5) and cooldown[classtable.HandofGuldan].ready then
@@ -343,7 +343,7 @@ function Demonology:callaction()
     if (MaxDps:CheckSpellUsable(classtable.SummonVilefiend, 'SummonVilefiend')) and (cooldown[classtable.SummonDemonicTyrant].remains >30) and cooldown[classtable.SummonVilefiend].ready then
         if not setSpell then setSpell = classtable.SummonVilefiend end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Demonbolt, 'Demonbolt')) and (( not debuff[classtable.DoomDeBuff].up or not (classtable and classtable.Demonbolt and cooldown[classtable.Demonbolt].duration - cooldown[classtable.Demonbolt].remains <=2 ) and debuff[classtable.DoomDeBuff].remains <= 2 ) and buff[classtable.DemonicCoreBuff].up and ( ( ( not talents[classtable.SoulStrike] or cooldown[classtable.SoulStrike].remains >gcd * 2 and talents[classtable.FelInvocation] ) and SoulShards <4 ) or SoulShards <( 4 - ( targets >2 ) ) ) and not (MaxDps.spellHistory[1] == classtable.Demonbolt) and talents[classtable.Doom] and cooldown[classtable.SummonDemonicTyrant].remains >15) and cooldown[classtable.Demonbolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Demonbolt, 'Demonbolt')) and (( not debuff[classtable.DoomDeBuff].up or not (cooldown[classtable.Demonbolt].remains <=2 ) and debuff[classtable.DoomDeBuff].remains <= 2 ) and buff[classtable.DemonicCoreBuff].up and ( ( ( not talents[classtable.SoulStrike] or cooldown[classtable.SoulStrike].remains >gcd * 2 and talents[classtable.FelInvocation] ) and SoulShards <4 ) or SoulShards <( 4 - ( targets >2 and 1 or 0)) ) and not (MaxDps.spellHistory[1] == classtable.Demonbolt) and talents[classtable.Doom] and cooldown[classtable.SummonDemonicTyrant].remains >15) and cooldown[classtable.Demonbolt].ready then
         if not setSpell then setSpell = classtable.Demonbolt end
     end
     if (MaxDps:CheckSpellUsable(classtable.Demonbolt, 'Demonbolt')) and (buff[classtable.DemonicCoreBuff].count >= 3 and SoulShards <= 3 and not pool_cores_for_tyrant) and cooldown[classtable.Demonbolt].ready then
@@ -385,10 +385,10 @@ function Demonology:callaction()
     if (MaxDps:CheckSpellUsable(classtable.Demonbolt, 'Demonbolt')) and (( ( not debuff[classtable.DoomDeBuff].up ) or targets <4 ) and buff[classtable.DemonicCoreBuff].count >1 and ( ( SoulShards <4 and not talents[classtable.SoulStrike] or cooldown[classtable.SoulStrike].remains >gcd * 2 and talents[classtable.FelInvocation] ) or SoulShards <3 ) and not pool_cores_for_tyrant) and cooldown[classtable.Demonbolt].ready then
         if not setSpell then setSpell = classtable.Demonbolt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Demonbolt, 'Demonbolt')) and (buff[classtable.DemonicCoreBuff].up and buff[classtable.TyrantBuff].up and SoulShards <3 - talents[classtable.Quietus]) and cooldown[classtable.Demonbolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Demonbolt, 'Demonbolt')) and (buff[classtable.DemonicCoreBuff].up and buff[classtable.TyrantBuff].up and SoulShards <3 - (talents[classtable.Quietus] and talents[classtable.Quietus] or 0)) and cooldown[classtable.Demonbolt].ready then
         if not setSpell then setSpell = classtable.Demonbolt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Demonbolt, 'Demonbolt')) and (buff[classtable.DemonicCoreBuff].count >1 and SoulShards <4 - talents[classtable.Quietus]) and cooldown[classtable.Demonbolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Demonbolt, 'Demonbolt')) and (buff[classtable.DemonicCoreBuff].count >1 and SoulShards <4 - (talents[classtable.Quietus] and talents[classtable.Quietus] or 0)) and cooldown[classtable.Demonbolt].ready then
         if not setSpell then setSpell = classtable.Demonbolt end
     end
     if (MaxDps:CheckSpellUsable(classtable.Demonbolt, 'Demonbolt')) and (( ( not debuff[classtable.DoomDeBuff].up ) or targets <4 ) and talents[classtable.Doom] and ( debuff[classtable.DoomDeBuff].remains >10 and buff[classtable.DemonicCoreBuff].up and SoulShards <4 - (talents[classtable.Quietus] and talents[classtable.Quietus] or 0) ) and not pool_cores_for_tyrant) and cooldown[classtable.Demonbolt].ready then
@@ -449,7 +449,7 @@ function Warlock:Demonology()
     --end
     classtable.GrimoireofSacrificeBuff = 0
     classtable.PowerSiphonBuff = 264130
-    classtable.DemonicCoreBuff = 0
+    classtable.DemonicCoreBuff = 264173
     classtable.DreadstalkersBuff = 0
     classtable.InfernalBoltBuff = 0
     classtable.bloodlust = 0
