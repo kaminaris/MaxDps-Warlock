@@ -288,6 +288,7 @@ function Demonology:tyrant()
 end
 function Demonology:variables()
     next_tyrant_cd = cooldown[classtable.SummonDemonicTyrant].remains
+    diabolic_ritual_remains = 0
     if ( UnitExists('pet') and UnitName('pet')  == 'demonic_tyrant' ) then
         in_opener = 0
     end
