@@ -375,7 +375,8 @@ end
 function Destruction:variables()
     havoc_immo_time = 0
     if havoc_active then
-        havoc_immo_time = debuff[classtable.ImmolateDeBuff].remains <debuff[classtable.WitherDeBuff].remains
+        --havoc_immo_time = debuff[classtable.ImmolateDeBuff].remains <debuff[classtable.WitherDeBuff].remains
+        havoc_immo_time = ((debuff[classtable.ImmolateDeBuff].remains > 0 and debuff[classtable.ImmolateDeBuff].remains) or (debuff[classtable.WitherDeBuff].remains >0 and debuff[classtable.WitherDeBuff].remains) or 0)
     end
     pooling_condition = 1
     pooling_condition_cb = 1
