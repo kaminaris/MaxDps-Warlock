@@ -57,9 +57,12 @@ local classtable
 local LibRangeCheck = LibStub('LibRangeCheck-3.0', true)
 
 local SoulShards
+local SoulShardsMax
+local SoulShardsDeficit
 local Mana
 local ManaMax
 local ManaDeficit
+local ManaPerc
 
 local Affliction = {}
 
@@ -78,19 +81,22 @@ function Affliction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and cooldown[classtable.DarkIntent].ready then
         if not setSpell then setSpell = classtable.DarkIntent end
     end
+    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and (MaxDps:Bloodlust() or not UnitAffectingCombat('player') or targetHP <= 20) and cooldown[classtable.VolcanicPotion].ready then
+        if not setSpell then setSpell = classtable.VolcanicPotion end
+    end
     if (MaxDps:CheckSpellUsable(classtable.DemonSoul, 'DemonSoul')) and cooldown[classtable.DemonSoul].ready then
         if not setSpell then setSpell = classtable.DemonSoul end
     end
     if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and cooldown[classtable.Soulburn].ready then
         if not setSpell then setSpell = classtable.Soulburn end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <buff[classtable.CorruptionBuff].duration ) and miss_up) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <buff[classtable.CorruptionBuff].duration )) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
-    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (( not debuff[classtable.UnstableAfflictionDeBuff].up or debuff[classtable.UnstableAfflictionDeBuff].remains <( ( classtable and classtable.UnstableAffliction and GetSpellInfo(classtable.UnstableAffliction).castTime /1000 ) + buff[classtable.UnstableAfflictionBuff].duration ) ) and ttd >= 5 and miss_up) and cooldown[classtable.UnstableAffliction].ready then
+    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (( not debuff[classtable.UnstableAfflictionDeBuff].up or debuff[classtable.UnstableAfflictionDeBuff].remains <( ( classtable and classtable.UnstableAffliction and GetSpellInfo(classtable.UnstableAffliction).castTime /1000 or 0) + buff[classtable.UnstableAfflictionBuff].duration ) ) and ttd >= 5) and cooldown[classtable.UnstableAffliction].ready then
         if not setSpell then setSpell = classtable.UnstableAffliction end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (ttd >15 and not debuff[classtable.BaneofDoomDeBuff].up and miss_up) and cooldown[classtable.BaneofDoom].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (ttd >15 and not debuff[classtable.BaneofDoomDeBuff].up) and cooldown[classtable.BaneofDoom].ready then
         if not setSpell then setSpell = classtable.BaneofDoom end
     end
     if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and cooldown[classtable.Haunt].ready then
@@ -114,13 +120,13 @@ function Affliction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (mana_pct <80 and mana_pct <targetHP) and cooldown[classtable.LifeTap].ready then
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <80 and ManaPerc <targetHP) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
     if (MaxDps:CheckSpellUsable(classtable.FelFlame, 'FelFlame')) and cooldown[classtable.FelFlame].ready then
         if not setSpell then setSpell = classtable.FelFlame end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (mana_pct_nonproc <100) and cooldown[classtable.LifeTap].ready then
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <100) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
 end
@@ -147,7 +153,10 @@ function Warlock:Affliction()
     classtable = MaxDps.SpellTable
     SpellHaste = UnitSpellHaste('player')
     SpellCrit = GetCritChance()
+    ManaPerc = (Mana / ManaMax) * 100
     SoulShards = UnitPower('player', SoulShardsPT)
+    SoulShardsMax = UnitPowerMax('player', MaelstromPT)
+    SoulShardsDeficit = SoulShardsMax - SoulShards
     classtable.SpellLock = 19647
     classtable.Wither = 445468
     --for spellId in pairs(MaxDps.Flags) do
@@ -159,6 +168,15 @@ function Warlock:Affliction()
     classtable.UnstableAfflictionDeBuff = 316099
     classtable.BaneofDoomDeBuff = 0
     classtable.SoulburnBuff = 0
+
+    local function debugg()
+    end
+
+
+    if MaxDps.db.global.debugMode then
+        debugg()
+    end
+
     setSpell = nil
     ClearCDs()
 

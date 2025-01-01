@@ -57,9 +57,12 @@ local classtable
 local LibRangeCheck = LibStub('LibRangeCheck-3.0', true)
 
 local SoulShards
+local SoulShardsMax
+local SoulShardsDeficit
 local Mana
 local ManaMax
 local ManaDeficit
+local ManaPerc
 
 local Demonology = {}
 
@@ -76,19 +79,49 @@ end
 
 
 
+local function imp_despawn()
+    if buff[classtable.TyrantBuff].up then return 0 end
+    local val = 0
+    local TTSHoD = (GetTime() - (MaxDps.spellHistoryTime and MaxDps.spellHistoryTime[classtable.HandofGuldan] and MaxDps.spellHistoryTime[classtable.HandofGuldan].last_used or 0))
+    if TTSHoD < (2 * UnitSpellHaste('player') * 6 + 0.58) and buff[classtable.DreadStalkers].up and cooldown[classtable.SummonDemonicTyrant].remains < 13 then
+        val = max( 0, GetTime() - TTSHoD + 2 * UnitSpellHaste('player') * 6 + 0.58 )
+    end
+    if val > 0 then
+        val = max( val, buff[classtable.DreadStalkers].remains + GetTime() )
+    end
+    if val > 0 and buff[classtable.GrimoireFelguard].up then
+        val = max( val, buff[classtable.GrimoireFelguard].remains + GetTime() )
+    end
+    return val
+end
+
+local function last_cast_imps()
+    if MaxDps.spellHistoryTime and MaxDps.spellHistoryTime[classtable.Implosion] then
+        return GetTime() - MaxDps.spellHistoryTime[classtable.Implosion].last_used
+    else
+        return math.huge
+    end
+end
+
+
+
+
 local function ClearCDs()
     MaxDps:GlowCooldown(classtable.Metamorphosis, false)
 end
 
 function Demonology:callaction()
-    --if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and cooldown[classtable.FelArmor].ready then
-    --    if not setSpell then setSpell = classtable.FelArmor end
-    --end
-    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (not UnitAffectingCombat("player")) and cooldown[classtable.SummonFelguard].ready then
+    if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and cooldown[classtable.FelArmor].ready then
+        if not setSpell then setSpell = classtable.FelArmor end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (not UnitAffectingCombat('player')) and cooldown[classtable.SummonFelguard].ready then
         if not setSpell then setSpell = classtable.SummonFelguard end
     end
     if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and cooldown[classtable.DarkIntent].ready then
         if not setSpell then setSpell = classtable.DarkIntent end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and (buff[classtable.MetamorphosisBuff].up or not UnitAffectingCombat('player')) and cooldown[classtable.VolcanicPotion].ready then
+        if not setSpell then setSpell = classtable.VolcanicPotion end
     end
     if (MaxDps:CheckSpellUsable(classtable.Metamorphosis, 'Metamorphosis')) and cooldown[classtable.Metamorphosis].ready then
         MaxDps:GlowCooldown(classtable.Metamorphosis, cooldown[classtable.Metamorphosis].ready)
@@ -102,12 +135,12 @@ function Demonology:callaction()
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (timeInCombat >10) and cooldown[classtable.SummonDoomguard].ready then
         if not setSpell then setSpell = classtable.SummonDoomguard end
     end
-    --if (MaxDps:CheckSpellUsable(classtable.Felguard:felstorm, 'Felguard:felstorm')) and cooldown[classtable.Felguard:felstorm].ready then
-    --    if not setSpell then setSpell = classtable.Felguard:felstorm end
-    --end
-    --if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and (( UnitExists('pet') and UnitName('pet')  == 'felguard' ) and not pet.felguard.debuff.felstorm.ticking) and cooldown[classtable.Soulburn].ready then
-    --    if not setSpell then setSpell = classtable.Soulburn end
-    --end
+    if (MaxDps:CheckSpellUsable(classtable.Felguardfelstorm, 'Felguardfelstorm')) and cooldown[classtable.Felguardfelstorm].ready then
+        if not setSpell then setSpell = classtable.Felguardfelstorm end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and (( UnitExists('pet') and UnitName('pet')  == 'felguard' )) and cooldown[classtable.Soulburn].ready then
+        if not setSpell then setSpell = classtable.Soulburn end
+    end
     --if (MaxDps:CheckSpellUsable(classtable.SummonFelhunter, 'SummonFelhunter')) and (not pet.felguard.debuff.felstorm.ticking and ( UnitExists('pet') and UnitName('pet')  == 'felguard' )) and cooldown[classtable.SummonFelhunter].ready then
     --    if not setSpell then setSpell = classtable.SummonFelhunter end
     --end
@@ -170,7 +203,6 @@ function Warlock:Demonology()
     Mana = UnitPower('player', ManaPT)
     ManaMax = UnitPowerMax('player', ManaPT)
     ManaDeficit = ManaMax - Mana
-    ManaPerc = (Mana / ManaMax) * 100
     targetHP = UnitHealth('target')
     targetmaxHP = UnitHealthMax('target')
     targethealthPerc = (targetHP >0 and targetmaxHP >0 and (targetHP / targetmaxHP) * 100) or 100
@@ -181,9 +213,14 @@ function Warlock:Demonology()
     classtable = MaxDps.SpellTable
     SpellHaste = UnitSpellHaste('player')
     SpellCrit = GetCritChance()
+    ManaPerc = (Mana / ManaMax) * 100
     SoulShards = UnitPower('player', SoulShardsPT)
+    SoulShardsMax = UnitPowerMax('player', MaelstromPT)
+    SoulShardsDeficit = SoulShardsMax - SoulShards
     classtable.SpellLock = 19647
     classtable.AxeToss = 119914
+    classtable.Demonbolt = 264178
+    classtable.InfernalBolt = 434506
     --for spellId in pairs(MaxDps.Flags) do
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
@@ -191,12 +228,21 @@ function Warlock:Demonology()
     classtable.MetamorphosisBuff = 0
     classtable.BaneofDoomDeBuff = 0
     classtable.SoulburnBuff = 0
-    classtable.ImmolateDeBuff = 0
+    classtable.ImmolateDeBuff = 157736
     classtable.CorruptionDeBuff = 0
     classtable.MoltenCoreBuff = 0
     classtable.DecimationBuff = 0
     classtable.bloodlust = 0
     classtable.DemonSoulFelguardBuff = 0
+
+    local function debugg()
+    end
+
+
+    if MaxDps.db.global.debugMode then
+        debugg()
+    end
+
     setSpell = nil
     ClearCDs()
 
