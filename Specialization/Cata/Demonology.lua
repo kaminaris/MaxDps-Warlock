@@ -221,6 +221,7 @@ function Warlock:Demonology()
     classtable.AxeToss = 119914
     classtable.Demonbolt = 264178
     classtable.InfernalBolt = 434506
+    classtable.ImmolationAura = 50589
     --for spellId in pairs(MaxDps.Flags) do
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
