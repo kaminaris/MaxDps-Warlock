@@ -70,6 +70,17 @@ local Destruction = {}
 
 
 
+local function GetTotemDuration(name)
+    for index=1,MAX_TOTEMS do
+        local arg1, totemName, startTime, duration, icon = GetTotemInfo(index)
+        local est_dur = math.floor(startTime+duration-GetTime())
+        if (totemName == name and est_dur and est_dur > 0) then return est_dur else return 0 end
+    end
+end
+
+
+
+
 local function demonic_art()
     if buff[classtable.demonic_art_mother_of_chaos].up or buff[classtable.demonic_art_overlord].up or buff[classtable.demonic_art_pit_lord].up then
         return true
@@ -85,77 +96,88 @@ local function diabolic_ritual()
 end
 
 
+function Destruction:precombat()
+    if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and (not buff[classtable.ArmorBuff].up or buff[classtable.ArmorBuff].remains <180) and cooldown[classtable.FelArmor].ready and not UnitAffectingCombat('player') then
+        if not setSpell then setSpell = classtable.FelArmor end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (not UnitExists('pet')) and cooldown[classtable.SummonImp].ready and not UnitAffectingCombat('player') then
+        if not setSpell then setSpell = classtable.SummonImp end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (IsSpellKnownOrOverridesKnown(63320) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready and not UnitAffectingCombat('player') then
+        if not setSpell then setSpell = classtable.LifeTap end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
+        if not setSpell then setSpell = classtable.VolcanicPotion end
+    end
+end
+function Destruction:st()
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up and debuff[classtable.ImmolateDeBuff].remains <buff[classtable.ImmolateBuff].duration) and cooldown[classtable.Immolate].ready then
+        if not setSpell then setSpell = classtable.Immolate end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Conflagrate, 'Conflagrate')) and cooldown[classtable.Conflagrate].ready then
+        if not setSpell then setSpell = classtable.Conflagrate end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (IsSpellKnownOrOverridesKnown(63320) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready then
+        if not setSpell then setSpell = classtable.LifeTap end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and cooldown[classtable.ChaosBolt].ready then
+        if not setSpell then setSpell = classtable.ChaosBolt end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (not debuff[classtable.CorruptionDeBuff].up and debuff[classtable.CorruptionDeBuff].remains <buff[classtable.CorruptionBuff].duration) and cooldown[classtable.Corruption].ready then
+        if not setSpell then setSpell = classtable.Corruption end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Inferno, 'Inferno')) and (ttd <= 60 and ManaPerc >20 and true or targetHP <40 and true) and cooldown[classtable.Inferno].ready then
+        if not setSpell then setSpell = classtable.Inferno end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and ((GetUnitSpeed('player') >0) and ManaPerc <80 or ManaPerc <10) and cooldown[classtable.LifeTap].ready then
+        if not setSpell then setSpell = classtable.LifeTap end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and cooldown[classtable.Incinerate].ready then
+        if not setSpell then setSpell = classtable.Incinerate end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.CurseofDoom, 'CurseofDoom')) and (ttd >60 and not debuff[classtable.MyCurseDeBuff].up) and cooldown[classtable.CurseofDoom].ready then
+        if not setSpell then setSpell = classtable.CurseofDoom end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.CurseofAgony, 'CurseofAgony')) and (ttd <60 and not debuff[classtable.CurseofDoomDeBuff].duration >buff[classtable.CurseofAgonyBuff].duration) and cooldown[classtable.CurseofAgony].ready then
+        if not setSpell then setSpell = classtable.CurseofAgony end
+    end
+end
+function Destruction:aoe()
+    if (MaxDps:CheckSpellUsable(classtable.Shadowflame, 'Shadowflame')) and (targets >3 and (LibRangeCheck and LibRangeCheck:GetRange('target', false, true) or 0) <10) and cooldown[classtable.Shadowflame].ready then
+        if not setSpell then setSpell = classtable.Shadowflame end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SeedofCorruption, 'SeedofCorruption')) and (targets >3 and not debuff[classtable.SeedofCorruptionDeBuff].up) and cooldown[classtable.SeedofCorruption].ready then
+        if not setSpell then setSpell = classtable.SeedofCorruption end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up) and cooldown[classtable.Immolate].ready then
+        if not setSpell then setSpell = classtable.Immolate end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and ((GetUnitSpeed('player') >0)) and cooldown[classtable.Corruption].ready then
+        if not setSpell then setSpell = classtable.Corruption end
+    end
+end
+function Destruction:life()
+    if (MaxDps:CheckSpellUsable(classtable.DeathCoil, 'DeathCoil')) and cooldown[classtable.DeathCoil].ready then
+        if not setSpell then setSpell = classtable.DeathCoil end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.DrainLife, 'DrainLife')) and cooldown[classtable.DrainLife].ready then
+        if not setSpell then setSpell = classtable.DrainLife end
+    end
+end
 
 
 local function ClearCDs()
 end
 
 function Destruction:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and cooldown[classtable.FelArmor].ready then
-        if not setSpell then setSpell = classtable.FelArmor end
+    if (targets <2) then
+        Destruction:st()
     end
-    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and cooldown[classtable.SummonImp].ready then
-        if not setSpell then setSpell = classtable.SummonImp end
+    if (targets >1) then
+        Destruction:aoe()
     end
-    if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and cooldown[classtable.DarkIntent].ready then
-        if not setSpell then setSpell = classtable.DarkIntent end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and (MaxDps:Bloodlust() or not UnitAffectingCombat('player') or targetHP <= 20) and cooldown[classtable.VolcanicPotion].ready then
-        if not setSpell then setSpell = classtable.VolcanicPotion end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.DemonSoul, 'DemonSoul')) and cooldown[classtable.DemonSoul].ready then
-        if not setSpell then setSpell = classtable.DemonSoul end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and cooldown[classtable.Soulburn].ready then
-        if not setSpell then setSpell = classtable.Soulburn end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SoulFire, 'SoulFire')) and (buff[classtable.SoulburnBuff].up and not UnitAffectingCombat('player')) and cooldown[classtable.SoulFire].ready then
-        if not setSpell then setSpell = classtable.SoulFire end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (( debuff[classtable.ImmolateDeBuff].remains <( classtable and classtable.Immolate and GetSpellInfo(classtable.Immolate).castTime /1000 or 0) + gcd or not debuff[classtable.ImmolateDeBuff].up ) and ttd >= 4) and cooldown[classtable.Immolate].ready then
-        if not setSpell then setSpell = classtable.Immolate end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.Conflagrate, 'Conflagrate')) and cooldown[classtable.Conflagrate].ready then
-        if not setSpell then setSpell = classtable.Conflagrate end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:Bloodlust() and MaxDps:Bloodlust() >32 and cooldown[classtable.Conflagrate].remains <= 3 and debuff[classtable.ImmolateDeBuff].remains <12) and cooldown[classtable.Immolate].ready then
-        if not setSpell then setSpell = classtable.Immolate end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (not debuff[classtable.BaneofDoomDeBuff].up and ttd >= 15) and cooldown[classtable.BaneofDoom].ready then
-        if not setSpell then setSpell = classtable.BaneofDoom end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <buff[classtable.CorruptionBuff].duration )) and cooldown[classtable.Corruption].ready then
-        if not setSpell then setSpell = classtable.Corruption end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.Shadowflame, 'Shadowflame')) and cooldown[classtable.Shadowflame].ready then
-        if not setSpell then setSpell = classtable.Shadowflame end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and (( classtable and classtable.ChaosBolt and GetSpellInfo(classtable.ChaosBolt).castTime /1000 or 0) >0.9) and cooldown[classtable.ChaosBolt].ready then
-        if not setSpell then setSpell = classtable.ChaosBolt end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (timeInCombat >10) and cooldown[classtable.SummonDoomguard].ready then
-        if not setSpell then setSpell = classtable.SummonDoomguard end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SoulFire, 'SoulFire')) and (buff[classtable.SoulburnBuff].up) and cooldown[classtable.SoulFire].ready then
-        if not setSpell then setSpell = classtable.SoulFire end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.SoulFire, 'SoulFire')) and (( ( buff[classtable.EmpoweredImpBuff].up and buff[classtable.EmpoweredImpBuff].remains <( buff[classtable.ImprovedSoulFireBuff].remains + 1 ) ) or buff[classtable.ImprovedSoulFireBuff].remains <( ( classtable and classtable.SoulFire and GetSpellInfo(classtable.SoulFire).castTime /1000 or 0) + 1 + ( classtable and classtable.Incinerate and GetSpellInfo(classtable.Incinerate).castTime / 1000 or 0) + gcd ) ) and not (MaxDps.spellHistory and MaxDps.spellHistory[1] and MaxDps.spellHistory[1] ~= classtable.SoulFire)) and cooldown[classtable.SoulFire].ready then
-        if not setSpell then setSpell = classtable.SoulFire end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.Shadowburn, 'Shadowburn')) and cooldown[classtable.Shadowburn].ready then
-        if not setSpell then setSpell = classtable.Shadowburn end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and cooldown[classtable.Incinerate].ready then
-        if not setSpell then setSpell = classtable.Incinerate end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <80 and ManaPerc <targetHP) and cooldown[classtable.LifeTap].ready then
-        if not setSpell then setSpell = classtable.LifeTap end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.FelFlame, 'FelFlame')) and cooldown[classtable.FelFlame].ready then
-        if not setSpell then setSpell = classtable.FelFlame end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <100) and cooldown[classtable.LifeTap].ready then
-        if not setSpell then setSpell = classtable.LifeTap end
+    if (curentHP <25) then
+        Destruction:life()
     end
 end
 function Warlock:Destruction()
@@ -201,13 +223,24 @@ function Warlock:Destruction()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
-    classtable.bloodlust = 0
-    classtable.SoulburnBuff = 0
-    classtable.ImmolateDeBuff = 157736
-    classtable.BaneofDoomDeBuff = 0
-    classtable.CorruptionDeBuff = 0
-    classtable.EmpoweredImpBuff = 0
-    classtable.ImprovedSoulFireBuff = 0
+    classtable.ArmorBuff = 0
+    classtable.LifeTapBuff = 63321
+    classtable.MyCurseDeBuff = 0
+    classtable.ImmolateDeBuff = 348
+    classtable.CorruptionDeBuff = 172
+    classtable.CurseofDoomDeBuff = 0
+    classtable.SeedofCorruptionDeBuff = 0
+    classtable.FelArmor = 28176
+    classtable.SummonImp = 688
+    classtable.LifeTap = 1454
+    classtable.Immolate = 348
+    classtable.Conflagrate = 17962
+    classtable.ChaosBolt = 50796
+    classtable.Corruption = 172
+    classtable.Incinerate = 29722
+    classtable.Shadowflame = 47897
+    classtable.DeathCoil = 6789
+    classtable.DrainLife = 689
 
     local function debugg()
     end
@@ -219,6 +252,8 @@ function Warlock:Destruction()
 
     setSpell = nil
     ClearCDs()
+
+    Destruction:precombat()
 
     Destruction:callaction()
     if setSpell then return setSpell end
