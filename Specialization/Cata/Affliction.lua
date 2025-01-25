@@ -104,7 +104,7 @@ function Affliction:single_target()
     if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (debuff[classtable.UnstableAfflictionDeBuff].remains <1 and targethealthPerc >25) and cooldown[classtable.UnstableAffliction].ready then
         if not setSpell then setSpell = classtable.UnstableAffliction end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Bane, 'Bane')) and (not not debuff[classtable.MyBaneDeBuff].up) and cooldown[classtable.Bane].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Bane, 'Bane')) and (not debuff[classtable.MyBaneDeBuff].up) and cooldown[classtable.Bane].ready then
         if not setSpell then setSpell = classtable.Bane end
     end
     if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul')) and (targethealthPerc <= 25) and cooldown[classtable.DrainSoul].ready then
@@ -136,7 +136,7 @@ function Affliction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (debuff[classtable.UnstableAfflictionDeBuff].remains <( classtable and classtable.UnstableAffliction and GetSpellInfo(classtable.UnstableAffliction).castTime /1000 or 0)) and cooldown[classtable.UnstableAffliction].ready then
         if not setSpell then setSpell = classtable.UnstableAffliction end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BaneofAgony, 'BaneofAgony')) and (debuff[classtable.BaneofAgonyDeBuff].remains <1 and not not debuff[classtable.BaneofDoomDeBuff].up and not not debuff[classtable.BaneofHavocDeBuff].up) and cooldown[classtable.BaneofAgony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BaneofAgony, 'BaneofAgony')) and (debuff[classtable.BaneofAgonyDeBuff].remains <1 and not debuff[classtable.BaneofDoomDeBuff].up and not debuff[classtable.BaneofHavocDeBuff].up) and cooldown[classtable.BaneofAgony].ready then
         if not setSpell then setSpell = classtable.BaneofAgony end
     end
     if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (not debuff[classtable.HauntDeBuff].up or debuff[classtable.HauntDeBuff].remains <( ( classtable and classtable.Haunt and GetSpellInfo(classtable.Haunt).castTime /1000 or 0) + 1 + 2 )) and cooldown[classtable.Haunt].ready then
@@ -233,17 +233,10 @@ function Warlock:Affliction()
     classtable.FelSparkBuff = 89937
     classtable.ShadowEmbraceBuff = 32389
     classtable.CurseoftheElementsBuff = 1490
-    classtable.JinxCurseElementsBuff = 86105
-    classtable.HauntBuff = 48181
-    classtable.UnstableAfflictionBuff = 30108
-    classtable.CorruptionBuff = 172
     classtable.SoulburnBuff = 74434
-    classtable.BaneofAgonyBuff = 980
-    classtable.BaneofDoomBuff = 603
-    classtable.BaneofHavocBuff = 80240
     classtable.ShadowEmbraceDeBuff = 32389
-    classtable.CurseoftheElementsDeBuff = 1490
     classtable.JinxCurseElementsDeBuff = 86105
+    classtable.CurseoftheElementsDeBuff = 1490
     classtable.HauntDeBuff = 48181
     classtable.UnstableAfflictionDeBuff = 30108
     classtable.CorruptionDeBuff = 172
