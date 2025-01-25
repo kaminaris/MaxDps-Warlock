@@ -143,7 +143,7 @@ function Demonology:spell_damage_rotation()
     if (MaxDps:CheckSpellUsable(classtable.BaneofAgony, 'BaneofAgony')) and (not debuff[classtable.BaneofAgonyDeBuff].up and ttd >25 and not debuff[classtable.BaneofDoomDeBuff].up) and cooldown[classtable.BaneofAgony].ready then
         if not setSpell then setSpell = classtable.BaneofAgony end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (buff[classtable.DemonicPactBuff].up and buff[classtable.MoltenCoreBuff].count >= 1 and cooldown[classtable.HandofGulDan].remains <10) and cooldown[classtable.SummonDoomguard].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (buff[classtable.DemonicPactBuff].up and buff[classtable.MoltenCoreBuff].count >= 1 and cooldown[classtable.HandofGuldan].remains <10) and cooldown[classtable.SummonDoomguard].ready then
         if not setSpell then setSpell = classtable.SummonDoomguard end
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonInfernal, 'SummonInfernal')) and (false and ttd >45) and cooldown[classtable.SummonInfernal].ready then
@@ -163,7 +163,7 @@ function Demonology:spell_damage_rotation()
     end
 end
 function Demonology:single_target_rotation()
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up and debuff[classtable.ImmolateDeBuff].remains <buff[classtable.ImmolateBuff].duration) and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up and debuff[classtable.ImmolateDeBuff].remains <1) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
     if (MaxDps:CheckSpellUsable(classtable.HandofGuldan, 'HandofGuldan')) and cooldown[classtable.HandofGuldan].ready then
@@ -184,13 +184,13 @@ function Demonology:single_target_rotation()
     if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and (buff[classtable.MoltenCoreBuff].up) and cooldown[classtable.Incinerate].ready then
         if not setSpell then setSpell = classtable.Incinerate end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SoulFire, 'SoulFire')) and (targetHP <25 and buff[classtable.DecimationBuff].up) and cooldown[classtable.SoulFire].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SoulFire, 'SoulFire')) and (targethealthPerc <25 and buff[classtable.DecimationBuff].up) and cooldown[classtable.SoulFire].ready then
         if not setSpell then setSpell = classtable.SoulFire end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and (IsSpellKnownOrOverridesKnown(56242)) and cooldown[classtable.Incinerate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and (MaxDps:HasGlyphEnabled(classtable.IncinerateGlyph)) and cooldown[classtable.Incinerate].ready then
         if not setSpell then setSpell = classtable.Incinerate end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (IsSpellKnownOrOverridesKnown(56218)) and cooldown[classtable.ShadowBolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (MaxDps:HasGlyphEnabled(classtable.CorruptionGlyph)) and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
     if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and (SoulShards >1 and false and not buff[classtable.FelIntelligenceBuff].up and not buff[classtable.DemonSoulFelguardBuff].up) and cooldown[classtable.Soulburn].ready then
@@ -232,9 +232,6 @@ local function ClearCDs()
 end
 
 function Demonology:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.SynapseSprings, 'SynapseSprings')) and (cooldown[classtable.Metamorphosis].remains >61) and cooldown[classtable.SynapseSprings].ready then
-        if not setSpell then setSpell = classtable.SynapseSprings end
-    end
     if (MaxDps:CheckSpellUsable(classtable.Metamorphosis, 'Metamorphosis')) and cooldown[classtable.Metamorphosis].ready then
         if not setSpell then setSpell = classtable.Metamorphosis end
     end
@@ -252,6 +249,12 @@ function Demonology:callaction()
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (buff[classtable.FelIntelligenceBuff].up and cooldown[classtable.DemonSoul].remains <6 and false) and cooldown[classtable.SummonFelguard].ready then
         if not setSpell then setSpell = classtable.SummonFelguard end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.GroupCurse, 'GroupCurse')) and (not debuff[classtable.MyCurseDeBuff].up and MaxDps:NumGroupFriends() >1) and cooldown[classtable.GroupCurse].ready then
+        if not setSpell then setSpell = classtable.GroupCurse end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SoloCurse, 'SoloCurse')) and (not debuff[classtable.MyCurseDeBuff].up) and cooldown[classtable.SoloCurse].ready then
+        if not setSpell then setSpell = classtable.SoloCurse end
     end
     if (buff[classtable.MetamorphosisBuff].up and buff[classtable.MetamorphosisBuff].remains >2) then
         Demonology:spell_damage_rotation()
@@ -291,6 +294,7 @@ function Warlock:Demonology()
     SoulShardsMax = UnitPowerMax('player', MaelstromPT)
     SoulShardsDeficit = SoulShardsMax - SoulShards
     classtable.SpellLock = 19647
+    classtable.MyCurseDeBuff = MaxDps:NumGroupFriends() <= 1 and classtable.SoloCurse or MaxDps:NumGroupFriends() > 1 and classtable.GroupCurse
     classtable.AxeToss = 119914
     classtable.Demonbolt = 264178
     classtable.InfernalBolt = 434506
@@ -298,29 +302,22 @@ function Warlock:Demonology()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
-    classtable.FelArmorBuff = 28176
-    classtable.SoulLinkBuff = 25228
-    classtable.FelIntelligenceBuff = 54424
-    classtable.MetamorphosisBuff = 47241
-    classtable.DemonSoulFelguardBuff = 79462
-    classtable.BaneofDoomDeBuff = 0
-    classtable.BaneofAgonyDeBuff = 0
-    classtable.DemonicPactBuff = 53646
-    classtable.MoltenCoreBuff = 71165
+    classtable.ShadowandFlameDeBuff = 17800
+    classtable.BaneofDoomDeBuff = 603
     classtable.ImmolateDeBuff = 348
-    classtable.CorruptionDeBuff = 172
-    classtable.DecimationBuff = 63167
-    classtable.SoulburnBuff = 74434
-    classtable.FelSparkBuff = 89937
     classtable.SoulHarvest = 79268
     classtable.SummonFelguard = 30146
     classtable.SummonFelhunter = 691
     classtable.FelArmor = 28176
     classtable.SoulLink = 19028
     classtable.DemonSoul = 77801
+    classtable.VolcanicPotion = 58091
     classtable.ImmolationAura = 50589
     classtable.Felstorm = 89751
+    classtable.BaneofDoom = 603
+    classtable.BaneofAgony = 980
     classtable.SummonDoomguard = 18540
+    classtable.HandofGuldan = 71521
     classtable.SummonInfernal = 1122
     classtable.Shadowflame = 47897
     classtable.Immolate = 348
@@ -333,6 +330,12 @@ function Warlock:Demonology()
     classtable.Hellfire = 1949
     classtable.FelFlame = 77799
     classtable.LifeTap = 1454
+    classtable.GroupCurse = 1490
+    classtable.CurseoftheElements = 1490
+    classtable.SoloCurse = 980
+    classtable.BaneofAgony = 980
+    classtable.IncinerateGlyph = 56242
+    classtable.CorruptionGlyph = 56218
 
     local function debugg()
     end

@@ -95,25 +95,25 @@ function Affliction:single_target()
     if (MaxDps:CheckSpellUsable(classtable.SummonFelhunter, 'SummonFelhunter')) and (not UnitExists('pet')) and cooldown[classtable.SummonFelhunter].ready then
         if not setSpell then setSpell = classtable.SummonFelhunter end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (not debuff[classtable.Haunt].up or debuff[classtable.Haunt].remains <( ( classtable and classtable.Haunt and GetSpellInfo(classtable.Haunt).castTime /1000 or 0) + 1 + 2 )) and cooldown[classtable.Haunt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (not debuff[classtable.HauntDeBuff].up or debuff[classtable.HauntDeBuff].remains <( ( classtable and classtable.Haunt and GetSpellInfo(classtable.Haunt).castTime /1000 or 0) + 1 + 2 )) and cooldown[classtable.Haunt].ready then
         if not setSpell then setSpell = classtable.Haunt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (debuff[classtable.Corruption].remains <buff[classtable.CorruptionBuff].duration) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (debuff[classtable.CorruptionDeBuff].remains <1) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
-    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (debuff[classtable.UnstableAffliction].remains <buff[classtable.UnstableAfflictionBuff].duration and targetHP >25) and cooldown[classtable.UnstableAffliction].ready then
+    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (debuff[classtable.UnstableAfflictionDeBuff].remains <1 and targethealthPerc >25) and cooldown[classtable.UnstableAffliction].ready then
         if not setSpell then setSpell = classtable.UnstableAffliction end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Bane, 'Bane')) and (not not debuff[classtable.MyBane].up) and cooldown[classtable.Bane].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Bane, 'Bane')) and (not not debuff[classtable.MyBaneDeBuff].up) and cooldown[classtable.Bane].ready then
         if not setSpell then setSpell = classtable.Bane end
     end
-    if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul')) and (targetHP <= 25) and cooldown[classtable.DrainSoul].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul')) and (targethealthPerc <= 25) and cooldown[classtable.DrainSoul].ready then
         if not setSpell then setSpell = classtable.DrainSoul end
     end
     if (MaxDps:CheckSpellUsable(classtable.Shadowflame, 'Shadowflame')) and ((LibRangeCheck and LibRangeCheck:GetRange('target', false, true) or 0) <7) and cooldown[classtable.Shadowflame].ready then
         if not setSpell then setSpell = classtable.Shadowflame end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (targetHP >25 and (LibRangeCheck and LibRangeCheck:GetRange('target', false, true) or 0) >7 or not debuff[classtable.ShadowEmbraceDeBuff].up and targetHP >25 or (LibRangeCheck and LibRangeCheck:GetRange('target', false, true) or 0) <7 and cooldown[classtable.Shadowflame].remains >3) and cooldown[classtable.ShadowBolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (targethealthPerc >25 and (LibRangeCheck and LibRangeCheck:GetRange('target', false, true) or 0) >7 or not debuff[classtable.ShadowEmbraceDeBuff].up and targethealthPerc >25 or (LibRangeCheck and LibRangeCheck:GetRange('target', false, true) or 0) <7 and cooldown[classtable.Shadowflame].remains >3) and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
     if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and ((GetUnitSpeed('player') >0)) and cooldown[classtable.Soulburn].ready then
@@ -122,27 +122,27 @@ function Affliction:single_target()
     if (MaxDps:CheckSpellUsable(classtable.SoulFire, 'SoulFire')) and (buff[classtable.SoulburnBuff].up) and cooldown[classtable.SoulFire].ready then
         if not setSpell then setSpell = classtable.SoulFire end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <30 or ManaPerc <70 and (GetUnitSpeed('player') >0) and IsSpellKnownOrOverridesKnown(63320)) and cooldown[classtable.LifeTap].ready then
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <30 or ManaPerc <70 and (GetUnitSpeed('player') >0) and MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph)) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
 end
 function Affliction:aoe()
-    if (MaxDps:CheckSpellUsable(classtable.CurseoftheElements, 'CurseoftheElements')) and ((talents[classtable.Jinx] and talents[classtable.Jinx] or 0) and ( not debuff[classtable.JinxCurseElements].up and debuff[classtable.CurseoftheElementsDeBuff].remains <3 )) and cooldown[classtable.CurseoftheElements].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CurseoftheElements, 'CurseoftheElements')) and ((talents[classtable.Jinx] and talents[classtable.Jinx] or 0) and ( not debuff[classtable.JinxCurseElementsDeBuff].up and debuff[classtable.CurseoftheElementsDeBuff].remains <3 )) and cooldown[classtable.CurseoftheElements].ready then
         if not setSpell then setSpell = classtable.CurseoftheElements end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (debuff[classtable.Corruption].remains <2 and targets <6) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (debuff[classtable.CorruptionDeBuff].remains <2 and targets <6) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
-    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (debuff[classtable.UnstableAffliction].remains <( classtable and classtable.UnstableAffliction and GetSpellInfo(classtable.UnstableAffliction).castTime /1000 or 0)) and cooldown[classtable.UnstableAffliction].ready then
+    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (debuff[classtable.UnstableAfflictionDeBuff].remains <( classtable and classtable.UnstableAffliction and GetSpellInfo(classtable.UnstableAffliction).castTime /1000 or 0)) and cooldown[classtable.UnstableAffliction].ready then
         if not setSpell then setSpell = classtable.UnstableAffliction end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BaneofAgony, 'BaneofAgony')) and (debuff[classtable.BaneofAgony].remains <buff[classtable.BaneofAgonyBuff].duration and not not debuff[classtable.BaneofDoom].up and not not debuff[classtable.BaneofHavoc].up) and cooldown[classtable.BaneofAgony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.BaneofAgony, 'BaneofAgony')) and (debuff[classtable.BaneofAgonyDeBuff].remains <1 and not not debuff[classtable.BaneofDoomDeBuff].up and not not debuff[classtable.BaneofHavocDeBuff].up) and cooldown[classtable.BaneofAgony].ready then
         if not setSpell then setSpell = classtable.BaneofAgony end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (not debuff[classtable.Haunt].up or debuff[classtable.Haunt].remains <( ( classtable and classtable.Haunt and GetSpellInfo(classtable.Haunt).castTime /1000 or 0) + 1 + 2 )) and cooldown[classtable.Haunt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (not debuff[classtable.HauntDeBuff].up or debuff[classtable.HauntDeBuff].remains <( ( classtable and classtable.Haunt and GetSpellInfo(classtable.Haunt).castTime /1000 or 0) + 1 + 2 )) and cooldown[classtable.Haunt].ready then
         if not setSpell then setSpell = classtable.Haunt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SoulSwap, 'SoulSwap')) and (debuff[classtable.BaneofAgony].up and targets == 2) and cooldown[classtable.SoulSwap].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SoulSwap, 'SoulSwap')) and (debuff[classtable.BaneofAgonyDeBuff].up and targets == 2) and cooldown[classtable.SoulSwap].ready then
         if not setSpell then setSpell = classtable.SoulSwap end
     end
     if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and (cooldown[classtable.SeedofCorruption].remains <gcd and targets >2) and cooldown[classtable.Soulburn].ready then
@@ -167,13 +167,16 @@ function Affliction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.FelFlame, 'FelFlame')) and (buff[classtable.FelSparkBuff].up) and cooldown[classtable.FelFlame].ready then
         if not setSpell then setSpell = classtable.FelFlame end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SynapseSprings, 'SynapseSprings')) and cooldown[classtable.SynapseSprings].ready then
-        if not setSpell then setSpell = classtable.SynapseSprings end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (not debuff[classtable.ShadowEmbraceDeBuff].up and targetHP >25) and cooldown[classtable.ShadowBolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (not debuff[classtable.ShadowEmbraceDeBuff].up and targethealthPerc >25) and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (not debuff[classtable.Haunt].up or debuff[classtable.Haunt].remains <( ( classtable and classtable.Haunt and GetSpellInfo(classtable.Haunt).castTime /1000 or 0) + 1 + 2 )) and cooldown[classtable.Haunt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.GroupCurse, 'GroupCurse')) and (not debuff[classtable.MyCurseDeBuff].up and MaxDps:NumGroupFriends() >1 and ( classtable.MyCurseDeBuff ~= classtable.CurseoftheElementsDeBuff or (talents[classtable.Jinx] and talents[classtable.Jinx] or 0) and not debuff[classtable.JinxCurseElementsDeBuff].up )) and cooldown[classtable.GroupCurse].ready then
+        if not setSpell then setSpell = classtable.GroupCurse end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SoloCurse, 'SoloCurse')) and (not debuff[classtable.MyCurseDeBuff].up and ( classtable.MyCurseDeBuff ~= classtable.CurseoftheElementsDeBuff or (talents[classtable.Jinx] and talents[classtable.Jinx] or 0) and not debuff[classtable.JinxCurseElementsDeBuff].up )) and cooldown[classtable.SoloCurse].ready then
+        if not setSpell then setSpell = classtable.SoloCurse end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (not debuff[classtable.HauntDeBuff].up or debuff[classtable.HauntDeBuff].remains <( ( classtable and classtable.Haunt and GetSpellInfo(classtable.Haunt).castTime /1000 or 0) + 1 + 2 )) and cooldown[classtable.Haunt].ready then
         if not setSpell then setSpell = classtable.Haunt end
     end
     if (MaxDps:CheckSpellUsable(classtable.DemonSoul, 'DemonSoul')) and (UnitExists('pet')) and cooldown[classtable.DemonSoul].ready then
@@ -220,32 +223,46 @@ function Warlock:Affliction()
     SoulShardsMax = UnitPowerMax('player', MaelstromPT)
     SoulShardsDeficit = SoulShardsMax - SoulShards
     classtable.SpellLock = 19647
+    classtable.MyCurseDeBuff = MaxDps:NumGroupFriends() <= 1 and classtable.SoloCurse or MaxDps:NumGroupFriends() > 1 and classtable.GroupCurse
     classtable.Wither = 445468
     --for spellId in pairs(MaxDps.Flags) do
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
-    classtable.ArmorBuff = 0
     classtable.ShadowEmbraceDeBuff = 32389
-    classtable.SoulburnBuff = 74434
-    classtable.CurseoftheElementsDeBuff = 0
-    classtable.FelSparkBuff = 89937
+    classtable.CurseoftheElementsDeBuff = 1490
+    classtable.JinxCurseElementsDeBuff = 86105
+    classtable.HauntDeBuff = 48181
     classtable.UnstableAfflictionDeBuff = 30108
+    classtable.CorruptionDeBuff = 172
+    classtable.BaneofAgonyDeBuff = 980
+    classtable.BaneofDoomDeBuff = 603
+    classtable.BaneofHavocDeBuff = 80240
     classtable.SoulHarvest = 79268
     classtable.FelArmor = 28176
+    classtable.VolcanicPotion = 58091
     classtable.SummonFelhunter = 691
     classtable.Haunt = 48181
     classtable.Corruption = 172
     classtable.UnstableAffliction = 30108
+    classtable.BaneofAgony = 980
     classtable.DrainSoul = 1120
     classtable.Shadowflame = 47897
     classtable.ShadowBolt = 686
     classtable.Soulburn = 74434
     classtable.SoulFire = 6353
     classtable.LifeTap = 1454
+    classtable.CurseoftheElements = 1490
+    classtable.BaneofAgony = 980
     classtable.SoulSwap = 86121
+    classtable.SeedofCorruption = 27243
     classtable.FelFlame = 77799
+    classtable.GroupCurse = 1490
+    classtable.CurseoftheElements = 1490
+    classtable.SoloCurse = 980
+    classtable.BaneofAgony = 980
     classtable.DemonSoul = 77801
+    classtable.LifeTapGlyph = 63320
 
     local function debugg()
         talents[classtable.Jinx] = 1

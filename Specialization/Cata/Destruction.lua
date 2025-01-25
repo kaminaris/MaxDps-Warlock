@@ -103,7 +103,7 @@ function Destruction:precombat()
     if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (not UnitExists('pet')) and cooldown[classtable.SummonImp].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.SummonImp end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (IsSpellKnownOrOverridesKnown(63320) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.LifeTap end
     end
     if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
@@ -111,22 +111,28 @@ function Destruction:precombat()
     end
 end
 function Destruction:st()
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up and debuff[classtable.ImmolateDeBuff].remains <buff[classtable.ImmolateBuff].duration) and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.GroupCurse, 'GroupCurse')) and (not debuff[classtable.MyCurseDeBuff].up and MaxDps:NumGroupFriends() >1) and cooldown[classtable.GroupCurse].ready then
+        if not setSpell then setSpell = classtable.GroupCurse end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up and debuff[classtable.ImmolateDeBuff].remains <1) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
     if (MaxDps:CheckSpellUsable(classtable.Conflagrate, 'Conflagrate')) and cooldown[classtable.Conflagrate].ready then
         if not setSpell then setSpell = classtable.Conflagrate end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (IsSpellKnownOrOverridesKnown(63320) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SoloCurse, 'SoloCurse')) and (not debuff[classtable.MyCurseDeBuff].up) and cooldown[classtable.SoloCurse].ready then
+        if not setSpell then setSpell = classtable.SoloCurse end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
     if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and cooldown[classtable.ChaosBolt].ready then
         if not setSpell then setSpell = classtable.ChaosBolt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (not debuff[classtable.CorruptionDeBuff].up and debuff[classtable.CorruptionDeBuff].remains <buff[classtable.CorruptionBuff].duration) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (not debuff[classtable.CorruptionDeBuff].up and debuff[classtable.CorruptionDeBuff].remains <1) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Inferno, 'Inferno')) and (ttd <= 60 and ManaPerc >20 and true or targetHP <40 and true) and cooldown[classtable.Inferno].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Inferno, 'Inferno')) and (ttd <= 60 and ManaPerc >20 and false or targethealthPerc <40 and false) and cooldown[classtable.Inferno].ready then
         if not setSpell then setSpell = classtable.Inferno end
     end
     if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and ((GetUnitSpeed('player') >0) and ManaPerc <80 or ManaPerc <10) and cooldown[classtable.LifeTap].ready then
@@ -138,7 +144,7 @@ function Destruction:st()
     if (MaxDps:CheckSpellUsable(classtable.CurseofDoom, 'CurseofDoom')) and (ttd >60 and not debuff[classtable.MyCurseDeBuff].up) and cooldown[classtable.CurseofDoom].ready then
         if not setSpell then setSpell = classtable.CurseofDoom end
     end
-    if (MaxDps:CheckSpellUsable(classtable.CurseofAgony, 'CurseofAgony')) and (ttd <60 and not debuff[classtable.CurseofDoomDeBuff].duration >buff[classtable.CurseofAgonyBuff].duration) and cooldown[classtable.CurseofAgony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CurseofAgony, 'CurseofAgony')) and (ttd <60 and not debuff[classtable.CurseofDoomDeBuff].duration >1) and cooldown[classtable.CurseofAgony].ready then
         if not setSpell then setSpell = classtable.CurseofAgony end
     end
 end
@@ -176,7 +182,7 @@ function Destruction:callaction()
     if (targets >1) then
         Destruction:aoe()
     end
-    if (curentHP <25) then
+    if (healthPerc <25) then
         Destruction:life()
     end
 end
@@ -208,6 +214,7 @@ function Warlock:Destruction()
     SoulShardsMax = UnitPowerMax('player', MaelstromPT)
     SoulShardsDeficit = SoulShardsMax - SoulShards
     classtable.SpellLock = 19647
+    classtable.MyCurseDeBuff = MaxDps:NumGroupFriends() <= 1 and classtable.SoloCurse or MaxDps:NumGroupFriends() > 1 and classtable.GroupCurse
     local havoc_count, havoc_totalRemains = MaxDps:DebuffCounter(classtable.Havoc,1)
     havoc_active = havoc_count >= 1
     havoc_remains = havoc_totalRemains or 0
@@ -223,24 +230,31 @@ function Warlock:Destruction()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
-    classtable.ArmorBuff = 0
-    classtable.LifeTapBuff = 63321
-    classtable.MyCurseDeBuff = 0
     classtable.ImmolateDeBuff = 348
     classtable.CorruptionDeBuff = 172
-    classtable.CurseofDoomDeBuff = 0
-    classtable.SeedofCorruptionDeBuff = 0
     classtable.FelArmor = 28176
     classtable.SummonImp = 688
     classtable.LifeTap = 1454
+    classtable.VolcanicPotion = 58091
+    classtable.GroupCurse = 1490
+    classtable.CurseoftheElements = 1490
     classtable.Immolate = 348
     classtable.Conflagrate = 17962
+    classtable.SoloCurse = 980
+    classtable.BaneofAgony = 980
     classtable.ChaosBolt = 50796
     classtable.Corruption = 172
+    classtable.Inferno = 1122
+    classtable.SummonInfernal = 1122
     classtable.Incinerate = 29722
+    classtable.CurseofDoom = 603
+    classtable.CurseofAgony = 980
     classtable.Shadowflame = 47897
-    classtable.DeathCoil = 6789
+    classtable.SeedofCorruption = 27243
+    classtable.DeathCoil = 47541
     classtable.DrainLife = 689
+    classtable.LifeTapGlyph = 63320
+    classtable.LifeTapGlyph = 63320
 
     local function debugg()
     end
