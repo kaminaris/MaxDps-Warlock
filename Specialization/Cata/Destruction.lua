@@ -230,6 +230,8 @@ function Warlock:Destruction()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
+    classtable.ArmorBuff = 687
+    classtable.LifeTapBuff = 63321
     classtable.ImmolateDeBuff = 348
     classtable.CorruptionDeBuff = 172
     classtable.FelArmor = 28176

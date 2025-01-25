@@ -302,6 +302,19 @@ function Warlock:Demonology()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
+    classtable.FelArmorBuff = 28176
+    classtable.SoulLinkBuff = 25228
+    classtable.ShadowandFlameBuff = 17800
+    classtable.FelSparkBuff = 89937
+    classtable.MetamorphosisBuff = 47241
+    classtable.FelIntelligenceBuff = 54424
+    classtable.DemonSoulFelguardBuff = 79462
+    classtable.BaneofDoomBuff = 603
+    classtable.DemonicPactBuff = 53646
+    classtable.MoltenCoreBuff = 71165
+    classtable.ImmolateBuff = 348
+    classtable.DecimationBuff = 63167
+    classtable.SoulburnBuff = 74434
     classtable.ShadowandFlameDeBuff = 17800
     classtable.BaneofDoomDeBuff = 603
     classtable.ImmolateDeBuff = 348

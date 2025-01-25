@@ -229,6 +229,18 @@ function Warlock:Affliction()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
+    classtable.ArmorBuff = 687
+    classtable.FelSparkBuff = 89937
+    classtable.ShadowEmbraceBuff = 32389
+    classtable.CurseoftheElementsBuff = 1490
+    classtable.JinxCurseElementsBuff = 86105
+    classtable.HauntBuff = 48181
+    classtable.UnstableAfflictionBuff = 30108
+    classtable.CorruptionBuff = 172
+    classtable.SoulburnBuff = 74434
+    classtable.BaneofAgonyBuff = 980
+    classtable.BaneofDoomBuff = 603
+    classtable.BaneofHavocBuff = 80240
     classtable.ShadowEmbraceDeBuff = 32389
     classtable.CurseoftheElementsDeBuff = 1490
     classtable.JinxCurseElementsDeBuff = 86105
