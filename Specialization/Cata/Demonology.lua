@@ -137,11 +137,11 @@ function Demonology:spell_damage_rotation()
     if (MaxDps:CheckSpellUsable(classtable.Felstorm, 'Felstorm')) and (buff[classtable.DemonSoulFelguardBuff].up) and cooldown[classtable.Felstorm].ready then
         if not setSpell then setSpell = classtable.Felstorm end
     end
-    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (not debuff[classtable.BaneofDoomDeBuff].up and ttd >15) and cooldown[classtable.BaneofDoom].ready then
-        if not setSpell then setSpell = classtable.BaneofDoom end
-    end
     if (MaxDps:CheckSpellUsable(classtable.BaneofAgony, 'BaneofAgony')) and (not debuff[classtable.BaneofAgonyDeBuff].up and ttd >25 and not debuff[classtable.BaneofDoomDeBuff].up) and cooldown[classtable.BaneofAgony].ready then
         if not setSpell then setSpell = classtable.BaneofAgony end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (not debuff[classtable.BaneofDoomDeBuff].up and ttd >15 and not debuff[classtable.BaneofAgony].up) and cooldown[classtable.BaneofDoom].ready then
+        if not setSpell then setSpell = classtable.BaneofDoom end
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (buff[classtable.DemonicPactBuff].up and buff[classtable.MoltenCoreBuff].count >= 1 and cooldown[classtable.HandofGuldan].remains <10) and cooldown[classtable.SummonDoomguard].ready then
         if not setSpell then setSpell = classtable.SummonDoomguard end
