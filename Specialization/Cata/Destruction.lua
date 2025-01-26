@@ -103,9 +103,9 @@ function Destruction:precombat()
     if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (not UnitExists('pet')) and cooldown[classtable.SummonImp].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.SummonImp end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.LifeTap end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.LifeTap end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.VolcanicPotion end
     end
@@ -123,9 +123,9 @@ function Destruction:st()
     if (MaxDps:CheckSpellUsable(classtable.SoloCurse, 'SoloCurse')) and (not debuff[classtable.MyCurseDeBuff].up) and cooldown[classtable.SoloCurse].ready then
         if not setSpell then setSpell = classtable.SoloCurse end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready then
-        if not setSpell then setSpell = classtable.LifeTap end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready then
+    --    if not setSpell then setSpell = classtable.LifeTap end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and cooldown[classtable.ChaosBolt].ready then
         if not setSpell then setSpell = classtable.ChaosBolt end
     end
