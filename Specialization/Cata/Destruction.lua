@@ -97,15 +97,15 @@ end
 
 
 function Destruction:precombat()
-    if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and (not buff[classtable.ArmorBuff].up or buff[classtable.ArmorBuff].remains <180) and cooldown[classtable.FelArmor].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and (not buff[classtable.FelArmorBuff].up or buff[classtable.FelArmorBuff].remains <180) and cooldown[classtable.FelArmor].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.FelArmor end
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (not UnitExists('pet')) and cooldown[classtable.SummonImp].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.SummonImp end
     end
-    --if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready and not UnitAffectingCombat('player') then
-    --    if not setSpell then setSpell = classtable.LifeTap end
-    --end
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and ManaPerc <10) and cooldown[classtable.LifeTap].ready and not UnitAffectingCombat('player') then
+        if not setSpell then setSpell = classtable.LifeTap end
+    end
     if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.VolcanicPotion end
     end
@@ -123,9 +123,9 @@ function Destruction:st()
     if (MaxDps:CheckSpellUsable(classtable.SoloCurse, 'SoloCurse')) and (not debuff[classtable.MyCurseDeBuff].up) and cooldown[classtable.SoloCurse].ready then
         if not setSpell then setSpell = classtable.SoloCurse end
     end
-    --if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and not buff[classtable.LifeTapBuff].up) and cooldown[classtable.LifeTap].ready then
-    --    if not setSpell then setSpell = classtable.LifeTap end
-    --end
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph) and ManaPerc <10) and cooldown[classtable.LifeTap].ready then
+        if not setSpell then setSpell = classtable.LifeTap end
+    end
     if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and cooldown[classtable.ChaosBolt].ready then
         if not setSpell then setSpell = classtable.ChaosBolt end
     end
@@ -230,10 +230,10 @@ function Warlock:Destruction()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
-    classtable.ArmorBuff = 687
-    classtable.LifeTapBuff = 63321
+    classtable.FelArmorBuff = 28176
     classtable.ImmolateDeBuff = 348
     classtable.CorruptionDeBuff = 172
+    classtable.SeedofCorruptionDeBuff = 27243
     classtable.FelArmor = 28176
     classtable.SummonImp = 688
     classtable.LifeTap = 1454
