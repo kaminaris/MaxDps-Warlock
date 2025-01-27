@@ -137,11 +137,11 @@ function Demonology:spell_damage_rotation()
     if (MaxDps:CheckSpellUsable(classtable.Felstorm, 'Felstorm')) and (buff[classtable.DemonSoulFelguardBuff].up) and cooldown[classtable.Felstorm].ready then
         if not setSpell then setSpell = classtable.Felstorm end
     end
+    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (not debuff[classtable.BaneofDoomDeBuff].up and ttd >15 and not debuff[classtable.BaneofAgonyDeBuff].up) and cooldown[classtable.BaneofDoom].ready then
+        if not setSpell then setSpell = classtable.BaneofDoom end
+    end
     if (MaxDps:CheckSpellUsable(classtable.BaneofAgony, 'BaneofAgony')) and (not debuff[classtable.BaneofAgonyDeBuff].up and ttd >25 and not debuff[classtable.BaneofDoomDeBuff].up) and cooldown[classtable.BaneofAgony].ready then
         if not setSpell then setSpell = classtable.BaneofAgony end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (not debuff[classtable.BaneofDoomDeBuff].up and ttd >15 and not debuff[classtable.BaneofAgony].up) and cooldown[classtable.BaneofDoom].ready then
-        if not setSpell then setSpell = classtable.BaneofDoom end
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (buff[classtable.DemonicPactBuff].up and buff[classtable.MoltenCoreBuff].count >= 1 and cooldown[classtable.HandofGuldan].remains <10) and cooldown[classtable.SummonDoomguard].ready then
         if not setSpell then setSpell = classtable.SummonDoomguard end
@@ -163,17 +163,17 @@ function Demonology:spell_damage_rotation()
     end
 end
 function Demonology:single_target_rotation()
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up or debuff[classtable.ImmolateDeBuff].remains <1) and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up and debuff[classtable.ImmolateDeBuff].remains <1) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
     if (MaxDps:CheckSpellUsable(classtable.HandofGuldan, 'HandofGuldan')) and cooldown[classtable.HandofGuldan].ready then
         if not setSpell then setSpell = classtable.HandofGuldan end
     end
+    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (not debuff[classtable.BaneofDoomDeBuff].up and ttd >15 and not debuff[classtable.BaneofAgonyDeBuff].up) and cooldown[classtable.BaneofDoom].ready then
+        if not setSpell then setSpell = classtable.BaneofDoom end
+    end
     if (MaxDps:CheckSpellUsable(classtable.BaneofAgony, 'BaneofAgony')) and (not debuff[classtable.BaneofAgonyDeBuff].up and ttd >25 and not debuff[classtable.BaneofDoomDeBuff].up) and cooldown[classtable.BaneofAgony].ready then
         if not setSpell then setSpell = classtable.BaneofAgony end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.BaneofDoom, 'BaneofDoom')) and (not debuff[classtable.BaneofDoomDeBuff].up and ttd >15 and not debuff[classtable.BaneofAgony].up) and cooldown[classtable.BaneofDoom].ready then
-        if not setSpell then setSpell = classtable.BaneofDoom end
     end
     if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (not debuff[classtable.CorruptionDeBuff].up) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
@@ -198,6 +198,9 @@ function Demonology:single_target_rotation()
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonFelhunter, 'SummonFelhunter')) and (buff[classtable.SoulburnBuff].up and not buff[classtable.FelIntelligenceBuff].up and false and not buff[classtable.DemonSoulFelguardBuff].up) and cooldown[classtable.SummonFelhunter].ready then
         if not setSpell then setSpell = classtable.SummonFelhunter end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and cooldown[classtable.ShadowBolt].ready then
+        if not setSpell then setSpell = classtable.ShadowBolt end
     end
 end
 function Demonology:aoe()
@@ -313,8 +316,10 @@ function Warlock:Demonology()
     classtable.DecimationBuff = 63167
     classtable.SoulburnBuff = 74434
     classtable.ShadowandFlameDeBuff = 17800
+    classtable.BaneofAgonyDeBuff = 980
     classtable.BaneofDoomDeBuff = 603
     classtable.ImmolateDeBuff = 348
+    classtable.CorruptionDeBuff = 172
     classtable.SoulHarvest = 79268
     classtable.SummonFelguard = 30146
     classtable.SummonFelhunter = 691
