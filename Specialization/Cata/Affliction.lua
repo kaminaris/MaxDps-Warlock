@@ -81,7 +81,7 @@ function Affliction:precombat()
     if (MaxDps:CheckSpellUsable(classtable.SoulHarvest, 'SoulHarvest')) and (SoulShards <3) and cooldown[classtable.SoulHarvest].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.SoulHarvest end
     end
-    if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and (not buff[classtable.ArmorBuff].up) and cooldown[classtable.FelArmor].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and (not buff[classtable.FelArmorBuff].up) and cooldown[classtable.FelArmor].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.FelArmor end
     end
     if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
@@ -104,8 +104,8 @@ function Affliction:single_target()
     if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (debuff[classtable.UnstableAfflictionDeBuff].remains <1 and targethealthPerc >25) and cooldown[classtable.UnstableAffliction].ready then
         if not setSpell then setSpell = classtable.UnstableAffliction end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Bane, 'Bane')) and (not debuff[classtable.MyBaneDeBuff].up) and cooldown[classtable.Bane].ready then
-        if not setSpell then setSpell = classtable.Bane end
+    if (MaxDps:CheckSpellUsable(classtable.BaneofAgony, 'BaneofAgony')) and (not debuff[classtable.BaneofAgonyDeBuff].up) and cooldown[classtable.BaneofAgony].ready then
+        if not setSpell then setSpell = classtable.BaneofAgony end
     end
     if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul')) and (targethealthPerc <= 25) and cooldown[classtable.DrainSoul].ready then
         if not setSpell then setSpell = classtable.DrainSoul end
@@ -122,7 +122,7 @@ function Affliction:single_target()
     if (MaxDps:CheckSpellUsable(classtable.SoulFire, 'SoulFire')) and (buff[classtable.SoulburnBuff].up) and cooldown[classtable.SoulFire].ready then
         if not setSpell then setSpell = classtable.SoulFire end
     end
-    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <30 or ManaPerc <70 and (GetUnitSpeed('player') >0) and MaxDps:HasGlyphEnabled(classtable.LifeTapGlyph)) and cooldown[classtable.LifeTap].ready then
+    if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <30 or ManaPerc <70 and (GetUnitSpeed('player') >0)) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
 end
@@ -229,7 +229,7 @@ function Warlock:Affliction()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
-    classtable.ArmorBuff = 687
+    classtable.FelArmorBuff = 28176
     classtable.FelSparkBuff = 89937
     classtable.ShadowEmbraceBuff = 32389
     classtable.CurseoftheElementsBuff = 1490
@@ -258,7 +258,6 @@ function Warlock:Affliction()
     classtable.SoulFire = 6353
     classtable.LifeTap = 1454
     classtable.CurseoftheElements = 1490
-    classtable.BaneofAgony = 980
     classtable.SoulSwap = 86121
     classtable.SeedofCorruption = 27243
     classtable.FelFlame = 77799
@@ -267,7 +266,6 @@ function Warlock:Affliction()
     classtable.SoloCurse = 980
     classtable.BaneofAgony = 980
     classtable.DemonSoul = 77801
-    classtable.LifeTapGlyph = 63320
 
     local function debugg()
         talents[classtable.Jinx] = 1
