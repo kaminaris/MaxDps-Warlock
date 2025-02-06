@@ -25,3 +25,7 @@ Specialization\Cata\Affliction.lua
 Specialization\Cata\Demonology.lua
 Specialization\Cata\Destruction.lua
 #@end-version-cata@
+
+#@version-classic@
+Specialization\Classic\DPS.lua
+#@end-version-classic@

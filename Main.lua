@@ -16,16 +16,21 @@ Warlock.spellMeta = {
 }
 
 function Warlock:Enable()
-	if MaxDps.Spec == 1 then
-		MaxDps:Print(MaxDps.Colors.Info .. 'Warlock Affliction', "info")
-		MaxDps.NextSpell = Warlock.Affliction
-	elseif MaxDps.Spec == 2 then
-		MaxDps:Print(MaxDps.Colors.Info .. 'Warlock Demonology', "info")
-		MaxDps.NextSpell = Warlock.Demonology
-		--self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', 'CLEU')
-	elseif MaxDps.Spec == 3 then
-		MaxDps:Print(MaxDps.Colors.Info .. 'Warlock Destruction', "info")
-		MaxDps.NextSpell = Warlock.Destruction
+	if not MaxDps:IsClassicWow() then
+	    if MaxDps.Spec == 1 then
+	    	MaxDps:Print(MaxDps.Colors.Info .. 'Warlock Affliction', "info")
+	    	MaxDps.NextSpell = Warlock.Affliction
+	    elseif MaxDps.Spec == 2 then
+	    	MaxDps:Print(MaxDps.Colors.Info .. 'Warlock Demonology', "info")
+	    	MaxDps.NextSpell = Warlock.Demonology
+	    	--self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', 'CLEU')
+	    elseif MaxDps.Spec == 3 then
+	    	MaxDps:Print(MaxDps.Colors.Info .. 'Warlock Destruction', "info")
+	    	MaxDps.NextSpell = Warlock.Destruction
+	    end
+	else
+		MaxDps:Print(MaxDps.Colors.Info .. 'Warlock DPS', "info");
+		MaxDps.NextSpell = Warlock.DPS;
 	end
 
 	Warlock.playerLevel = UnitLevel('player')
