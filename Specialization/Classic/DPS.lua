@@ -88,13 +88,13 @@ function DPS:priorityList()
     if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <10) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
-    if (MaxDps:CheckSpellUsable(classtable.CurseofAgony, 'CurseofAgony')) and (not debuff[classtable.CurseofAgonyDeBuff].up) and cooldown[classtable.CurseofAgony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CurseofAgony, 'CurseofAgony')) and (not MaxDps:FindDeBuffAuraData ( 11713 ) .up) and cooldown[classtable.CurseofAgony].ready then
         if not setSpell then setSpell = classtable.CurseofAgony end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (not debuff[classtable.CorruptionDeBuff].up) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (not MaxDps:FindDeBuffAuraData ( 25311 ) .up) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up) and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not MaxDps:FindDeBuffAuraData ( 25309 ) .up) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
     if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and cooldown[classtable.ShadowBolt].ready then
