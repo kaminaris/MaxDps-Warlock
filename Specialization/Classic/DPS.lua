@@ -68,6 +68,12 @@ local ManaPerc
 local DPS = {}
 
 function DPS:precombat()
+    if (MaxDps:CheckSpellUsable(classtable.DemonSkin, 'DemonSkin')) and (UnitLevel('player') < 20 and not MaxDps:FindBuffAuraData ( 687 ) .up) and cooldown[classtable.DemonSkin].ready and not UnitAffectingCombat('player') then
+        if not setSpell then setSpell = classtable.DemonSkin end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.DemonArmor, 'DemonArmor')) and (UnitLevel('player') >= 20 and not MaxDps:FindBuffAuraData ( 706 ) .up) and cooldown[classtable.DemonArmor].ready and not UnitAffectingCombat('player') then
+        if not setSpell then setSpell = classtable.DemonArmor end
+    end
     if (MaxDps:CheckSpellUsable(classtable.DemonicSacrifice, 'DemonicSacrifice')) and cooldown[classtable.DemonicSacrifice].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DemonicSacrifice end
     end
