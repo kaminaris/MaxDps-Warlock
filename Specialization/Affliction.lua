@@ -136,9 +136,9 @@ function Affliction:precombat()
     end
 end
 function Affliction:aoe()
-    min_agony = min ( min_agony,debuff[classtable.AgonyDeBuff].up )
-    min_vt = min ( min_vt,debuff[classtable.VileTaintDeBuff].up )
-    min_ps = min ( min_ps,debuff[classtable.PhantomSingularityDeBuff].up )
+    min_agony = min ( min_agony,debuff[classtable.AgonyDeBuff].remains )
+    min_vt = min ( min_vt,debuff[classtable.VileTaintDeBuff].remains )
+    min_ps = min ( min_ps,debuff[classtable.PhantomSingularityDeBuff].remains )
     min_ps1 = ( min_vt * (talents[classtable.VileTaint] and talents[classtable.VileTaint] or 0) ) <min ( min_ps * (talents[classtable.PhantomSingularity] and talents[classtable.PhantomSingularity] or 0) )
     if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (debuff[classtable.HauntDeBuff].remains <3) and cooldown[classtable.Haunt].ready then
         if not setSpell then setSpell = classtable.Haunt end
@@ -161,7 +161,7 @@ function Affliction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.Malevolence, 'Malevolence')) and (ps_up and vt_up and sr_up) and cooldown[classtable.Malevolence].ready then
         if not setSpell then setSpell = classtable.Malevolence end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SeedofCorruption, 'SeedofCorruption') and talents[classtable.SeedofCorruption]) and (( ( not talents[classtable.Wither] and debuff[classtable.CorruptionDeBuff].remains <5 ) or ( talents[classtable.Wither] and debuff[classtable.WitherDeBuff].remains <5 ) ) and not ( (classtable and classtable.SeedofCorruption and cooldown[classtable.SeedofCorruption].duration - cooldown[classtable.SeedofCorruption].remains <=2 ) or MaxDps:DebuffCounter(classtable.SeedofCorruptionDeBuff) >0 )) and cooldown[classtable.SeedofCorruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SeedofCorruption, 'SeedofCorruption') and talents[classtable.SeedofCorruption]) and (( ( not talents[classtable.Wither] and debuff[classtable.CorruptionDeBuff].remains <5 ) or ( talents[classtable.Wither] and debuff[classtable.WitherDeBuff].remains <5 ) ) and not ( (MaxDps.spellHistory[1] == classtable.SeedofCorruption) or MaxDps:DebuffCounter(classtable.SeedofCorruptionDeBuff) >0 )) and cooldown[classtable.SeedofCorruption].ready then
         if not setSpell then setSpell = classtable.SeedofCorruption end
     end
     if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (debuff[classtable.CorruptionDeBuff].remains <5 and not talents[classtable.SeedofCorruption]) and cooldown[classtable.Corruption].ready then
@@ -208,19 +208,19 @@ function Affliction:cleave()
     if (MaxDps:boss()) then
         Affliction:end_of_fight()
     end
-    if (MaxDps:CheckSpellUsable(classtable.Agony, 'Agony')) and (debuff[classtable.AgonyDeBuff].refreshable and ( debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.VileTaint].remains + ( classtable and classtable.VileTaint and GetSpellInfo(classtable.VileTaint).castTime / 1000 or 0) or not talents[classtable.VileTaint] ) and ( debuff[classtable.AgonyDeBuff].remains <gcd * 2 or talents[classtable.DemonicSoul] and debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.SoulRot].remains + 8 and cooldown[classtable.SoulRot].remains <5 ) ) and cooldown[classtable.Agony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Agony, 'Agony')) and (debuff[classtable.AgonyDeBuff].refreshable and ( debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.VileTaint].remains + ( classtable and classtable.VileTaint and GetSpellInfo(classtable.VileTaint).castTime / 1000 or 0) or not talents[classtable.VileTaint] ) and ( debuff[classtable.AgonyDeBuff].remains <gcd * 2 or talents[classtable.DemonicSoul] and debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.SoulRot].remains + 8 and cooldown[classtable.SoulRot].remains <5 ) and ttd >debuff[classtable.AgonyDeBuff].remains + 5) and cooldown[classtable.Agony].ready then
         if not setSpell then setSpell = classtable.Agony end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Wither, 'Wither') and talents[classtable.Wither]) and (debuff[classtable.WitherDeBuff].refreshable and debuff[classtable.WitherDeBuff].remains <5 and not ( (classtable and classtable.SeedofCorruption and cooldown[classtable.SeedofCorruption].duration - cooldown[classtable.SeedofCorruption].remains <=2 ) or debuff[classtable.SeedofCorruptionDeBuff].remains >0 ) ) and cooldown[classtable.Wither].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Wither, 'Wither') and talents[classtable.Wither]) and (debuff[classtable.WitherDeBuff].refreshable and debuff[classtable.WitherDeBuff].remains <5 and not ( (MaxDps.spellHistory[1] == classtable.SeedofCorruption) or debuff[classtable.SeedofCorruptionDeBuff].remains >0 ) and ttd >debuff[classtable.WitherDeBuff].remains + 5) and cooldown[classtable.Wither].ready then
         if not setSpell then setSpell = classtable.Wither end
     end
     if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (talents[classtable.DemonicSoul] and buff[classtable.NightfallBuff].count <2 - (MaxDps.spellHistory[1] == classtable.DrainSoul) and ( not talents[classtable.VileTaint] or not cooldown[classtable.VileTaint].ready ) or debuff[classtable.HauntDeBuff].remains <3) and cooldown[classtable.Haunt].ready then
         if not setSpell then setSpell = classtable.Haunt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (( debuff[classtable.UnstableAfflictionDeBuff].remains <5 or talents[classtable.DemonicSoul] and debuff[classtable.UnstableAfflictionDeBuff].remains <cooldown[classtable.SoulRot].remains + 8 and cooldown[classtable.SoulRot].remains <5 ) ) and cooldown[classtable.UnstableAffliction].ready then
+    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (( debuff[classtable.UnstableAfflictionDeBuff].remains <5 or talents[classtable.DemonicSoul] and debuff[classtable.UnstableAfflictionDeBuff].remains <cooldown[classtable.SoulRot].remains + 8 and cooldown[classtable.SoulRot].remains <5 ) and ttd >debuff[classtable.UnstableAfflictionDeBuff].remains + 5) and cooldown[classtable.UnstableAffliction].ready then
         if not setSpell then setSpell = classtable.UnstableAffliction end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (debuff[classtable.CorruptionDeBuff].refreshable and debuff[classtable.CorruptionDeBuff].remains <5 and not ( (classtable and classtable.SeedofCorruption and cooldown[classtable.SeedofCorruption].duration - cooldown[classtable.SeedofCorruption].remains <=2 ) or debuff[classtable.SeedofCorruptionDeBuff].remains >0 ) ) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (debuff[classtable.CorruptionDeBuff].refreshable and debuff[classtable.CorruptionDeBuff].remains <5 and not ( (MaxDps.spellHistory[1] == classtable.SeedofCorruption) or debuff[classtable.SeedofCorruptionDeBuff].remains >0 ) and ttd >debuff[classtable.CorruptionDeBuff].remains + 5) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
     if (talents[classtable.Wither]) then
@@ -305,23 +305,23 @@ function Affliction:end_of_fight()
     end
 end
 function Affliction:se_maintenance()
-    if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul') and talents[classtable.DrainSoul]) and (talents[classtable.ShadowEmbrace] and talents[classtable.DrainSoul] and ( debuff[classtable.ShadowEmbraceDeBuff].count <2 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) and targets <= 4 and ttd >15) and cooldown[classtable.DrainSoul].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul') and talents[classtable.DrainSoul]) and (talents[classtable.ShadowEmbrace] and talents[classtable.DrainSoul] and ( debuff[classtable.ShadowEmbraceDeBuff].count <debuff[classtable.ShadowEmbraceDeBuff].maxStacks or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) and targets <= 4 and ttd >15) and cooldown[classtable.DrainSoul].ready then
         if not setSpell then setSpell = classtable.DrainSoul end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (talents[classtable.ShadowEmbrace] and ( ( debuff[classtable.ShadowEmbraceDeBuff].count + ( ( (MaxDps.spellHistoryTime and MaxDps.spellHistoryTime[classtable.ShadowBolt] and GetTime() - MaxDps.spellHistoryTime[classtable.ShadowBolt].last_used or 0) <1 ) and 1 or 0 ) ) <2 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 and not (classtable and classtable.ShadowBolt and cooldown[classtable.ShadowBolt].duration - cooldown[classtable.ShadowBolt].remains <=2 ) ) and targets <= 4 and ttd >15) and cooldown[classtable.ShadowBolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (talents[classtable.ShadowEmbrace] and ( ( debuff[classtable.ShadowEmbraceDeBuff].count + ( ( (MaxDps.spellHistoryTime and MaxDps.spellHistoryTime[classtable.ShadowBolt] and GetTime() - MaxDps.spellHistoryTime[classtable.ShadowBolt].last_used or 0) <1 ) and 1 or 0 ) ) <debuff[classtable.ShadowEmbraceDeBuff].maxStacks or debuff[classtable.ShadowEmbraceDeBuff].remains <3 and not (cooldown[classtable.ShadowBolt].duration - cooldown[classtable.ShadowBolt].remains <1) ) and targets <= 4 and ttd >15) and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
 end
 function Affliction:opener_cleave_se()
-    if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul') and talents[classtable.DrainSoul]) and (talents[classtable.ShadowEmbrace] and talents[classtable.DrainSoul] and buff[classtable.NightfallBuff].up and ( debuff[classtable.ShadowEmbraceDeBuff].count <2 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) and ( ttd >15 or timeInCombat <20 )) and cooldown[classtable.DrainSoul].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul') and talents[classtable.DrainSoul]) and (talents[classtable.ShadowEmbrace] and talents[classtable.DrainSoul] and buff[classtable.NightfallBuff].up and ( debuff[classtable.ShadowEmbraceDeBuff].count <debuff[classtable.ShadowEmbraceDeBuff].maxStacks or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) and ( ttd >15 or timeInCombat <20 )) and cooldown[classtable.DrainSoul].ready then
         if not setSpell then setSpell = classtable.DrainSoul end
     end
 end
 function Affliction:cleave_se_maintenance()
-    if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul') and talents[classtable.DrainSoul]) and (talents[classtable.ShadowEmbrace] and talents[classtable.DrainSoul] and ( talents[classtable.Wither] or talents[classtable.DemonicSoul] and buff[classtable.NightfallBuff].up ) and ( debuff[classtable.ShadowEmbraceDeBuff].count <2 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) and ttd >15) and cooldown[classtable.DrainSoul].ready then
+    if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul') and talents[classtable.DrainSoul]) and (talents[classtable.ShadowEmbrace] and talents[classtable.DrainSoul] and ( talents[classtable.Wither] or talents[classtable.DemonicSoul] and buff[classtable.NightfallBuff].up ) and ( debuff[classtable.ShadowEmbraceDeBuff].count <debuff[classtable.ShadowEmbraceDeBuff].maxStacks or debuff[classtable.ShadowEmbraceDeBuff].remains <3 ) and ttd >15) and cooldown[classtable.DrainSoul].ready then
         if not setSpell then setSpell = classtable.DrainSoul end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (talents[classtable.ShadowEmbrace] and not talents[classtable.DrainSoul] and ( ( debuff[classtable.ShadowEmbraceDeBuff].count + (classtable and classtable.ShadowBolt and MaxDps.spellHistory[1] == classtable.ShadowBolt and 1 or 0) ) <2 or debuff[classtable.ShadowEmbraceDeBuff].remains <3 and not (classtable and classtable.ShadowBolt and cooldown[classtable.ShadowBolt].duration - cooldown[classtable.ShadowBolt].remains <=2 ) ) and ttd >15) and cooldown[classtable.ShadowBolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (talents[classtable.ShadowEmbrace] and not talents[classtable.DrainSoul] and ( ( debuff[classtable.ShadowEmbraceDeBuff].count + (MaxDps.spellHistory[1] == classtable.ShadowBolt and 1 or 0) ) <debuff[classtable.ShadowEmbraceDeBuff].maxStacks or debuff[classtable.ShadowEmbraceDeBuff].remains <3 and not (cooldown[classtable.ShadowBolt].duration - cooldown[classtable.ShadowBolt].remains <1) ) and ttd >15) and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
 end
@@ -336,7 +336,7 @@ function Affliction:variables()
     sr_up = not talents[classtable.SoulRot] or debuff[classtable.SoulRotDeBuff].up
     cd_dots_up = ps_up and vt_up and sr_up
     has_cds = talents[classtable.PhantomSingularity] or talents[classtable.VileTaint] or talents[classtable.SoulRot] or talents[classtable.SummonDarkglare]
-    cds_active = not has_cds or ( cd_dots_up and ( not talents[classtable.SummonDarkglare] or cooldown[classtable.SummonDarkglare].remains >20 or GetTotemInfoByName('darkglare').remains ) )
+    cds_active = not has_cds or ( cd_dots_up and ( not talents[classtable.SummonDarkglare] or cooldown[classtable.SummonDarkglare].remains >20 or GetTotemInfoByName('Darkglare').remains ) )
     if min_vt then
         min_vt = 10
     end
@@ -365,22 +365,22 @@ function Affliction:callaction()
         Affliction:aoe()
     end
     Affliction:end_of_fight()
-    if (MaxDps:CheckSpellUsable(classtable.Agony, 'Agony')) and (( not talents[classtable.VileTaint] or debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.VileTaint].remains + ( classtable and classtable.VileTaint and GetSpellInfo(classtable.VileTaint).castTime / 1000 or 0) ) and ( talents[classtable.AbsoluteCorruption] and debuff[classtable.AgonyDeBuff].remains <3 or not talents[classtable.AbsoluteCorruption] and debuff[classtable.AgonyDeBuff].remains <5 or cooldown[classtable.SoulRot].remains <5 and debuff[classtable.AgonyDeBuff].remains <8 ) ) and cooldown[classtable.Agony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Agony, 'Agony')) and (( not talents[classtable.VileTaint] or debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.VileTaint].remains + ( classtable and classtable.VileTaint and GetSpellInfo(classtable.VileTaint).castTime / 1000 or 0) ) and ( talents[classtable.AbsoluteCorruption] and debuff[classtable.AgonyDeBuff].remains <3 or not talents[classtable.AbsoluteCorruption] and debuff[classtable.AgonyDeBuff].remains <5 or cooldown[classtable.SoulRot].remains <5 and debuff[classtable.AgonyDeBuff].remains <8 ) and ttd >debuff[classtable.AgonyDeBuff].remains + 5) and cooldown[classtable.Agony].ready then
         if not setSpell then setSpell = classtable.Agony end
     end
     if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (talents[classtable.DemonicSoul] and buff[classtable.NightfallBuff].count <2 - (MaxDps.spellHistory[1] == classtable.DrainSoul) and ( not talents[classtable.VileTaint] or not cooldown[classtable.VileTaint].ready )) and cooldown[classtable.Haunt].ready then
         if not setSpell then setSpell = classtable.Haunt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (( MaxDps:DebuffCounter(classtable.UnstableAfflictionDeBuff) == 0 or debuff[classtable.UnstableAfflictionDeBuff].up ) and ( talents[classtable.AbsoluteCorruption] and debuff[classtable.UnstableAfflictionDeBuff].remains <3 or not talents[classtable.AbsoluteCorruption] and debuff[classtable.UnstableAfflictionDeBuff].remains <5 or cooldown[classtable.SoulRot].remains <5 and debuff[classtable.UnstableAfflictionDeBuff].remains <8 ) and ( not talents[classtable.DemonicSoul] or buff[classtable.NightfallBuff].count <2 or (MaxDps.spellHistory[1] == classtable.Haunt) and buff[classtable.NightfallBuff].count <2 ) ) and cooldown[classtable.UnstableAffliction].ready then
+    if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (( MaxDps:DebuffCounter(classtable.UnstableAfflictionDeBuff) == 0 or debuff[classtable.UnstableAfflictionDeBuff].up ) and ( talents[classtable.AbsoluteCorruption] and debuff[classtable.UnstableAfflictionDeBuff].remains <3 or not talents[classtable.AbsoluteCorruption] and debuff[classtable.UnstableAfflictionDeBuff].remains <5 or cooldown[classtable.SoulRot].remains <5 and debuff[classtable.UnstableAfflictionDeBuff].remains <8 ) and ( not talents[classtable.DemonicSoul] or buff[classtable.NightfallBuff].count <2 or (MaxDps.spellHistory[1] == classtable.Haunt) and buff[classtable.NightfallBuff].count <2 ) and ttd >debuff[classtable.UnstableAfflictionDeBuff].remains + 5) and cooldown[classtable.UnstableAffliction].ready then
         if not setSpell then setSpell = classtable.UnstableAffliction end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (( talents[classtable.AbsoluteCorruption] and debuff[classtable.HauntDeBuff].remains <3 or not talents[classtable.AbsoluteCorruption] and debuff[classtable.HauntDeBuff].remains <5 or cooldown[classtable.SoulRot].remains <5 and debuff[classtable.HauntDeBuff].remains <8 ) and ( not talents[classtable.VileTaint] or not cooldown[classtable.VileTaint].ready ) ) and cooldown[classtable.Haunt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (( talents[classtable.AbsoluteCorruption] and debuff[classtable.HauntDeBuff].remains <3 or not talents[classtable.AbsoluteCorruption] and debuff[classtable.HauntDeBuff].remains <5 or cooldown[classtable.SoulRot].remains <5 and debuff[classtable.HauntDeBuff].remains <8 ) and ( not talents[classtable.VileTaint] or not cooldown[classtable.VileTaint].ready ) and ttd >debuff[classtable.HauntDeBuff].remains + 5) and cooldown[classtable.Haunt].ready then
         if not setSpell then setSpell = classtable.Haunt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Wither, 'Wither') and talents[classtable.Wither]) and (talents[classtable.Wither] and not ( (classtable and classtable.SeedofCorruption and cooldown[classtable.SeedofCorruption].duration - cooldown[classtable.SeedofCorruption].remains <=2 ) or MaxDps:DebuffCounter(classtable.SeedofCorruptionDeBuff) >0 ) and ( talents[classtable.AbsoluteCorruption] and debuff[classtable.WitherDeBuff].remains <3 or not talents[classtable.AbsoluteCorruption] and debuff[classtable.WitherDeBuff].remains <5 ) ) and cooldown[classtable.Wither].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Wither, 'Wither') and talents[classtable.Wither]) and (talents[classtable.Wither] and not ( (MaxDps.spellHistory[1] == classtable.SeedofCorruption) or MaxDps:DebuffCounter(classtable.SeedofCorruptionDeBuff) >0 ) and ( talents[classtable.AbsoluteCorruption] and debuff[classtable.WitherDeBuff].remains <3 or not talents[classtable.AbsoluteCorruption] and debuff[classtable.WitherDeBuff].remains <5 ) and ttd >debuff[classtable.WitherDeBuff].remains + 5) and cooldown[classtable.Wither].ready then
         if not setSpell then setSpell = classtable.Wither end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (not ( (MaxDps.spellHistory[1] == classtable.Corruption ) or MaxDps:DebuffCounter(classtable.SeedofCorruptionDeBuff) >0 ) and debuff[classtable.CorruptionDeBuff].refreshable) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (not ( (MaxDps.spellHistory[1] == classtable.SeedofCorruption) or MaxDps:DebuffCounter(classtable.SeedofCorruptionDeBuff) >0 ) and debuff[classtable.CorruptionDeBuff].refreshable and ttd >debuff[classtable.CorruptionDeBuff].remains + 5) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
     if (MaxDps:CheckSpellUsable(classtable.DrainSoul, 'DrainSoul') and talents[classtable.DrainSoul]) and (buff[classtable.NightfallBuff].up and ( buff[classtable.NightfallBuff].count >1 or buff[classtable.NightfallBuff].remains <timeShift * 2 ) and not buff[classtable.TormentedCrescendoBuff].up and not cooldown[classtable.SoulRot].ready and SoulShards <5 - buff[classtable.TormentedCrescendoBuff].upMath and ( not talents[classtable.VileTaint] or not cooldown[classtable.VileTaint].ready )) and cooldown[classtable.DrainSoul].ready then
@@ -404,7 +404,7 @@ function Affliction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.SoulRot, 'SoulRot') and talents[classtable.SoulRot]) and (vt_ps_up) and cooldown[classtable.SoulRot].ready then
         if not setSpell then setSpell = classtable.SoulRot end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SummonDarkglare, 'SummonDarkglare') and talents[classtable.SummonDarkglare]) and (cd_dots_up and ( debuff[classtable.ShadowEmbraceDeBuff].count == 2 )) and cooldown[classtable.SummonDarkglare].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonDarkglare, 'SummonDarkglare') and talents[classtable.SummonDarkglare]) and (cd_dots_up and ( debuff[classtable.ShadowEmbraceDeBuff].count == debuff[classtable.ShadowEmbraceDeBuff].maxStacks )) and cooldown[classtable.SummonDarkglare].ready then
         MaxDps:GlowCooldown(classtable.SummonDarkglare, cooldown[classtable.SummonDarkglare].ready)
     end
     if (talents[classtable.DemonicSoul]) then
@@ -419,7 +419,7 @@ function Affliction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.MaleficRapture, 'MaleficRapture')) and (talents[classtable.DemonicSoul] and ( SoulShards >1 or buff[classtable.TormentedCrescendoBuff].up and cooldown[classtable.SoulRot].remains >buff[classtable.TormentedCrescendoBuff].remains * gcd ) and ( not talents[classtable.VileTaint] or SoulShards >1 and cooldown[classtable.VileTaint].remains >10 ) and ( not talents[classtable.Oblivion] or cooldown[classtable.Oblivion].remains >10 or SoulShards >2 and cooldown[classtable.Oblivion].remains <10 )) and cooldown[classtable.MaleficRapture].ready then
         if not setSpell then setSpell = classtable.MaleficRapture end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Oblivion, 'Oblivion') and talents[classtable.Oblivion]) and (debuff[classtable.AgonyDeBuff].up and ( debuff[classtable.CorruptionDeBuff].up or debuff[classtable.WitherDeBuff].up ) and debuff[classtable.UnstableAfflictionDeBuff].up and debuff[classtable.HauntDeBuff].remains >5) and cooldown[classtable.Oblivion].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Oblivion, 'Oblivion') and talents[classtable.Oblivion]) and (debuff[classtable.AgonyDeBuff].remains and ( debuff[classtable.CorruptionDeBuff].up or debuff[classtable.WitherDeBuff].up ) and debuff[classtable.UnstableAfflictionDeBuff].up and debuff[classtable.HauntDeBuff].remains >5) and cooldown[classtable.Oblivion].ready then
         if not setSpell then setSpell = classtable.Oblivion end
     end
     if (MaxDps:CheckSpellUsable(classtable.MaleficRapture, 'MaleficRapture')) and (talents[classtable.TormentedCrescendo] and buff[classtable.TormentedCrescendoBuff].up and ( buff[classtable.TormentedCrescendoBuff].remains <gcd * 2 or buff[classtable.TormentedCrescendoBuff].count == 2 )) and cooldown[classtable.MaleficRapture].ready then
@@ -499,6 +499,7 @@ function Warlock:Affliction()
     classtable.VileTaintDeBuff = 386931
     classtable.PhantomSingularityDeBuff = 205179
     classtable.SeedofCorruptionDeBuff = 27243
+    classtable.VileTaintDotDeBuff = 386931
 
     local function debugg()
         talents[classtable.GrimoireofSacrifice] = 1
