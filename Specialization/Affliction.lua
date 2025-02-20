@@ -84,7 +84,7 @@ local trinket_priority = false
 local min_agony = 0
 local min_vt = 10
 local min_ps = 16
-local min_ps1 = false
+local min_ps1 = 0
 local ps_up = false
 local vt_up = false
 local vt_ps_up = false
@@ -139,7 +139,7 @@ function Affliction:aoe()
     min_agony = min ( min_agony,debuff[classtable.AgonyDeBuff].remains )
     min_vt = min ( min_vt,debuff[classtable.VileTaintDeBuff].remains )
     min_ps = min ( min_ps,debuff[classtable.PhantomSingularityDeBuff].remains )
-    min_ps1 = ( min_vt * (talents[classtable.VileTaint] and talents[classtable.VileTaint] or 0) ) <min ( min_ps * (talents[classtable.PhantomSingularity] and talents[classtable.PhantomSingularity] or 0) )
+    min_ps1 = math.min ( ( min_vt * (talents[classtable.VileTaint] and talents[classtable.VileTaint] or 0) ) , ( min_ps * (talents[classtable.PhantomSingularity] and talents[classtable.PhantomSingularity] or 0) ) )
     if (MaxDps:CheckSpellUsable(classtable.Haunt, 'Haunt')) and (debuff[classtable.HauntDeBuff].remains <3) and cooldown[classtable.Haunt].ready then
         if not setSpell then setSpell = classtable.Haunt end
     end
@@ -152,7 +152,7 @@ function Affliction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.UnstableAffliction, 'UnstableAffliction')) and (( MaxDps:DebuffCounter(classtable.UnstableAfflictionDeBuff) == 0 or debuff[classtable.UnstableAfflictionDeBuff].up ) and debuff[classtable.UnstableAfflictionDeBuff].remains <5) and cooldown[classtable.UnstableAffliction].ready then
         if not setSpell then setSpell = classtable.UnstableAffliction end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Agony, 'Agony')) and (MaxDps:DebuffCounter(classtable.AgonyDeBuff) <8 and ( debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.VileTaint].remains + ( classtable and classtable.VileTaint and GetSpellInfo(classtable.VileTaint).castTime / 1000 or 0) or not talents[classtable.VileTaint] ) and gcd + ( classtable and classtable.SoulRot and GetSpellInfo(classtable.SoulRot).castTime / 1000 or 0) + gcd <( ( min_vt * (talents[classtable.VileTaint] and talents[classtable.VileTaint] or 0) ) <( min_ps * (talents[classtable.PhantomSingularity] and talents[classtable.PhantomSingularity] or 0) ) ) and debuff[classtable.AgonyDeBuff].remains <10) and cooldown[classtable.Agony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Agony, 'Agony')) and (MaxDps:DebuffCounter(classtable.AgonyDeBuff) <8 and ( debuff[classtable.AgonyDeBuff].remains <cooldown[classtable.VileTaint].remains + ( classtable and classtable.VileTaint and GetSpellInfo(classtable.VileTaint).castTime / 1000 or 0) or not talents[classtable.VileTaint] ) and gcd + ( classtable and classtable.SoulRot and GetSpellInfo(classtable.SoulRot).castTime / 1000 or 0) + gcd <( math.min ( ( min_vt * (talents[classtable.VileTaint] and talents[classtable.VileTaint] or 0) ) , ( min_ps * (talents[classtable.PhantomSingularity] and talents[classtable.PhantomSingularity] or 0) ) ) ) and debuff[classtable.AgonyDeBuff].remains <10) and cooldown[classtable.Agony].ready then
         if not setSpell then setSpell = classtable.Agony end
     end
     if (MaxDps:CheckSpellUsable(classtable.SoulRot, 'SoulRot') and talents[classtable.SoulRot]) and (vt_up and ( ps_up or vt_up ) and debuff[classtable.AgonyDeBuff].up) and cooldown[classtable.SoulRot].ready then
@@ -336,7 +336,7 @@ function Affliction:variables()
     sr_up = not talents[classtable.SoulRot] or debuff[classtable.SoulRotDeBuff].up
     cd_dots_up = ps_up and vt_up and sr_up
     has_cds = talents[classtable.PhantomSingularity] or talents[classtable.VileTaint] or talents[classtable.SoulRot] or talents[classtable.SummonDarkglare]
-    cds_active = not has_cds or ( cd_dots_up and ( not talents[classtable.SummonDarkglare] or cooldown[classtable.SummonDarkglare].remains >20 or GetTotemInfoByName('Darkglare').remains ) )
+    cds_active = not has_cds or ( cd_dots_up and ( not talents[classtable.SummonDarkglare] or cooldown[classtable.SummonDarkglare].remains >20 or GetTotemInfoByName('Darkglare').up ) )
     if min_vt then
         min_vt = 10
     end
