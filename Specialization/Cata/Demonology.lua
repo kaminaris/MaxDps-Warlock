@@ -108,12 +108,12 @@ function Demonology:precombat()
     if (MaxDps:CheckSpellUsable(classtable.SoulHarvest, 'SoulHarvest')) and (SoulShards <3) and cooldown[classtable.SoulHarvest].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.SoulHarvest end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (false and not UnitExists('pet')) and cooldown[classtable.SummonFelguard].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (not UnitExists('pet')) and cooldown[classtable.SummonFelguard].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.SummonFelguard end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SummonFelhunter, 'SummonFelhunter')) and (not false and not UnitExists('pet')) and cooldown[classtable.SummonFelhunter].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.SummonFelhunter end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.SummonFelhunter, 'SummonFelhunter')) and (not false and not UnitExists('pet')) and cooldown[classtable.SummonFelhunter].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.SummonFelhunter end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.FelArmor, 'FelArmor')) and (not buff[classtable.FelArmorBuff].up) and cooldown[classtable.FelArmor].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.FelArmor end
     end
@@ -196,9 +196,9 @@ function Demonology:single_target_rotation()
     if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and (SoulShards >1 and false and not buff[classtable.FelIntelligenceBuff].up and not buff[classtable.DemonSoulFelguardBuff].up) and cooldown[classtable.Soulburn].ready then
         if not setSpell then setSpell = classtable.Soulburn end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SummonFelhunter, 'SummonFelhunter')) and (buff[classtable.SoulburnBuff].up and not buff[classtable.FelIntelligenceBuff].up and false and not buff[classtable.DemonSoulFelguardBuff].up) and cooldown[classtable.SummonFelhunter].ready then
-        if not setSpell then setSpell = classtable.SummonFelhunter end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.SummonFelhunter, 'SummonFelhunter')) and (buff[classtable.SoulburnBuff].up and not buff[classtable.FelIntelligenceBuff].up and false and not buff[classtable.DemonSoulFelguardBuff].up) and cooldown[classtable.SummonFelhunter].ready then
+    --    if not setSpell then setSpell = classtable.SummonFelhunter end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
