@@ -252,6 +252,7 @@ function Warlock:Destruction()
     classtable.SummonInfernal = 1122
     classtable.Incinerate = 29722
     classtable.CurseofDoom = 603
+    classtable.CurseofDoomDeBuff = 61573
     classtable.CurseofAgony = 980
     classtable.Shadowflame = 47897
     classtable.SeedofCorruption = 27243
