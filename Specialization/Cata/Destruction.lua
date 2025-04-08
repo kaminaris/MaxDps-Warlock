@@ -144,7 +144,7 @@ function Destruction:st()
     if (MaxDps:CheckSpellUsable(classtable.CurseofDoom, 'CurseofDoom')) and (ttd >60 and not debuff[classtable.MyCurseDeBuff].up) and cooldown[classtable.CurseofDoom].ready then
         if not setSpell then setSpell = classtable.CurseofDoom end
     end
-    if (MaxDps:CheckSpellUsable(classtable.CurseofAgony, 'CurseofAgony')) and (ttd <60 and not debuff[classtable.CurseofDoomDeBuff].duration >1) and cooldown[classtable.CurseofAgony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CurseofAgony, 'CurseofAgony')) and (ttd <60 and debuff[classtable.CurseofDoomDeBuff].remains <1) and cooldown[classtable.CurseofAgony].ready then
         if not setSpell then setSpell = classtable.CurseofAgony end
     end
 end
@@ -214,7 +214,9 @@ function Warlock:Destruction()
     SoulShardsMax = UnitPowerMax('player', MaelstromPT)
     SoulShardsDeficit = SoulShardsMax - SoulShards
     classtable.SpellLock = 19647
-    classtable.MyCurseDeBuff = MaxDps:NumGroupFriends() <= 1 and classtable.SoloCurse or MaxDps:NumGroupFriends() > 1 and classtable.GroupCurse
+    classtable.SoloCurse = 980
+    classtable.GroupCurse = 1490
+    classtable.MyCurseDeBuff = (MaxDps:NumGroupFriends() <= 1 and classtable.SoloCurse) or (MaxDps:NumGroupFriends() > 1 and classtable.GroupCurse)
     local havoc_count, havoc_totalRemains = MaxDps:DebuffCounter(classtable.Havoc,1)
     havoc_active = havoc_count >= 1
     havoc_remains = havoc_totalRemains or 0
