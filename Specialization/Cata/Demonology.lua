@@ -297,7 +297,9 @@ function Warlock:Demonology()
     SoulShardsMax = UnitPowerMax('player', MaelstromPT)
     SoulShardsDeficit = SoulShardsMax - SoulShards
     classtable.SpellLock = 19647
-    classtable.MyCurseDeBuff = MaxDps:NumGroupFriends() <= 1 and classtable.SoloCurse or MaxDps:NumGroupFriends() > 1 and classtable.GroupCurse
+    classtable.SoloCurse = 980
+    classtable.GroupCurse = 1490
+    classtable.MyCurseDeBuff = (MaxDps:NumGroupFriends() <= 1 and classtable.SoloCurse or MaxDps:NumGroupFriends() > 1 and classtable.GroupCurse) or classtable.SoloCurse
     classtable.AxeToss = 119914
     classtable.Demonbolt = 264178
     classtable.InfernalBolt = 434506

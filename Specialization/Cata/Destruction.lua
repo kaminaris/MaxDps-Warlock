@@ -216,7 +216,7 @@ function Warlock:Destruction()
     classtable.SpellLock = 19647
     classtable.SoloCurse = 980
     classtable.GroupCurse = 1490
-    classtable.MyCurseDeBuff = (MaxDps:NumGroupFriends() <= 1 and classtable.SoloCurse) or (MaxDps:NumGroupFriends() > 1 and classtable.GroupCurse)
+    classtable.MyCurseDeBuff = (MaxDps:NumGroupFriends() <= 1 and classtable.SoloCurse or MaxDps:NumGroupFriends() > 1 and classtable.GroupCurse) or classtable.SoloCurse
     local havoc_count, havoc_totalRemains = MaxDps:DebuffCounter(classtable.Havoc,1)
     havoc_active = havoc_count >= 1
     havoc_remains = havoc_totalRemains or 0
