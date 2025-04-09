@@ -268,6 +268,12 @@ function Demonology:callaction()
     if (targets <4 and cooldown[classtable.Metamorphosis].remains >1) then
         Demonology:single_target_rotation()
     end
+    if (targets >= 4 and not talents[59672]) then
+        Demonology:aoe()
+    end
+    if (targets <4 and not talents[59672]) then
+        Demonology:single_target_rotation()
+    end
 end
 function Warlock:Demonology()
     fd = MaxDps.FrameData
