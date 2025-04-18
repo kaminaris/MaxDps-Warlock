@@ -140,6 +140,8 @@ function Warlock:DPS()
     SoulShardsMax = UnitPowerMax('player', MaelstromPT)
     SoulShardsDeficit = SoulShardsMax - SoulShards
     classtable.SpellLock = 19647
+    classtable.DemonSkin = 687
+    classtable.DemonArmor = 706
     --for spellId in pairs(MaxDps.Flags) do
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
