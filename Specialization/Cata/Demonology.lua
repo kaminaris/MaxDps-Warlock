@@ -144,7 +144,8 @@ function Demonology:spell_damage_rotation()
         if not setSpell then setSpell = classtable.BaneofAgony end
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (buff[classtable.DemonicPactBuff].up and buff[classtable.MoltenCoreBuff].count >= 1 and cooldown[classtable.HandofGuldan].remains <10) and cooldown[classtable.SummonDoomguard].ready then
-        if not setSpell then setSpell = classtable.SummonDoomguard end
+        --if not setSpell then setSpell = classtable.SummonDoomguard end
+        MaxDps:GlowCooldown(classtable.SummonDoomguard, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonInfernal, 'SummonInfernal')) and (false and ttd >45) and cooldown[classtable.SummonInfernal].ready then
         if not setSpell then setSpell = classtable.SummonInfernal end
@@ -211,7 +212,8 @@ function Demonology:aoe()
         if not setSpell then setSpell = classtable.Felstorm end
     end
     if (MaxDps:CheckSpellUsable(classtable.Metamorphosis, 'Metamorphosis')) and cooldown[classtable.Metamorphosis].ready then
-        if not setSpell then setSpell = classtable.Metamorphosis end
+        --if not setSpell then setSpell = classtable.Metamorphosis end
+        MaxDps:GlowCooldown(classtable.Metamorphosis, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.ImmolationAura, 'ImmolationAura')) and (buff[classtable.MetamorphosisBuff].up) and cooldown[classtable.ImmolationAura].ready then
         if not setSpell then setSpell = classtable.ImmolationAura end
@@ -232,11 +234,14 @@ end
 
 
 local function ClearCDs()
+    MaxDps:GlowCooldown(classtable.SummonDoomguard, false)
+    MaxDps:GlowCooldown(classtable.Metamorphosis, false)
 end
 
 function Demonology:callaction()
     if (MaxDps:CheckSpellUsable(classtable.Metamorphosis, 'Metamorphosis')) and cooldown[classtable.Metamorphosis].ready then
-        if not setSpell then setSpell = classtable.Metamorphosis end
+        --if not setSpell then setSpell = classtable.Metamorphosis end
+        MaxDps:GlowCooldown(classtable.Metamorphosis, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.FelFlame, 'FelFlame')) and (buff[classtable.FelSparkBuff].up) and cooldown[classtable.FelFlame].ready then
         if not setSpell then setSpell = classtable.FelFlame end
