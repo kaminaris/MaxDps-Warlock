@@ -29,3 +29,9 @@ Specialization\Cata\Destruction.lua
 #@version-classic@
 Specialization\Classic\DPS.lua
 #@end-version-classic@
+
+#@version-mists@
+Specialization\Mop\Affliction.lua
+Specialization\Mop\Demonology.lua
+Specialization\Mop\Destruction.lua
+#@end-version-mists@
