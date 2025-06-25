@@ -73,30 +73,13 @@ local havoc_remains
 
 local Destruction = {}
 
-
-
-local function demonic_art()
-    if buff[classtable.demonic_art_mother_of_chaos].up or buff[classtable.demonic_art_overlord].up or buff[classtable.demonic_art_pit_lord].up then
-        return true
-    end
-    return false
-end
-
-local function diabolic_ritual()
-    if buff[classtable.diabolic_ritual_overlord].up or buff[classtable.diabolic_ritual_mother_of_chaos].up or buff[classtable.diabolic_ritual_pit_lord].up then
-        return true
-    end
-    return false
-end
-
-
 function Destruction:precombat()
-    if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and (not aura.spell_power_multiplier.up) and cooldown[classtable.DarkIntent].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and (not buff[classtable.DarkIntentBuff].up) and cooldown[classtable.DarkIntent].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DarkIntent end
     end
-    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.VolcanicPotion end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.VolcanicPotion end
+    --end
 end
 function Destruction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (targets <7) and cooldown[classtable.SummonDoomguard].ready then
@@ -108,13 +91,13 @@ function Destruction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.RainofFire, 'RainofFire')) and (not debuff[classtable.RainofFireDeBuff].up and not (MaxDps.spellHistory and MaxDps.spellHistory[1] and MaxDps.spellHistory[1] ~= classtable.RainofFire)) and cooldown[classtable.RainofFire].ready then
         if not setSpell then setSpell = classtable.RainofFire end
     end
-    if (MaxDps:CheckSpellUsable(classtable.FireandBrimstone, 'FireandBrimstone')) and (ember_up and not buff[classtable.FireandBrimstoneBuff].up) and cooldown[classtable.FireandBrimstone].ready then
+    if (MaxDps:CheckSpellUsable(classtable.FireandBrimstone, 'FireandBrimstone')) and (BurningEmber >=1 and not buff[classtable.FireandBrimstoneBuff].up) and cooldown[classtable.FireandBrimstone].ready then
         if not setSpell then setSpell = classtable.FireandBrimstone end
     end
     if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (buff[classtable.FireandBrimstoneBuff].up and not debuff[classtable.ImmolateDeBuff].up) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Conflagrate, 'Conflagrate')) and (ember_up and buff[classtable.FireandBrimstoneBuff].up) and cooldown[classtable.Conflagrate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Conflagrate, 'Conflagrate')) and (BurningEmber >=1 and buff[classtable.FireandBrimstoneBuff].up) and cooldown[classtable.Conflagrate].ready then
         if not setSpell then setSpell = classtable.Conflagrate end
     end
     if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and (buff[classtable.FireandBrimstoneBuff].up) and cooldown[classtable.Incinerate].ready then
@@ -131,9 +114,9 @@ local function ClearCDs()
 end
 
 function Destruction:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and (MaxDps:Bloodlust(1) or targethealthPerc <= 20) and cooldown[classtable.VolcanicPotion].ready then
-        if not setSpell then setSpell = classtable.VolcanicPotion end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and (MaxDps:Bloodlust(1) or targethealthPerc <= 20) and cooldown[classtable.VolcanicPotion].ready then
+    --    if not setSpell then setSpell = classtable.VolcanicPotion end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.DarkSoul, 'DarkSoul')) and cooldown[classtable.DarkSoul].ready then
         if not setSpell then setSpell = classtable.DarkSoul end
     end
@@ -152,13 +135,13 @@ function Destruction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.Havoc, 'Havoc')) and (targets >1) and cooldown[classtable.Havoc].ready then
         if not setSpell then setSpell = classtable.Havoc end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Shadowburn, 'Shadowburn')) and (ember_up) and cooldown[classtable.Shadowburn].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Shadowburn, 'Shadowburn')) and (BurningEmber >=1) and cooldown[classtable.Shadowburn].ready then
         if not setSpell then setSpell = classtable.Shadowburn end
     end
     if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (( not debuff[classtable.ImmolateDeBuff].up or debuff[classtable.ImmolateDeBuff].remains <( ( classtable and classtable.Incinerate and GetSpellInfo(classtable.Incinerate).castTime / 1000 or 0) + ( classtable and classtable.Immolate and GetSpellInfo(classtable.Immolate).castTime /1000 or 0) ) ) and ttd >= 5 and true) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and (ember_up and ( buff[classtable.BackdraftBuff].count <3 or UnitLevel('player') <86 ) and ( BurningEmber >3.5 or buff[classtable.DarkSoulBuff].remains >( classtable and classtable.ChaosBolt and GetSpellInfo(classtable.ChaosBolt).castTime /1000 or 0) ) and ManaPerc <= 80) and cooldown[classtable.ChaosBolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and (BurningEmber >=1 and ( buff[classtable.BackdraftBuff].count <3 or UnitLevel('player') <86 ) and ( BurningEmber >3.5 or buff[classtable.DarkSoulBuff].remains >( classtable and classtable.ChaosBolt and GetSpellInfo(classtable.ChaosBolt).castTime /1000 or 0) ) and ManaPerc <= 80) and cooldown[classtable.ChaosBolt].ready then
         if not setSpell then setSpell = classtable.ChaosBolt end
     end
     if (MaxDps:CheckSpellUsable(classtable.Conflagrate, 'Conflagrate')) and cooldown[classtable.Conflagrate].ready then
@@ -203,18 +186,21 @@ function Warlock:Destruction()
     local havoc_count, havoc_totalRemains = MaxDps:DebuffCounter(classtable.Havoc,1)
     havoc_active = havoc_count >= 1
     havoc_remains = havoc_totalRemains or 0
-    classtable.Wither = 445468
-    classtable.InfernalBolt = 434506
-    classtable.demonic_art_mother_of_chaos = 432794
-    classtable.demonic_art_overlord = 428524
-    classtable.demonic_art_pit_lord = 432795
-    classtable.diabolic_ritual_overlord = 431944
-    classtable.diabolic_ritual_mother_of_chaos = 432815
-    classtable.diabolic_ritual_pit_lord = 432816
+
     --for spellId in pairs(MaxDps.Flags) do
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
+
+    classtable.ServicePet = 691
+    classtable.SummonDoomguard = talents[108499] and 112927 or 18540
+
+    classtable.DarkIntentBuff = 109773
+    --classtable.FireandBrimstoneBuff
+    classtable.BackdraftBuff = 117828
+    classtable.DarkSoulBuff = 113858
+    classtable.RainofFireDeBuff = 104232
+    classtable.ImmolateDeBuff = 348
 
     local function debugg()
         talents[classtable.GrimoireofService] = 1
