@@ -68,44 +68,16 @@ local Mana
 local ManaMax
 local ManaDeficit
 local ManaPerc
-local DemonicFury
 
 local Demonology = {}
 
-
-
---local function imp_despawn()
---    if buff[classtable.TyrantBuff].up then return 0 end
---    local val = 0
---    local TTSHoD = (GetTime() - (MaxDps.spellHistoryTime and MaxDps.spellHistoryTime[classtable.HandofGuldan] and MaxDps.spellHistoryTime[classtable.HandofGuldan].last_used or 0))
---    if TTSHoD < (2 * UnitSpellHaste('player') * 6 + 0.58) and buff[classtable.DreadStalkers].up and cooldown[classtable.SummonDemonicTyrant].remains < 13 then
---        val = max( 0, GetTime() - TTSHoD + 2 * UnitSpellHaste('player') * 6 + 0.58 )
---    end
---    if val > 0 then
---        val = max( val, buff[classtable.DreadStalkers].remains + GetTime() )
---    end
---    if val > 0 and buff[classtable.GrimoireFelguard].up then
---        val = max( val, buff[classtable.GrimoireFelguard].remains + GetTime() )
---    end
---    return val
---end
-
-local function last_cast_imps()
-    if MaxDps.spellHistoryTime and MaxDps.spellHistoryTime[classtable.Implosion] then
-        return GetTime() - MaxDps.spellHistoryTime[classtable.Implosion].last_used
-    else
-        return math.huge
-    end
-end
-
-
 function Demonology:precombat()
-    if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and (not aura.spell_power_multiplier.up) and cooldown[classtable.DarkIntent].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and (not buff[classtable.DarkIntentBuff].up) and cooldown[classtable.DarkIntent].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DarkIntent end
     end
-    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.VolcanicPotion end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.VolcanicPotion end
+    --end
 end
 function Demonology:aoe()
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (targets <7) and cooldown[classtable.SummonDoomguard].ready then
@@ -129,7 +101,7 @@ function Demonology:aoe()
     if (MaxDps:CheckSpellUsable(classtable.VoidRay, 'VoidRay')) and (debuff[classtable.CorruptionDeBuff].remains <10) and cooldown[classtable.VoidRay].ready then
         if not setSpell then setSpell = classtable.VoidRay end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Doom, 'Doom')) and (( not debuff[classtable.DoomDeBuff].up or debuff[classtable.DoomDeBuff].remains <40 ) and ttd >30 and true) and cooldown[classtable.Doom].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Doom, 'Doom')) and (( not debuff[classtable.DoomDeBuff].up or debuff[classtable.DoomDeBuff].remains <4 ) and ttd >30 and true) and cooldown[classtable.Doom].ready then
         if not setSpell then setSpell = classtable.Doom end
     end
     if (MaxDps:CheckSpellUsable(classtable.VoidRay, 'VoidRay')) and cooldown[classtable.VoidRay].ready then
@@ -153,21 +125,21 @@ local function ClearCDs()
 end
 
 function Demonology:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and (MaxDps:Bloodlust(1) or targethealthPerc <= 20) and cooldown[classtable.VolcanicPotion].ready then
-        if not setSpell then setSpell = classtable.VolcanicPotion end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and (MaxDps:Bloodlust(1) or targethealthPerc <= 20) and cooldown[classtable.VolcanicPotion].ready then
+    --    if not setSpell then setSpell = classtable.VolcanicPotion end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.DarkSoul, 'DarkSoul')) and cooldown[classtable.DarkSoul].ready then
         if not setSpell then setSpell = classtable.DarkSoul end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and (not UnitExists("pet")) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
         if not setSpell then setSpell = classtable.ServicePet end
     end
     if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false)) and cooldown[classtable.GrimoireofSacrifice].ready then
         if not setSpell then setSpell = classtable.GrimoireofSacrifice end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Melee, 'Melee')) and cooldown[classtable.Melee].ready then
-        if not setSpell then setSpell = classtable.Melee end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.Melee, 'Melee')) and cooldown[classtable.Melee].ready then
+    --    if not setSpell then setSpell = classtable.Melee end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.Felguardfelstorm, 'Felguardfelstorm')) and cooldown[classtable.Felguardfelstorm].ready then
         if not setSpell then setSpell = classtable.Felguardfelstorm end
     end
@@ -189,9 +161,9 @@ function Demonology:callaction()
     if (MaxDps:CheckSpellUsable(classtable.Metamorphosis, 'Metamorphosis')) and (buff[classtable.DarkSoulBuff].up or debuff[classtable.CorruptionDeBuff].remains <5 or DemonicFury >= 900 or DemonicFury >= ttd * 30) and cooldown[classtable.Metamorphosis].ready then
         MaxDps:GlowCooldown(classtable.Metamorphosis, cooldown[classtable.Metamorphosis].ready)
     end
-    if (MaxDps:CheckSpellUsable(classtable.CancelMetamorphosis, 'CancelMetamorphosis')) and (debuff[classtable.CorruptionDeBuff].remains >20 and not buff[classtable.DarkSoulBuff].up and DemonicFury <= 750 and ttd >30) and cooldown[classtable.CancelMetamorphosis].ready then
-        if not setSpell then setSpell = classtable.CancelMetamorphosis end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.CancelMetamorphosis, 'CancelMetamorphosis')) and (debuff[classtable.CorruptionDeBuff].remains >20 and not buff[classtable.DarkSoulBuff].up and DemonicFury <= 750 and ttd >30) and cooldown[classtable.CancelMetamorphosis].ready then
+    --    if not setSpell then setSpell = classtable.CancelMetamorphosis end
+    --end
     if (MaxDps:CheckSpellUsable(classtable.HandofGuldan, 'HandofGuldan')) and (not (MaxDps.spellHistory and MaxDps.spellHistory[1] and MaxDps.spellHistory[1] ~= classtable.HandofGuldan) and debuff[classtable.ShadowflameDeBuff].remains <1 + ( classtable and classtable.ShadowBolt and GetSpellInfo(classtable.ShadowBolt).castTime / 1000 or 0)) and cooldown[classtable.HandofGuldan].ready then
         if not setSpell then setSpell = classtable.HandofGuldan end
     end
@@ -260,6 +232,19 @@ function Warlock:Demonology()
         talents[classtable.HarvestLife] = 1
     end
 
+    classtable.TouchofChaos = 103964
+    classtable.Doom = 603
+    classtable.Felguardfelstorm = 89751
+    classtable.DarkIntentBuff = 109773
+    classtable.DarkSoulBuff = 113861
+    classtable.MoltenCoreBuff = 122355
+    classtable.MetamorphosisBuff = 103958
+    classtable.CorruptionDeBuff = 146739
+    classtable.DoomDeBuff = 603
+    classtable.ShadowflameDeBuff = 47960
+
+    classtable.ServicePet = 30146
+    classtable.Wrathguardwrathstorm = 115831
 
     --if MaxDps.db.global.debugMode then
     --   debugg()
