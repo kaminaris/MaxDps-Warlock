@@ -72,12 +72,12 @@ local ManaPerc
 local Affliction = {}
 
 function Affliction:precombat()
-    if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and (not aura.spell_power_multiplier.up) and cooldown[classtable.DarkIntent].ready and not UnitAffectingCombat('player') then
+    if (MaxDps:CheckSpellUsable(classtable.DarkIntent, 'DarkIntent')) and (not buff[classtable.DarkIntent].up) and cooldown[classtable.DarkIntent].ready and not UnitAffectingCombat('player') then
         if not setSpell then setSpell = classtable.DarkIntent end
     end
-    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
-        if not setSpell then setSpell = classtable.VolcanicPotion end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and cooldown[classtable.VolcanicPotion].ready and not UnitAffectingCombat('player') then
+    --    if not setSpell then setSpell = classtable.VolcanicPotion end
+    --end
 end
 function Affliction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (targets <7) and cooldown[classtable.SummonDoomguard].ready then
@@ -109,13 +109,13 @@ local function ClearCDs()
 end
 
 function Affliction:callaction()
-    if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and (MaxDps:Bloodlust(1) or targethealthPerc <= 20) and cooldown[classtable.VolcanicPotion].ready then
-        if not setSpell then setSpell = classtable.VolcanicPotion end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.DarkSoul, 'DarkSoul')) and cooldown[classtable.DarkSoul].ready then
+    --if (MaxDps:CheckSpellUsable(classtable.VolcanicPotion, 'VolcanicPotion')) and (MaxDps:Bloodlust(1) or targethealthPerc <= 20) and cooldown[classtable.VolcanicPotion].ready then
+    --    if not setSpell then setSpell = classtable.VolcanicPotion end
+    --end
+    if (MaxDps:CheckSpellUsable(classtable.DarkSoul, 'DarkSoul')) and (not buff[classtable.DarkSoulBuff].up) and cooldown[classtable.DarkSoul].ready then
         if not setSpell then setSpell = classtable.DarkSoul end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and (not UnitExists("pet")) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
         if not setSpell then setSpell = classtable.ServicePet end
     end
     if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false)) and cooldown[classtable.GrimoireofSacrifice].ready then
@@ -142,7 +142,7 @@ function Affliction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.Soulburn, 'Soulburn')) and (buff[classtable.DarkSoulBuff].up and SoulShards >0) and cooldown[classtable.Soulburn].ready then
         if not setSpell then setSpell = classtable.Soulburn end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Agony, 'Agony')) and (( not debuff[classtable.AgonyDeBuff].up or debuff[classtable.AgonyDeBuff].remains <= action.drain_soul.new_tick_time * 2 ) and ttd >= 8 and true) and cooldown[classtable.Agony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Agony, 'Agony')) and (( not debuff[classtable.AgonyDeBuff].up or debuff[classtable.AgonyDeBuff].remains <= 2 * 2 ) and ttd >= 8 and true) and cooldown[classtable.Agony].ready then
         if not setSpell then setSpell = classtable.Agony end
     end
     if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <1 ) and ttd >= 6 and true) and cooldown[classtable.Corruption].ready then
@@ -203,6 +203,18 @@ function Warlock:Affliction()
     --    self.Flags[spellId] = false
     --    self:ClearGlowIndependent(spellId, spellId)
     --end
+
+    classtable.MaleficGrasp = 103103
+
+    classtable.SoulburnBuff = 74434
+    classtable.DarkSoulBuff = 113860
+    classtable.SeedofCorruptionDeBuff = 27243
+    classtable.HauntDeBuff = 48181
+    classtable.AgonyDeBuff = 980
+    classtable.CorruptionDeBuff = 146739
+    classtable.UnstableAfflictionDeBuff = 30108
+    classtable.SummonDoomguard = talents[108499] and 112927 or 18540
+    classtable.ServicePet = 691
 
     local function debugg()
         talents[classtable.GrimoireofService] = 1
