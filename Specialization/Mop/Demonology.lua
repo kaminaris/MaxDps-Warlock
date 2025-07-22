@@ -123,7 +123,7 @@ end
 local function ClearCDs()
     MaxDps:GlowCooldown(classtable.Metamorphosis, false)
     MaxDps:GlowCooldown(classtable.SummonInfernal, false)
-    MaxDps:GlowCooldown(classtable.DarkSoul, false)
+    MaxDps:GlowCooldown(classtable.Felguardfelstorm, false)
     MaxDps:GlowCooldown(classtable.SummonDoomguard, false)
 end
 
@@ -135,17 +135,18 @@ function Demonology:callaction()
         --if not setSpell then setSpell = classtable.DarkSoul end
         MaxDps:GlowCooldown(classtable.DarkSoul, true)
     end
-    if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and (not UnitExists("pet")) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and (not UnitExists("pet")) and ( (talents[classtable.GrimoireofSacrifice] and not buff[classtable.GrimoireofSacrificeBuff].up) or not talents[classtable.GrimoireofSacrifice] ) and cooldown[classtable.ServicePet].ready then
         if not setSpell then setSpell = classtable.ServicePet end
     end
-    if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false)) and cooldown[classtable.GrimoireofSacrifice].ready then
+    if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false) and not buff[classtable.GrimoireofSacrificeBuff].up or buff[classtable.GrimoireofSacrificeBuff].refreshable) and cooldown[classtable.GrimoireofSacrifice].ready then
         if not setSpell then setSpell = classtable.GrimoireofSacrifice end
     end
     --if (MaxDps:CheckSpellUsable(classtable.Melee, 'Melee')) and cooldown[classtable.Melee].ready then
     --    if not setSpell then setSpell = classtable.Melee end
     --end
     if (MaxDps:CheckSpellUsable(classtable.Felguardfelstorm, 'Felguardfelstorm')) and cooldown[classtable.Felguardfelstorm].ready then
-        if not setSpell then setSpell = classtable.Felguardfelstorm end
+        --if not setSpell then setSpell = classtable.Felguardfelstorm end
+        MaxDps:GlowCooldown(classtable.Felguardfelstorm, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.Wrathguardwrathstorm, 'Wrathguardwrathstorm')) and cooldown[classtable.Wrathguardwrathstorm].ready then
         if not setSpell then setSpell = classtable.Wrathguardwrathstorm end
@@ -169,7 +170,7 @@ function Demonology:callaction()
     --if (MaxDps:CheckSpellUsable(classtable.CancelMetamorphosis, 'CancelMetamorphosis')) and (debuff[classtable.CorruptionDeBuff].remains >20 and not buff[classtable.DarkSoulBuff].up and DemonicFury <= 750 and ttd >30) and cooldown[classtable.CancelMetamorphosis].ready then
     --    if not setSpell then setSpell = classtable.CancelMetamorphosis end
     --end
-    if (MaxDps:CheckSpellUsable(classtable.HandofGuldan, 'HandofGuldan')) and (not (MaxDps.spellHistory and MaxDps.spellHistory[1] and MaxDps.spellHistory[1] ~= classtable.HandofGuldan) and debuff[classtable.ShadowflameDeBuff].remains <1 + ( classtable and classtable.ShadowBolt and GetSpellInfo(classtable.ShadowBolt).castTime / 1000 or 0)) and cooldown[classtable.HandofGuldan].ready then
+    if (MaxDps:CheckSpellUsable(classtable.HandofGuldan, 'HandofGuldan')) and ((MaxDps.spellHistory and MaxDps.spellHistory[1] and MaxDps.spellHistory[1] ~= classtable.HandofGuldan) and debuff[classtable.ShadowflameDeBuff].remains <1 + ( classtable and classtable.ShadowBolt and GetSpellInfo(classtable.ShadowBolt).castTime / 1000 or 0)) and cooldown[classtable.HandofGuldan].ready then
         if not setSpell then setSpell = classtable.HandofGuldan end
     end
     if (MaxDps:CheckSpellUsable(classtable.TouchofChaos, 'TouchofChaos')) and (debuff[classtable.CorruptionDeBuff].remains <20) and cooldown[classtable.TouchofChaos].ready then
@@ -243,13 +244,14 @@ function Warlock:Demonology()
     classtable.SummonDoomguard = talents[108499] and 112927 or 18540
     classtable.DarkIntentBuff = 109773
     classtable.DarkSoulBuff = 113861
+    classtable.GrimoireofSacrificeBuff = 108503
     classtable.MoltenCoreBuff = 122355
     classtable.MetamorphosisBuff = 103958
     classtable.CorruptionDeBuff = 146739
     classtable.DoomDeBuff = 603
     classtable.ShadowflameDeBuff = 47960
 
-    classtable.ServicePet = 30146
+    classtable.ServicePet = talents[classtable.GrimoireofSupremacy] and 112870 or 30146
     classtable.Wrathguardwrathstorm = 115831
 
     --if MaxDps.db.global.debugMode then
