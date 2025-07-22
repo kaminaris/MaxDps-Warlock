@@ -83,7 +83,8 @@ function Destruction:precombat()
 end
 function Destruction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (targets <7) and cooldown[classtable.SummonDoomguard].ready then
-        if not setSpell then setSpell = classtable.SummonDoomguard end
+        --if not setSpell then setSpell = classtable.SummonDoomguard end
+        MaxDps:GlowCooldown(classtable.SummonDoomguard, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonInfernal, 'SummonInfernal')) and (targets >= 7) and cooldown[classtable.SummonInfernal].ready then
         MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
@@ -111,6 +112,8 @@ end
 
 local function ClearCDs()
     MaxDps:GlowCooldown(classtable.SummonInfernal, false)
+    MaxDps:GlowCooldown(classtable.DarkSoul, false)
+    MaxDps:GlowCooldown(classtable.SummonDoomguard, false)
 end
 
 function Destruction:callaction()
@@ -118,7 +121,8 @@ function Destruction:callaction()
     --    if not setSpell then setSpell = classtable.VolcanicPotion end
     --end
     if (MaxDps:CheckSpellUsable(classtable.DarkSoul, 'DarkSoul')) and cooldown[classtable.DarkSoul].ready then
-        if not setSpell then setSpell = classtable.DarkSoul end
+        --if not setSpell then setSpell = classtable.DarkSoul end
+        MaxDps:GlowCooldown(classtable.DarkSoul, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
         if not setSpell then setSpell = classtable.ServicePet end
@@ -130,7 +134,8 @@ function Destruction:callaction()
         Destruction:aoe()
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and cooldown[classtable.SummonDoomguard].ready then
-        if not setSpell then setSpell = classtable.SummonDoomguard end
+        --if not setSpell then setSpell = classtable.SummonDoomguard end
+        MaxDps:GlowCooldown(classtable.SummonDoomguard, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.Havoc, 'Havoc')) and (targets >1) and cooldown[classtable.Havoc].ready then
         if not setSpell then setSpell = classtable.Havoc end

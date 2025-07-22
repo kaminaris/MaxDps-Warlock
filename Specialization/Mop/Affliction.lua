@@ -81,7 +81,8 @@ function Affliction:precombat()
 end
 function Affliction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (targets <7) and cooldown[classtable.SummonDoomguard].ready then
-        if not setSpell then setSpell = classtable.SummonDoomguard end
+        --if not setSpell then setSpell = classtable.SummonDoomguard end
+        MaxDps:GlowCooldown(classtable.SummonDoomguard, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonInfernal, 'SummonInfernal')) and (targets >= 7) and cooldown[classtable.SummonInfernal].ready then
         MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
@@ -106,6 +107,8 @@ end
 
 local function ClearCDs()
     MaxDps:GlowCooldown(classtable.SummonInfernal, false)
+    MaxDps:GlowCooldown(classtable.DarkSoul, false)
+    MaxDps:GlowCooldown(classtable.SummonDoomguard, false)
 end
 
 function Affliction:callaction()
@@ -113,7 +116,8 @@ function Affliction:callaction()
     --    if not setSpell then setSpell = classtable.VolcanicPotion end
     --end
     if (MaxDps:CheckSpellUsable(classtable.DarkSoul, 'DarkSoul')) and (not buff[classtable.DarkSoulBuff].up) and cooldown[classtable.DarkSoul].ready then
-        if not setSpell then setSpell = classtable.DarkSoul end
+        --if not setSpell then setSpell = classtable.DarkSoul end
+        MaxDps:GlowCooldown(classtable.DarkSoul, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and (not UnitExists("pet")) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
         if not setSpell then setSpell = classtable.ServicePet end
@@ -125,7 +129,8 @@ function Affliction:callaction()
         Affliction:aoe()
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and cooldown[classtable.SummonDoomguard].ready then
-        if not setSpell then setSpell = classtable.SummonDoomguard end
+        --if not setSpell then setSpell = classtable.SummonDoomguard end
+        MaxDps:GlowCooldown(classtable.SummonDoomguard, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.SoulSwap, 'SoulSwap')) and (buff[classtable.SoulburnBuff].up) and cooldown[classtable.SoulSwap].ready then
         if not setSpell then setSpell = classtable.SoulSwap end

@@ -81,7 +81,8 @@ function Demonology:precombat()
 end
 function Demonology:aoe()
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and (targets <7) and cooldown[classtable.SummonDoomguard].ready then
-        if not setSpell then setSpell = classtable.SummonDoomguard end
+        --if not setSpell then setSpell = classtable.SummonDoomguard end
+        MaxDps:GlowCooldown(classtable.SummonDoomguard, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonInfernal, 'SummonInfernal')) and (targets >= 7) and cooldown[classtable.SummonInfernal].ready then
         MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
@@ -122,6 +123,8 @@ end
 local function ClearCDs()
     MaxDps:GlowCooldown(classtable.Metamorphosis, false)
     MaxDps:GlowCooldown(classtable.SummonInfernal, false)
+    MaxDps:GlowCooldown(classtable.DarkSoul, false)
+    MaxDps:GlowCooldown(classtable.SummonDoomguard, false)
 end
 
 function Demonology:callaction()
@@ -129,7 +132,8 @@ function Demonology:callaction()
     --    if not setSpell then setSpell = classtable.VolcanicPotion end
     --end
     if (MaxDps:CheckSpellUsable(classtable.DarkSoul, 'DarkSoul')) and cooldown[classtable.DarkSoul].ready then
-        if not setSpell then setSpell = classtable.DarkSoul end
+        --if not setSpell then setSpell = classtable.DarkSoul end
+        MaxDps:GlowCooldown(classtable.DarkSoul, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and (not UnitExists("pet")) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
         if not setSpell then setSpell = classtable.ServicePet end
@@ -150,7 +154,8 @@ function Demonology:callaction()
         Demonology:aoe()
     end
     if (MaxDps:CheckSpellUsable(classtable.SummonDoomguard, 'SummonDoomguard')) and cooldown[classtable.SummonDoomguard].ready then
-        if not setSpell then setSpell = classtable.SummonDoomguard end
+        --if not setSpell then setSpell = classtable.SummonDoomguard end
+        MaxDps:GlowCooldown(classtable.SummonDoomguard, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <1 ) and ttd >= 6 and true) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
@@ -235,6 +240,7 @@ function Warlock:Demonology()
     classtable.TouchofChaos = 103964
     classtable.Doom = 603
     classtable.Felguardfelstorm = 89751
+    classtable.SummonDoomguard = talents[108499] and 112927 or 18540
     classtable.DarkIntentBuff = 109773
     classtable.DarkSoulBuff = 113861
     classtable.MoltenCoreBuff = 122355
