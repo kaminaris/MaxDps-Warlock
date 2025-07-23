@@ -87,7 +87,7 @@ function Demonology:aoe()
     if (MaxDps:CheckSpellUsable(classtable.SummonInfernal, 'SummonInfernal')) and (targets >= 7) and cooldown[classtable.SummonInfernal].ready then
         MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <1 ) and ttd >30 and true) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption') and not buff[classtable.MetamorphosisBuff].up) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <1 ) and ttd >30 and true) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
     if (MaxDps:CheckSpellUsable(classtable.HandofGuldan, 'HandofGuldan')) and cooldown[classtable.HandofGuldan].ready then
@@ -158,7 +158,7 @@ function Demonology:callaction()
         --if not setSpell then setSpell = classtable.SummonDoomguard end
         MaxDps:GlowCooldown(classtable.SummonDoomguard, true)
     end
-    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <1 ) and ttd >= 6 and true) and cooldown[classtable.Corruption].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption') and not buff[classtable.MetamorphosisBuff].up) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <1 ) and ttd >= 6 and true) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
     if (MaxDps:CheckSpellUsable(classtable.Doom, 'Doom')) and (( not debuff[classtable.DoomDeBuff].up or debuff[classtable.DoomDeBuff].remains <1 or ( debuff[classtable.DoomDeBuff].remains + 1 <debuff[classtable.DoomDeBuff].duration and buff[classtable.DarkSoulBuff].up ) ) and ttd >= 30 and true) and cooldown[classtable.Doom].ready then
