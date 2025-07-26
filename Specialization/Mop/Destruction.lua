@@ -127,7 +127,7 @@ function Destruction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
         if not setSpell then setSpell = classtable.ServicePet end
     end
-    if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false)) and cooldown[classtable.GrimoireofSacrifice].ready then
+    if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false) and not buff[classtable.GrimoireofSacrificeBuff].up or buff[classtable.GrimoireofSacrificeBuff].refreshable) and cooldown[classtable.GrimoireofSacrifice].ready then
         if not setSpell then setSpell = classtable.GrimoireofSacrifice end
     end
     if (targets >2) then
@@ -204,6 +204,7 @@ function Warlock:Destruction()
     --classtable.FireandBrimstoneBuff
     classtable.BackdraftBuff = 117828
     classtable.DarkSoulBuff = 113858
+    classtable.GrimoireofSacrificeBuff = 108503
     classtable.RainofFireDeBuff = 104232
     classtable.ImmolateDeBuff = 348
 
