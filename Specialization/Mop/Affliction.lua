@@ -122,7 +122,7 @@ function Affliction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and (not UnitExists("pet")) and ((talents[classtable.GrimoireofService] and true or false)) and cooldown[classtable.ServicePet].ready then
         if not setSpell then setSpell = classtable.ServicePet end
     end
-    if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false)) and cooldown[classtable.GrimoireofSacrifice].ready then
+    if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false) and not buff[classtable.GrimoireofSacrificeBuff].up or buff[classtable.GrimoireofSacrificeBuff].refreshable) and cooldown[classtable.GrimoireofSacrifice].ready then
         if not setSpell then setSpell = classtable.GrimoireofSacrifice end
     end
     if (targets >3) then
@@ -213,6 +213,7 @@ function Warlock:Affliction()
 
     classtable.SoulburnBuff = 74434
     classtable.DarkSoulBuff = 113860
+    classtable.GrimoireofSacrificeBuff = 108503
     classtable.SeedofCorruptionDeBuff = 27243
     classtable.HauntDeBuff = 48181
     classtable.AgonyDeBuff = 980
