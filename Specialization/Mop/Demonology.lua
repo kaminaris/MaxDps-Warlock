@@ -96,17 +96,17 @@ function Demonology:aoe()
     if (MaxDps:CheckSpellUsable(classtable.Metamorphosis, 'Metamorphosis')) and (DemonicFury >= 1000 or DemonicFury >= 31 * ttd) and cooldown[classtable.Metamorphosis].ready then
         MaxDps:GlowCooldown(classtable.Metamorphosis, cooldown[classtable.Metamorphosis].ready)
     end
-    if (MaxDps:CheckSpellUsable(classtable.ImmolationAura, 'ImmolationAura')) and cooldown[classtable.ImmolationAura].ready then
-        if not setSpell then setSpell = classtable.ImmolationAura end
+    if (MaxDps:CheckSpellUsable(classtable.MetamorphosisImmolationAura, 'MetamorphosisImmolationAura')) and cooldown[classtable.MetamorphosisImmolationAura].ready then
+        if not setSpell then setSpell = classtable.MetamorphosisImmolationAura end
     end
-    if (MaxDps:CheckSpellUsable(classtable.VoidRay, 'VoidRay')) and (debuff[classtable.CorruptionDeBuff].remains <10) and cooldown[classtable.VoidRay].ready then
-        if not setSpell then setSpell = classtable.VoidRay end
+    if (MaxDps:CheckSpellUsable(classtable.MetamorphosisVoidRay, 'MetamorphosisVoidRay')) and (debuff[classtable.CorruptionDeBuff].remains <10) and cooldown[classtable.MetamorphosisVoidRay].ready then
+        if not setSpell then setSpell = classtable.MetamorphosisVoidRay end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Doom, 'Doom')) and (( not debuff[classtable.DoomDeBuff].up or debuff[classtable.DoomDeBuff].remains <4 ) and ttd >30 and true) and cooldown[classtable.Doom].ready then
-        if not setSpell then setSpell = classtable.Doom end
+    if (MaxDps:CheckSpellUsable(classtable.MetamorphosisDoom, 'MetamorphosisDoom')) and (( not debuff[classtable.DoomDeBuff].up or debuff[classtable.DoomDeBuff].remains <4 ) and ttd >30 and true) and cooldown[classtable.MetamorphosisDoom].ready then
+        if not setSpell then setSpell = classtable.MetamorphosisDoom end
     end
-    if (MaxDps:CheckSpellUsable(classtable.VoidRay, 'VoidRay')) and cooldown[classtable.VoidRay].ready then
-        if not setSpell then setSpell = classtable.VoidRay end
+    if (MaxDps:CheckSpellUsable(classtable.MetamorphosisVoidRay, 'MetamorphosisVoidRay')) and cooldown[classtable.MetamorphosisVoidRay].ready then
+        if not setSpell then setSpell = classtable.MetamorphosisVoidRay end
     end
     if (MaxDps:CheckSpellUsable(classtable.HarvestLife, 'HarvestLife') and talents[classtable.HarvestLife]) and ((talents[classtable.HarvestLife] and true or false)) and cooldown[classtable.HarvestLife].ready then
         if not setSpell then setSpell = classtable.HarvestLife end
@@ -161,8 +161,8 @@ function Demonology:callaction()
     if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption') and not buff[classtable.MetamorphosisBuff].up) and (( not debuff[classtable.CorruptionDeBuff].up or debuff[classtable.CorruptionDeBuff].remains <1 ) and ttd >= 6 and true) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Doom, 'Doom')) and (( not debuff[classtable.DoomDeBuff].up or debuff[classtable.DoomDeBuff].remains <1 or ( debuff[classtable.DoomDeBuff].remains + 1 <debuff[classtable.DoomDeBuff].duration and buff[classtable.DarkSoulBuff].up ) ) and ttd >= 30 and true) and cooldown[classtable.Doom].ready then
-        if not setSpell then setSpell = classtable.Doom end
+    if (MaxDps:CheckSpellUsable(classtable.MetamorphosisDoom, 'MetamorphosisDoom')) and (( not debuff[classtable.DoomDeBuff].up or debuff[classtable.DoomDeBuff].remains <1 or ( debuff[classtable.DoomDeBuff].remains + 1 <debuff[classtable.DoomDeBuff].duration and buff[classtable.DarkSoulBuff].up ) ) and ttd >= 30 and true) and cooldown[classtable.MetamorphosisDoom].ready then
+        if not setSpell then setSpell = classtable.MetamorphosisDoom end
     end
     if (MaxDps:CheckSpellUsable(classtable.Metamorphosis, 'Metamorphosis')) and (buff[classtable.DarkSoulBuff].up or debuff[classtable.CorruptionDeBuff].remains <5 or DemonicFury >= 900 or DemonicFury >= ttd * 30) and cooldown[classtable.Metamorphosis].ready then
         MaxDps:GlowCooldown(classtable.Metamorphosis, cooldown[classtable.Metamorphosis].ready)
@@ -239,7 +239,6 @@ function Warlock:Demonology()
     end
 
     classtable.TouchofChaos = 103964
-    classtable.Doom = 603
     classtable.Felguardfelstorm = 89751
     classtable.SummonDoomguard = talents[108499] and 112927 or 18540
     classtable.DarkIntentBuff = 109773
