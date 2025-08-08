@@ -245,7 +245,7 @@ function Destruction:precombat()
 end
 function Destruction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.Malevolence, 'Malevolence') and talents[classtable.Malevolence]) and (cooldown[classtable.SummonInfernal].remains >= 55 and SoulShards <4.7 and (targets <= 3+MaxDps:DebuffCounter(classtable.WitherDeBuff) or timeInCombat >30)) and cooldown[classtable.Malevolence].ready then
-        if not setSpell then setSpell = classtable.Malevolence end
+        MaxDps:GlowCooldown(classtable.Malevolence, cooldown[classtable.Malevolence].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.RainofFire, 'RainofFire') and talents[classtable.RainofFire]) and (demonic_art()) and cooldown[classtable.RainofFire].ready then
         if not setSpell then setSpell = classtable.RainofFire end
@@ -342,7 +342,7 @@ function Destruction:cleave()
     end
     pool_soul_shards = cooldown[classtable.Havoc].remains <= 5 or talents[classtable.Mayhem]
     if (MaxDps:CheckSpellUsable(classtable.Malevolence, 'Malevolence') and talents[classtable.Malevolence]) and ((not cooldown[classtable.SummonInfernal].ready or not talents[classtable.SummonInfernal])) and cooldown[classtable.Malevolence].ready then
-        if not setSpell then setSpell = classtable.Malevolence end
+        MaxDps:GlowCooldown(classtable.Malevolence, cooldown[classtable.Malevolence].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.Havoc, 'Havoc')) and ((not cooldown[classtable.SummonInfernal].ready or not talents[classtable.SummonInfernal]) and ttd >8) and cooldown[classtable.Havoc].ready then
         if not setSpell then setSpell = classtable.Havoc end
@@ -506,6 +506,7 @@ end
 
 local function ClearCDs()
     MaxDps:GlowCooldown(classtable.SpellLock, false)
+    MaxDps:GlowCooldown(classtable.Malevolence, false)
     MaxDps:GlowCooldown(classtable.SummonInfernal, false)
     MaxDps:GlowCooldown(classtable.spymasters_web, false)
     MaxDps:GlowCooldown(classtable.trinket1, false)
@@ -526,7 +527,7 @@ function Destruction:callaction()
         Destruction:cleave()
     end
     if (MaxDps:CheckSpellUsable(classtable.Malevolence, 'Malevolence') and talents[classtable.Malevolence]) and (cooldown[classtable.SummonInfernal].remains >= 55) and cooldown[classtable.Malevolence].ready then
-        if not setSpell then setSpell = classtable.Malevolence end
+        MaxDps:GlowCooldown(classtable.Malevolence, cooldown[classtable.Malevolence].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and (demonic_art()) and cooldown[classtable.ChaosBolt].ready then
         if not setSpell then setSpell = classtable.ChaosBolt end
