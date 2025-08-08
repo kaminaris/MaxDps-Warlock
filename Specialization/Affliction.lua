@@ -243,7 +243,7 @@ function Affliction:aoe()
         if not setSpell then setSpell = classtable.SoulRot end
     end
     if (MaxDps:CheckSpellUsable(classtable.Malevolence, 'Malevolence')) and (ps_up and vt_up and sr_up) and cooldown[classtable.Malevolence].ready then
-        if not setSpell then setSpell = classtable.Malevolence end
+        MaxDps:GlowCooldown(classtable.Malevolence, cooldown[classtable.Malevolence].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.SeedofCorruption, 'SeedofCorruption') and talents[classtable.SeedofCorruption]) and (((not talents[classtable.Wither] and debuff[classtable.CorruptionDeBuff].remains <5) or (talents[classtable.Wither] and debuff[classtable.WitherDeBuff].remains <5)) and not ((MaxDps.spellHistory[1] == classtable.SeedofCorruption) or MaxDps:DebuffCounter(classtable.SeedofCorruptionDeBuff) >0)) and cooldown[classtable.SeedofCorruption].ready then
         if not setSpell then setSpell = classtable.SeedofCorruption end
@@ -317,7 +317,7 @@ function Affliction:cleave()
         if not setSpell then setSpell = classtable.PhantomSingularity end
     end
     if (MaxDps:CheckSpellUsable(classtable.Malevolence, 'Malevolence')) and (vt_ps_up) and cooldown[classtable.Malevolence].ready then
-        if not setSpell then setSpell = classtable.Malevolence end
+        MaxDps:GlowCooldown(classtable.Malevolence, cooldown[classtable.Malevolence].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.SoulRot, 'SoulRot') and talents[classtable.SoulRot]) and ((vt_ps_up) and MaxDps:DebuffCounter(classtable.AgonyDeBuff) == 2) and cooldown[classtable.SoulRot].ready then
         if not setSpell then setSpell = classtable.SoulRot end
@@ -465,6 +465,7 @@ end
 
 local function ClearCDs()
     MaxDps:GlowCooldown(classtable.SpellLock, false)
+    MaxDps:GlowCooldown(classtable.Malevolence, false)
     MaxDps:GlowCooldown(classtable.SummonDarkglare, false)
     MaxDps:GlowCooldown(classtable.aberrant_spellforge, false)
     MaxDps:GlowCooldown(classtable.spymasters_web, false)
@@ -522,7 +523,7 @@ function Affliction:callaction()
         if not setSpell then setSpell = classtable.PhantomSingularity end
     end
     if (MaxDps:CheckSpellUsable(classtable.Malevolence, 'Malevolence')) and (vt_ps_up) and cooldown[classtable.Malevolence].ready then
-        if not setSpell then setSpell = classtable.Malevolence end
+        MaxDps:GlowCooldown(classtable.Malevolence, cooldown[classtable.Malevolence].ready)
     end
     if (MaxDps:CheckSpellUsable(classtable.SoulRot, 'SoulRot') and talents[classtable.SoulRot]) and (vt_ps_up) and cooldown[classtable.SoulRot].ready then
         if not setSpell then setSpell = classtable.SoulRot end
