@@ -127,7 +127,7 @@ local trinket_2_buff_duration = 0
 local trinket_priority = false
 local allow_rof_2t_spender = 2
 local do_rof_2t = false
-local disable_cb_2t = 0
+local disable_cb_2t = false
 local pool_soul_shards = false
 local havoc_immo_time = 0
 local pooling_condition = 1
@@ -571,7 +571,7 @@ function Destruction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.SummonInfernal, 'SummonInfernal') and talents[classtable.SummonInfernal]) and cooldown[classtable.SummonInfernal].ready then
         MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
     end
-    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and (talents[classtable.DiabolicRitual] and (diabolic_ritual() and (buff[classtable.DiabolicRitualMotherofChaosBuff].remains + buff[classtable.DiabolicRitualOverlordBuff].remains+buff[classtable.DiabolicRitualPitLordBuff].remains - 2-(disable_cb_2t and 0 or 1) * ( classtable and classtable.ChaosBolt and GetSpellInfo(classtable.ChaosBolt).castTime / 1000 or 0)-disable_cb_2t * gcd)<=0)) and cooldown[classtable.Incinerate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and (talents[classtable.DiabolicRitual] and (diabolic_ritual() and (buff[classtable.DiabolicRitualMotherofChaosBuff].remains + buff[classtable.DiabolicRitualOverlordBuff].remains+buff[classtable.DiabolicRitualPitLordBuff].remains - 2-(disable_cb_2t and 0 or 1) * ( classtable and classtable.ChaosBolt and GetSpellInfo(classtable.ChaosBolt).castTime / 1000 or 0)-(disable_cb_2t and 0 or 1) * gcd)<=0)) and cooldown[classtable.Incinerate].ready then
         if not setSpell then setSpell = classtable.Incinerate end
     end
     if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and (pooling_condition_cb and (cooldown[classtable.SummonInfernal].remains >= gcd*3 or SoulShards >4 or not talents[classtable.RainofChaos])) and cooldown[classtable.ChaosBolt].ready then
