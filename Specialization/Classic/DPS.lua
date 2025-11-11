@@ -94,7 +94,7 @@ function DPS:priorityList()
     if (MaxDps:CheckSpellUsable(classtable.LifeTap, 'LifeTap')) and (ManaPerc <10) and cooldown[classtable.LifeTap].ready then
         if not setSpell then setSpell = classtable.LifeTap end
     end
-    if (MaxDps:CheckSpellUsable(classtable.CurseofAgony, 'CurseofAgony')) and (not MaxDps:FindDeBuffAuraData ( 11713 ) .up and MaxDps:NumGroupFriends() > 5) and cooldown[classtable.CurseofAgony].ready then
+    if (MaxDps:CheckSpellUsable(classtable.CurseofAgony, 'CurseofAgony')) and (not MaxDps:FindDeBuffAuraData ( 11713 ) .up and MaxDps:NumGroupFriends() <= 5) and cooldown[classtable.CurseofAgony].ready then
         if not setSpell then setSpell = classtable.CurseofAgony end
     end
     if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (not MaxDps:FindDeBuffAuraData ( 25311 ) .up) and cooldown[classtable.Corruption].ready then
