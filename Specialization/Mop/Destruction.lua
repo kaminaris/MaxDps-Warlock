@@ -89,7 +89,7 @@ function Destruction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.SummonInfernal, 'SummonInfernal')) and (targets >= 7) and cooldown[classtable.SummonInfernal].ready then
         MaxDps:GlowCooldown(classtable.SummonInfernal, cooldown[classtable.SummonInfernal].ready)
     end
-    if (MaxDps:CheckSpellUsable(classtable.RainofFire, 'RainofFire')) and (not debuff[classtable.RainofFireDeBuff].up and not (MaxDps.spellHistory and MaxDps.spellHistory[1] and MaxDps.spellHistory[1] ~= classtable.RainofFire)) and cooldown[classtable.RainofFire].ready then
+    if (MaxDps:CheckSpellUsable(classtable.RainofFire, 'RainofFire')) and (not debuff[classtable.RainofFireDeBuff].up) and cooldown[classtable.RainofFire].ready then
         if not setSpell then setSpell = classtable.RainofFire end
     end
     if (MaxDps:CheckSpellUsable(classtable.FireandBrimstone, 'FireandBrimstone')) and (BurningEmber >=1 and not buff[classtable.FireandBrimstoneBuff].up) and cooldown[classtable.FireandBrimstone].ready then
