@@ -92,10 +92,10 @@ function Destruction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.RainofFire, 'RainofFire')) and (not debuff[classtable.RainofFireDeBuff].up) and cooldown[classtable.RainofFire].ready then
         if not setSpell then setSpell = classtable.RainofFire end
     end
-    if (MaxDps:CheckSpellUsable(classtable.FireandBrimstone, 'FireandBrimstone')) and (BurningEmber >=1 and not buff[classtable.FireandBrimstoneBuff].up) and cooldown[classtable.FireandBrimstone].ready then
+    if (MaxDps:CheckSpellUsable(classtable.FireandBrimstone, 'FireandBrimstone')) and (BurningEmber >=1 and not buff[classtable.FireandBrimstoneBuff].up and (MaxDps:DebuffCounter(classtable.ImmolateDeBuff) < (targets - 1) ) ) and cooldown[classtable.FireandBrimstone].ready then
         if not setSpell then setSpell = classtable.FireandBrimstone end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (buff[classtable.FireandBrimstoneBuff].up and not debuff[classtable.ImmolateDeBuff].up) and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (buff[classtable.FireandBrimstoneBuff].up and not debuff[classtable.ImmolateDeBuff].up and (MaxDps:DebuffCounter(classtable.ImmolateDeBuff) < (targets - 1) ) ) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
     if (MaxDps:CheckSpellUsable(classtable.Conflagrate, 'Conflagrate')) and (BurningEmber >=1 and buff[classtable.FireandBrimstoneBuff].up) and cooldown[classtable.Conflagrate].ready then
@@ -104,9 +104,9 @@ function Destruction:aoe()
     if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and (buff[classtable.FireandBrimstoneBuff].up) and cooldown[classtable.Incinerate].ready then
         if not setSpell then setSpell = classtable.Incinerate end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up) and cooldown[classtable.Immolate].ready then
-        if not setSpell then setSpell = classtable.Immolate end
-    end
+    --if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (not debuff[classtable.ImmolateDeBuff].up) and cooldown[classtable.Immolate].ready then
+    --    if not setSpell then setSpell = classtable.Immolate end
+    --end
 end
 
 
@@ -143,7 +143,7 @@ function Destruction:callaction()
     if (MaxDps:CheckSpellUsable(classtable.Shadowburn, 'Shadowburn')) and (BurningEmber >=1) and cooldown[classtable.Shadowburn].ready then
         if not setSpell then setSpell = classtable.Shadowburn end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (( not debuff[classtable.ImmolateDeBuff].up or debuff[classtable.ImmolateDeBuff].remains <( ( classtable and classtable.Incinerate and GetSpellInfo(classtable.Incinerate).castTime / 1000 or 0) + ( classtable and classtable.Immolate and GetSpellInfo(classtable.Immolate).castTime /1000 or 0) ) ) and ttd >= 5 and true) and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and ( debuff[classtable.ImmolateDeBuff].refreshable and ttd >= 5) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
     if (MaxDps:CheckSpellUsable(classtable.ChaosBolt, 'ChaosBolt')) and (BurningEmber >=1 and ( buff[classtable.BackdraftBuff].count <3 or UnitLevel('player') <86 ) and ( BurningEmber >3.5 or buff[classtable.DarkSoulBuff].remains >( classtable and classtable.ChaosBolt and GetSpellInfo(classtable.ChaosBolt).castTime /1000 or 0) ) and ManaPerc <= 80) and cooldown[classtable.ChaosBolt].ready then
