@@ -141,7 +141,7 @@ function Warlock:Affliction()
     classtable.Corruption = 172
     classtable.SiphonLife = 63106
     classtable.Immolate = 348
-    classtable.ImprovedScorch = 84746
+    classtable.ImprovedScorch = 12873
     classtable.ShadowBolt = 686
 
     setSpell = nil
