@@ -104,7 +104,7 @@ function Destruction:Single()
     if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and talents[classtable.ShadowandFlame] and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and talents[classtable.Emberstorm] or (not talents[classtable.ShadowandFlame] and not talents[classtable.Emberstorm]) and cooldown[classtable.Incinerate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and (talents[classtable.Emberstorm] or not talents[classtable.ShadowandFlame] and not talents[classtable.Emberstorm]) and cooldown[classtable.Incinerate].ready then
         if not setSpell then setSpell = classtable.Incinerate end
     end
 end
