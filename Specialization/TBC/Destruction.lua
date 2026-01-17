@@ -76,7 +76,7 @@ local function ClearCDs()
 end
 
 function Destruction:AoE()
-    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and not talent[classtable.DemonicSacrifice]  and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
         --if not setSpell then setSpell = classtable.SummonImp end
         MaxDps:GlowCooldown(classtable.SummonSuccubus, true)
     end
@@ -86,7 +86,7 @@ function Destruction:AoE()
 end
 
 function Destruction:Single()
-    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Imp") and cooldown[classtable.SummonImp].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and not talent[classtable.DemonicSacrifice] and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Imp") and cooldown[classtable.SummonImp].ready then
         --if not setSpell then setSpell = classtable.SummonImp end
         MaxDps:GlowCooldown(classtable.SummonImp, true)
     end
@@ -101,15 +101,25 @@ function Destruction:Single()
     if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:FindADAuraData(classtable.Immolate).refreshable and MaxDps:FindADAuraData(classtable.ImprovedScorch).up) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
-    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and talents[classtable.ImprovedShadowBolt] and cooldown[classtable.ShadowBolt].ready then
+    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and talents[classtable.ShadowandFlame] and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and not talents[classtable.ImprovedShadowBolt] and cooldown[classtable.Incinerate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and talents[classtable.Emberstorm] or (not talents[classtable.ShadowandFlame] and not talents[classtable.Emberstorm]) and cooldown[classtable.Incinerate].ready then
         if not setSpell then setSpell = classtable.Incinerate end
     end
 end
 
 function Destruction:callaction()
+    if talent[classtable.DemonicSacrifice] and talents[classtable.ShadowandFlame] and not MaxDps:FindADAuraData(classtable.DemonicSacrifice).up and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Succubus") then
+        if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and cooldown[classtable.SummonSuccubus].ready then
+            MaxDps:GlowCooldown(classtable.SummonSuccubus, true)
+        end
+    end
+     if talent[classtable.DemonicSacrifice] and talents[classtable.Emberstorm] and not MaxDps:FindADAuraData(classtable.DemonicSacrifice).up and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Imp") then
+        if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and cooldown[classtable.SummonImp].ready then
+            MaxDps:GlowCooldown(classtable.SummonImp, true)
+        end
+    end
     if (targets >1) then
         Destruction:AoE()
     end
@@ -155,6 +165,9 @@ function Warlock:Destruction()
     classtable.Incinerate = 29722
     classtable.SeedofCorruption = 27243
     classtable.SummonSuccubus = 712
+    classtable.DemonicSacrifice = 18788
+    classtable.ShadowandFlame = 30288
+    classtable.Emberstorm = 17954
 
     setSpell = nil
     ClearCDs()
