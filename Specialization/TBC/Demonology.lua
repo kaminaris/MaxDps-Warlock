@@ -67,13 +67,21 @@ local ManaPerc
 local Demonology = {}
 
 local function ClearCDs()
+    MaxDps:GlowCooldown(classtable.SummonSuccubus, false)
 end
 
 function Demonology:AoE()
+    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and (not UnitExists('pet') or UnitCreatureFamily("player") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
+        --if not setSpell then setSpell = classtable.SummonImp end
+        MaxDps:GlowCooldown(classtable.SummonSuccubus, true)
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SeedofCorruption, 'SeedofCorruption')) and cooldown[classtable.SeedofCorruption].ready then
+        if not setSpell then setSpell = classtable.SeedofCorruption end
+    end
 end
 
 function Demonology:Single()
-    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (not UnitExists('pet')) and cooldown[classtable.SummonFelguard].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (not UnitExists('pet') or UnitCreatureFamily("player") ~= "Felguard") and cooldown[classtable.SummonFelguard].ready then
         if not setSpell then setSpell = classtable.SummonFelguard end
     end
     if (MaxDps:CheckSpellUsable(classtable.CurseofDoom, 'CurseofDoom')) and (MaxDps:FindADAuraData(classtable.CurseofDoom).refreshable) and cooldown[classtable.CurseofDoom].ready then
@@ -129,6 +137,8 @@ function Warlock:Demonology()
     classtable.Immolate = 348
     classtable.ImprovedScorch = 12873
     classtable.ShadowBolt = 686
+    classtable.SeedofCorruption = 27243
+    classtable.SummonSuccubus = 712
 
     setSpell = nil
     ClearCDs()

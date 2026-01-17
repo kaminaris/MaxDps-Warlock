@@ -67,16 +67,26 @@ local ManaPerc
 local Affliction = {}
 
 local function ClearCDs()
+    MaxDps:GlowCooldown(classtable.SummonSuccubus, false)
+    MaxDps:GlowCooldown(classtable.SummonImp, false)
     MaxDps:GlowCooldown(classtable.CurseoftheElements, false)
     MaxDps:GlowCooldown(classtable.CurseofDoom, false)
 end
 
 function Affliction:AoE()
+    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and (not UnitExists('pet') or UnitCreatureFamily("player") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
+        --if not setSpell then setSpell = classtable.SummonImp end
+        MaxDps:GlowCooldown(classtable.SummonSuccubus, true)
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SeedofCorruption, 'SeedofCorruption')) and cooldown[classtable.SeedofCorruption].ready then
+        if not setSpell then setSpell = classtable.SeedofCorruption end
+    end
 end
 
 function Affliction:Single()
-    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (not UnitExists('pet')) and cooldown[classtable.SummonImp].ready then
-        if not setSpell then setSpell = classtable.SummonImp end
+    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (not UnitExists('pet') or UnitCreatureFamily("player") ~= "Imp") and cooldown[classtable.SummonImp].ready then
+        --if not setSpell then setSpell = classtable.SummonImp end
+        MaxDps:GlowCooldown(classtable.SummonImp, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.CurseoftheElements, 'CurseoftheElements')) and (MaxDps:FindADAuraData(classtable.CurseoftheElements).refreshable) and cooldown[classtable.CurseoftheElements].ready then
         --if not setSpell then setSpell = classtable.CurseoftheElements end
@@ -143,6 +153,8 @@ function Warlock:Affliction()
     classtable.Immolate = 348
     classtable.ImprovedScorch = 12873
     classtable.ShadowBolt = 686
+    classtable.SeedofCorruption = 27243
+    classtable.SummonSuccubus = 712
 
     setSpell = nil
     ClearCDs()

@@ -30,6 +30,7 @@ Specialization\Cata\Destruction.lua
 #@version-bcc@
 Specialization\TBC\Affliction.lua
 Specialization\TBC\Demonology.lua
+Specialization\TBC\Destruction.lua
 #@end-version-bcc@
 
 #@version-classic@

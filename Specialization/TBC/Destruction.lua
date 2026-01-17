@@ -69,12 +69,44 @@ local havoc_remains
 local Destruction = {}
 
 local function ClearCDs()
+    MaxDps:GlowCooldown(classtable.SummonSuccubus, false)
+    MaxDps:GlowCooldown(classtable.SummonImp, false)
+    MaxDps:GlowCooldown(classtable.CurseoftheElements, false)
+    MaxDps:GlowCooldown(classtable.CurseofDoom, false)
 end
 
 function Destruction:AoE()
+    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and (not UnitExists('pet') or UnitCreatureFamily("player") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
+        --if not setSpell then setSpell = classtable.SummonImp end
+        MaxDps:GlowCooldown(classtable.SummonSuccubus, true)
+    end
+    if (MaxDps:CheckSpellUsable(classtable.SeedofCorruption, 'SeedofCorruption')) and cooldown[classtable.SeedofCorruption].ready then
+        if not setSpell then setSpell = classtable.SeedofCorruption end
+    end
 end
 
 function Destruction:Single()
+    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (not UnitExists('pet') or UnitCreatureFamily("player") ~= "Imp") and cooldown[classtable.SummonImp].ready then
+        --if not setSpell then setSpell = classtable.SummonImp end
+        MaxDps:GlowCooldown(classtable.SummonImp, true)
+    end
+    if (MaxDps:CheckSpellUsable(classtable.CurseoftheElements, 'CurseoftheElements')) and (MaxDps:FindADAuraData(classtable.CurseoftheElements).refreshable) and cooldown[classtable.CurseoftheElements].ready then
+        --if not setSpell then setSpell = classtable.CurseoftheElements end
+        MaxDps:GlowCooldown(classtable.CurseoftheElements, true)
+    end
+    if (MaxDps:CheckSpellUsable(classtable.CurseofDoom, 'CurseofDoom')) and (MaxDps:FindADAuraData(classtable.CurseofDoom).refreshable) and cooldown[classtable.CurseofDoom].ready then
+        --if not setSpell then setSpell = classtable.CurseofDoom end
+        MaxDps:GlowCooldown(classtable.CurseofDoom, true)
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:FindADAuraData(classtable.Immolate).refreshable and MaxDps:FindADAuraData(classtable.ImprovedScorch).up) and cooldown[classtable.Immolate].ready then
+        if not setSpell then setSpell = classtable.Immolate end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and talents[classtable.ImprovedShadowBolt] and cooldown[classtable.ShadowBolt].ready then
+        if not setSpell then setSpell = classtable.ShadowBolt end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and not talents[classtable.ImprovedShadowBolt] and cooldown[classtable.Incinerate].ready then
+        if not setSpell then setSpell = classtable.Incinerate end
+    end
 end
 
 function Destruction:callaction()
@@ -112,6 +144,17 @@ function Warlock:Destruction()
     SoulShards = UnitPower('player', SoulShardsPT)
     SoulShardsMax = UnitPowerMax('player', MaelstromPT)
     SoulShardsDeficit = SoulShardsMax - SoulShards
+
+    classtable.SummonImp = 688
+    classtable.CurseoftheElements = 1490
+    classtable.CurseofDoom = 603
+    classtable.Immolate = 348
+    classtable.ImprovedScorch = 12873
+    classtable.ShadowBolt = 686
+    classtable.ImprovedShadowBolt = 17803
+    classtable.Incinerate = 29722
+    classtable.SeedofCorruption = 27243
+    classtable.SummonSuccubus = 712
 
     setSpell = nil
     ClearCDs()
