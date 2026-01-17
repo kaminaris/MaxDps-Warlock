@@ -73,6 +73,7 @@ local function ClearCDs()
     MaxDps:GlowCooldown(classtable.SummonImp, false)
     MaxDps:GlowCooldown(classtable.CurseoftheElements, false)
     MaxDps:GlowCooldown(classtable.CurseofDoom, false)
+    MaxDps:GlowCooldown(classtable.Immolate, false)
 end
 
 function Destruction:AoE()
@@ -98,12 +99,12 @@ function Destruction:Single()
         --if not setSpell then setSpell = classtable.CurseofDoom end
         MaxDps:GlowCooldown(classtable.CurseofDoom, true)
     end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:GetPartyState() == "solo") and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:GetPartyState() == "solo" and MaxDps:FindADAuraData(classtable.Immolate).refreshable) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
     if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:GetPartyState() ~= "solo" and MaxDps:FindADAuraData(classtable.Immolate).refreshable and MaxDps:FindADAuraData(classtable.ImprovedScorch).up) and cooldown[classtable.Immolate].ready then
         --if not setSpell then setSpell = classtable.Immolate end
-        MaxDps:GlowCooldown(classtable.CurseofDoom, true)
+        MaxDps:GlowCooldown(classtable.Immolate, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and talents[classtable.ShadowandFlame] and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
