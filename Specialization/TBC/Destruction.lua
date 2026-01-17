@@ -98,14 +98,21 @@ function Destruction:Single()
         --if not setSpell then setSpell = classtable.CurseofDoom end
         MaxDps:GlowCooldown(classtable.CurseofDoom, true)
     end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:FindADAuraData(classtable.Immolate).refreshable and MaxDps:FindADAuraData(classtable.ImprovedScorch).up) and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:GetPartyState() == "solo") and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:GetPartyState() ~= "solo" and MaxDps:FindADAuraData(classtable.Immolate).refreshable and MaxDps:FindADAuraData(classtable.ImprovedScorch).up) and cooldown[classtable.Immolate].ready then
+        --if not setSpell then setSpell = classtable.Immolate end
+        MaxDps:GlowCooldown(classtable.CurseofDoom, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and talents[classtable.ShadowandFlame] and cooldown[classtable.ShadowBolt].ready then
         if not setSpell then setSpell = classtable.ShadowBolt end
     end
     if (MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and (talents[classtable.Emberstorm] or not talents[classtable.ShadowandFlame] and not talents[classtable.Emberstorm]) and cooldown[classtable.Incinerate].ready then
         if not setSpell then setSpell = classtable.Incinerate end
+    end
+    if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and (not MaxDps:CheckSpellUsable(classtable.Incinerate, 'Incinerate')) and cooldown[classtable.ShadowBolt].ready then
+        if not setSpell then setSpell = classtable.ShadowBolt end
     end
 end
 
