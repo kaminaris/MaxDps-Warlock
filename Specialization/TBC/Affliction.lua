@@ -102,10 +102,10 @@ function Affliction:Single()
     if (MaxDps:CheckSpellUsable(classtable.Corruption, 'Corruption')) and (MaxDps:FindADAuraData(classtable.Corruption).refreshable) and cooldown[classtable.Corruption].ready then
         if not setSpell then setSpell = classtable.Corruption end
     end
-    if (MaxDps:CheckSpellUsable(classtable.SiphonLife, 'SiphonLife')) and (MaxDps:FindADAuraData(classtable.SiphonLife).refreshable) and cooldown[classtable.SiphonLife].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SiphonLife, 'SiphonLife')) and (MaxDps:FindADAuraData(classtable.SiphonLife).refreshable and MaxDps:FindADAuraData(classtable.ShadowVulnerability).up) and cooldown[classtable.SiphonLife].ready then
         if not setSpell then setSpell = classtable.SiphonLife end
     end
-    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:FindADAuraData(classtable.Immolate).refreshable and MaxDps:FindADAuraData(classtable.ImprovedScorch).up) and cooldown[classtable.Immolate].ready then
+    if (MaxDps:CheckSpellUsable(classtable.Immolate, 'Immolate')) and (MaxDps:FindADAuraData(classtable.Immolate).refreshable) and cooldown[classtable.Immolate].ready then
         if not setSpell then setSpell = classtable.Immolate end
     end
     if (MaxDps:CheckSpellUsable(classtable.ShadowBolt, 'ShadowBolt')) and cooldown[classtable.ShadowBolt].ready then
@@ -155,6 +155,7 @@ function Warlock:Affliction()
     classtable.ShadowBolt = 686
     classtable.SeedofCorruption = 27243
     classtable.SummonSuccubus = 712
+    classtable.ShadowVulnerability = 17800
 
     setSpell = nil
     ClearCDs()
