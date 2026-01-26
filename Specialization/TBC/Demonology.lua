@@ -68,10 +68,11 @@ local Demonology = {}
 
 local function ClearCDs()
     MaxDps:GlowCooldown(classtable.SummonSuccubus, false)
+    MaxDps:GlowCooldown(classtable.SummonFelguard, false)
 end
 
 function Demonology:AoE()
-    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and (UnitCreatureFamily("pet") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
         --if not setSpell then setSpell = classtable.SummonImp end
         MaxDps:GlowCooldown(classtable.SummonSuccubus, true)
     end
@@ -81,8 +82,9 @@ function Demonology:AoE()
 end
 
 function Demonology:Single()
-    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Felguard") and cooldown[classtable.SummonFelguard].ready then
-        if not setSpell then setSpell = classtable.SummonFelguard end
+    if (MaxDps:CheckSpellUsable(classtable.SummonFelguard, 'SummonFelguard')) and (UnitCreatureFamily("pet") ~= "Felguard") and cooldown[classtable.SummonFelguard].ready then
+        --if not setSpell then setSpell = classtable.SummonFelguard end
+        MaxDps:GlowCooldown(classtable.SummonFelguard, true)
     end
     if (MaxDps:CheckSpellUsable(classtable.CurseofDoom, 'CurseofDoom')) and (MaxDps:FindADAuraData(classtable.CurseofDoom).refreshable) and cooldown[classtable.CurseofDoom].ready then
         if not setSpell then setSpell = classtable.CurseofDoom end

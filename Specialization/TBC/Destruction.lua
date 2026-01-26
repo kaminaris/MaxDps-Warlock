@@ -77,7 +77,7 @@ local function ClearCDs()
 end
 
 function Destruction:AoE()
-    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and not talents[classtable.DemonicSacrifice]  and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and not talents[classtable.DemonicSacrifice]  and (UnitCreatureFamily("pet") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
         --if not setSpell then setSpell = classtable.SummonImp end
         MaxDps:GlowCooldown(classtable.SummonSuccubus, true)
     end
@@ -87,7 +87,7 @@ function Destruction:AoE()
 end
 
 function Destruction:Single()
-    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and not talents[classtable.DemonicSacrifice] and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Imp") and cooldown[classtable.SummonImp].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and not talents[classtable.DemonicSacrifice] and (UnitCreatureFamily("pet") ~= "Imp") and cooldown[classtable.SummonImp].ready then
         --if not setSpell then setSpell = classtable.SummonImp end
         MaxDps:GlowCooldown(classtable.SummonImp, true)
     end
@@ -121,12 +121,12 @@ function Destruction:Single()
 end
 
 function Destruction:callaction()
-    if talents[classtable.DemonicSacrifice] and talents[classtable.ShadowandFlame] and not MaxDps:FindADAuraData(classtable.DemonicSacrifice).up and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Succubus") then
+    if talents[classtable.DemonicSacrifice] and talents[classtable.ShadowandFlame] and not MaxDps:FindADAuraData(classtable.DemonicSacrifice).up and (UnitCreatureFamily("pet") ~= "Succubus") then
         if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and cooldown[classtable.SummonSuccubus].ready then
             MaxDps:GlowCooldown(classtable.SummonSuccubus, true)
         end
     end
-     if talents[classtable.DemonicSacrifice] and talents[classtable.Emberstorm] and not MaxDps:FindADAuraData(classtable.DemonicSacrifice).up and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Imp") then
+     if talents[classtable.DemonicSacrifice] and talents[classtable.Emberstorm] and not MaxDps:FindADAuraData(classtable.DemonicSacrifice).up and (UnitCreatureFamily("pet") ~= "Imp") then
         if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and cooldown[classtable.SummonImp].ready then
             MaxDps:GlowCooldown(classtable.SummonImp, true)
         end

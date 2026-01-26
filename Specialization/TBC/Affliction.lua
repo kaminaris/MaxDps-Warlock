@@ -74,7 +74,7 @@ local function ClearCDs()
 end
 
 function Affliction:AoE()
-    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonSuccubus, 'SummonSuccubus')) and (UnitCreatureFamily("pet") ~= "Succubus") and cooldown[classtable.SummonSuccubus].ready then
         --if not setSpell then setSpell = classtable.SummonImp end
         MaxDps:GlowCooldown(classtable.SummonSuccubus, true)
     end
@@ -84,7 +84,7 @@ function Affliction:AoE()
 end
 
 function Affliction:Single()
-    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (not UnitExists('pet') or UnitCreatureFamily("pet") ~= "Imp") and cooldown[classtable.SummonImp].ready then
+    if (MaxDps:CheckSpellUsable(classtable.SummonImp, 'SummonImp')) and (UnitCreatureFamily("pet") ~= "Imp") and cooldown[classtable.SummonImp].ready then
         --if not setSpell then setSpell = classtable.SummonImp end
         MaxDps:GlowCooldown(classtable.SummonImp, true)
     end
