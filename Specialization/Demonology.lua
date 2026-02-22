@@ -47,5 +47,6 @@ function Warlock:Demonology()
             --    end
             end
         end
+        MaxDps:GlowCooldownMidnight(265187, true)
     end
 end
