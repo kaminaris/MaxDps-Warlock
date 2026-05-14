@@ -135,11 +135,11 @@ function Demonology:callaction()
         --if not setSpell then setSpell = classtable.DarkSoul end
         MaxDps:GlowCooldown(classtable.DarkSoul, true)
     end
+    if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false) and not buff[classtable.GrimoireofSacrificeBuff].up or buff[classtable.GrimoireofSacrificeBuff].refreshable) and UnitExists("pet") and cooldown[classtable.GrimoireofSacrifice].ready then
+        if not setSpell then setSpell = classtable.GrimoireofSacrifice end
+    end
     if (MaxDps:CheckSpellUsable(classtable.ServicePet, 'ServicePet')) and ( (talents[classtable.GrimoireofSacrifice] and not buff[classtable.GrimoireofSacrificeBuff].up) or (not talents[classtable.GrimoireofSacrifice] and not UnitExists("pet")) ) and cooldown[classtable.ServicePet].ready then
         if not setSpell then setSpell = classtable.ServicePet end
-    end
-    if (MaxDps:CheckSpellUsable(classtable.GrimoireofSacrifice, 'GrimoireofSacrifice') and talents[classtable.GrimoireofSacrifice]) and ((talents[classtable.GrimoireofSacrifice] and true or false) and not buff[classtable.GrimoireofSacrificeBuff].up or buff[classtable.GrimoireofSacrificeBuff].refreshable) and cooldown[classtable.GrimoireofSacrifice].ready then
-        if not setSpell then setSpell = classtable.GrimoireofSacrifice end
     end
     --if (MaxDps:CheckSpellUsable(classtable.Melee, 'Melee')) and cooldown[classtable.Melee].ready then
     --    if not setSpell then setSpell = classtable.Melee end
