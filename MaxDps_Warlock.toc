@@ -1,4 +1,4 @@
-## Title: MaxDps_Warlock
+﻿## Title: MaxDps_Warlock
 ## Version: @project-version@
 ## Author: Kaminaris
 ## Interface: 120105
@@ -16,30 +16,24 @@
 ## X-Wago-ID: qGYM9RGg
 
 Main.lua
-#@retail@
-Specialization\Affliction.lua
-Specialization\Demonology.lua
-Specialization\Destruction.lua
-#@end-retail@
+Specialization\Affliction.lua [AllowLoadGameType standard]
+Specialization\Demonology.lua [AllowLoadGameType standard]
+Specialization\Destruction.lua [AllowLoadGameType standard]
 
-#@version-cata@
-Specialization\Cata\Affliction.lua
-Specialization\Cata\Demonology.lua
-Specialization\Cata\Destruction.lua
-#@end-version-cata@
+Specialization\Cata\Affliction.lua [AllowLoadGameType cata]
+Specialization\Cata\Demonology.lua [AllowLoadGameType cata]
+Specialization\Cata\Destruction.lua [AllowLoadGameType cata]
 
-#@version-bcc@
-Specialization\TBC\Affliction.lua
-Specialization\TBC\Demonology.lua
-Specialization\TBC\Destruction.lua
-#@end-version-bcc@
+Specialization\TBC\Affliction.lua [AllowLoadGameType tbc]
+Specialization\TBC\Demonology.lua [AllowLoadGameType tbc]
+Specialization\TBC\Destruction.lua [AllowLoadGameType tbc]
 
-#@version-classic@
-Specialization\Classic\DPS.lua
-#@end-version-classic@
+Specialization\Classic\DPS.lua [AllowLoadGameType vanilla]
 
-#@version-mists@
-Specialization\Mop\Affliction.lua
-Specialization\Mop\Demonology.lua
-Specialization\Mop\Destruction.lua
-#@end-version-mists@
+Specialization\Mop\Affliction.lua [AllowLoadGameType mists]
+Specialization\Mop\Demonology.lua [AllowLoadGameType mists]
+Specialization\Mop\Destruction.lua [AllowLoadGameType mists]
+
+Specialization\Forever\Affliction.lua [AllowLoadGameType forever]
+Specialization\Forever\Demonology.lua [AllowLoadGameType forever]
+Specialization\Forever\Destruction.lua [AllowLoadGameType forever]
