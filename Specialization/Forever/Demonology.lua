@@ -11,9 +11,9 @@ local Demonology = {}
 
 local coeLC
 function Warlock:Demonology()
-    if not coeLC and  MaxDps.IsTrackedAuraActive(702) then
+    if not coeLC and  MaxDps.IsTrackedAuraActive(440892) then
         coeLC = GetTime() + 300
-    elseif MaxDps.IsTrackedAuraActive(702) == nil then
+    elseif MaxDps.IsTrackedAuraActive(440892) == nil then
         coeLC = nil
     end
     if coeLC and coeLC - GetTime() <= 0 then
