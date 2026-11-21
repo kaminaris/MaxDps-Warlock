@@ -5,10 +5,19 @@ if not MaxDps then return end
 
 local Affliction = {}
 
+local coeLC
 function Warlock:Affliction()
+    if not coeLC and  MaxDps.IsTrackedAuraActive(702) then
+        coeLC = GetTime() + 300
+    elseif MaxDps.IsTrackedAuraActive(702) == nil then
+        coeLC = nil
+    end
+    if coeLC and coeLC - GetTime() <= 0 then
+        coeLC = nil
+    end
     if MaxDps:SmartAoe() <= 1 then
         if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end --  Life Tap
-        if (not MaxDps.IsTrackedAuraActive(440892)) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
+        if (not MaxDps.IsTrackedAuraActive(440892) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
         if not MaxDps.IsSpellOnCooldown(18288, true) then return 18288 end --  Amplify Curse
         if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end --  Bane of Doom
         if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end --  Bane of Agony
@@ -20,7 +29,7 @@ function Warlock:Affliction()
 
     if MaxDps:SmartAoe() == 2 then
         if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end -- Life Tap
-        if (not MaxDps.IsTrackedAuraActive(440892)) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end -- Curse of the Elements
+        if (not MaxDps.IsTrackedAuraActive(440892) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end -- Curse of the Elements
         if not MaxDps.IsSpellOnCooldown(18288, true) then return 18288 end -- Amplify Curse
         if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end -- Bane of Doom
         if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end -- Bane of Agony
@@ -33,7 +42,7 @@ function Warlock:Affliction()
     if MaxDps:SmartAoe() > 2 then
         if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end --  Life Tap
         if MaxDps.Near(10) then MaxDps:GlowDefensiveHPMidnight(1949, true) end --  Hellfire
-        if (not MaxDps.IsTrackedAuraActive(440892)) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
+        if (not MaxDps.IsTrackedAuraActive(440892) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
         if not MaxDps.IsSpellOnCooldown(18288, true) then return 18288 end --  Amplify Curse
         if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end --  Bane of Doom
         if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end --  Bane of Agony
