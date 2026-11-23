@@ -21,7 +21,7 @@ function Warlock:Destruction()
     end
     if MaxDps:SmartAoe() <= 1 then
         if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end --  Life Tap
-        if (not MaxDps.IsTrackedAuraActive(440892) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end -- Curse of the Elements
+        if (not MaxDps.IsTrackedAuraActive(440892) and not MaxDps.IsTrackedAuraActive(702) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
         if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end --  Bane of Doom
         if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end --  Bane of Agony
         if (not MaxDps.IsTrackedAuraActive(172)) and not MaxDps.IsSpellOnCooldown(172, true) then return 172 end --  Corruption
@@ -33,7 +33,7 @@ function Warlock:Destruction()
 
     if MaxDps:SmartAoe() == 2 then
         if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end -- Life Tap
-        if (not MaxDps.IsTrackedAuraActive(440892) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end -- Curse of the Elements
+        if (not MaxDps.IsTrackedAuraActive(440892) and not MaxDps.IsTrackedAuraActive(702) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
         if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end -- Bane of Doom
         if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end -- Bane of Agony
         if (not MaxDps.IsTrackedAuraActive(172)) and not MaxDps.IsSpellOnCooldown(172, true) then return 172 end -- Corruption
@@ -46,7 +46,7 @@ function Warlock:Destruction()
     if MaxDps:SmartAoe() > 2 then
         if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end --  Life Tap
         if MaxDps.Near(10) then MaxDps:GlowDefensiveHPMidnight(1949, true) end --  Hellfire
-        if (not MaxDps.IsTrackedAuraActive(440892) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end -- Curse of the Elements
+        if (not MaxDps.IsTrackedAuraActive(440892) and not MaxDps.IsTrackedAuraActive(702) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
         if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end --  Bane of Doom
         if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end --  Bane of Agony
         if (not MaxDps.IsTrackedAuraActive(172)) and not MaxDps.IsSpellOnCooldown(172, true) then return 172 end --  Corruption
