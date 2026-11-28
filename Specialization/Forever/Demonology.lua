@@ -9,29 +9,43 @@ local aurasSetup = true
 
 local Demonology = {}
 
-local coeLC
+local coeLCExpire
+local coeLCCT
+
 function Warlock:Demonology()
-    if not coeLC and  MaxDps.IsTrackedAuraActive(440892) then
-        coeLC = GetTime() + 300
-    elseif MaxDps.IsTrackedAuraActive(440892) == nil then
-        coeLC = nil
+    local now = GetTime()
+
+    -- Backup: rebuild timer if aura is detected but timer was lost
+    if not coeLCExpire and MaxDps.IsTrackedAuraActive(440892) then
+        coeLCExpire = now + 300
+        coeLCCT = nil
     end
-    if coeLC and coeLC - GetTime() <= 0 then
-        coeLC = nil
+
+    -- Primary expiration handling
+    if coeLCExpire and now >= coeLCExpire then
+        coeLCExpire = nil
+        coeLCCT = nil
     end
+
+    -- Cast succeeded but aura never appeared
+    if coeLCCT and (now - coeLCCT) > 5 and not MaxDps.IsTrackedAuraActive(440892) then
+        coeLCExpire = nil
+        coeLCCT = nil
+    end
+
     if MaxDps:SmartAoe() <= 1 then
-        if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end --  Life Tap
-        if (not MaxDps.IsTrackedAuraActive(440892) and not MaxDps.IsTrackedAuraActive(702) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
-        if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end --  Bane of Doom
-        if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end --  Bane of Agony
-        if (not MaxDps.IsTrackedAuraActive(172)) and not MaxDps.IsSpellOnCooldown(172, true) then return 172 end --  Corruption
-        if (not MaxDps.IsTrackedAuraActive(348)) and not MaxDps.IsSpellOnCooldown(348, true) then return 348 end --  Immolate
-        if not MaxDps.IsSpellOnCooldown(686, true) then return 686 end --  Shadow Bolt
+        if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end -- Life Tap
+        if (not MaxDps.IsTrackedAuraActive(440892) and not MaxDps.IsTrackedAuraActive(702) and not coeLCExpire and not coeLCCT) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end -- Curse of the Elements
+        if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end -- Bane of Doom
+        if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end -- Bane of Agony
+        if (not MaxDps.IsTrackedAuraActive(172)) and not MaxDps.IsSpellOnCooldown(172, true) then return 172 end -- Corruption
+        if (not MaxDps.IsTrackedAuraActive(348)) and not MaxDps.IsSpellOnCooldown(348, true) then return 348 end -- Immolate
+        if not MaxDps.IsSpellOnCooldown(686, true) then return 686 end -- Shadow Bolt
     end
 
     if MaxDps:SmartAoe() == 2 then
         if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end -- Life Tap
-        if (not MaxDps.IsTrackedAuraActive(440892) and not MaxDps.IsTrackedAuraActive(702) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
+        if (not MaxDps.IsTrackedAuraActive(440892) and not MaxDps.IsTrackedAuraActive(702) and not coeLCExpire and not coeLCCT) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end -- Curse of the Elements
         if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end -- Bane of Doom
         if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end -- Bane of Agony
         if (not MaxDps.IsTrackedAuraActive(172)) and not MaxDps.IsSpellOnCooldown(172, true) then return 172 end -- Corruption
@@ -40,14 +54,31 @@ function Warlock:Demonology()
     end
 
     if MaxDps:SmartAoe() > 2 then
-        if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end --  Life Tap
-        if MaxDps.Near(10) then MaxDps:GlowDefensiveHPMidnight(1949, true) end --  Hellfire
-        if (not MaxDps.IsTrackedAuraActive(440892) and not MaxDps.IsTrackedAuraActive(702) and not coeLC) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end --  Curse of the Elements
-        if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end --  Bane of Doom
-        if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end --  Bane of Agony
-        if (not MaxDps.IsTrackedAuraActive(172)) and not MaxDps.IsSpellOnCooldown(172, true) then return 172 end --  Corruption
-        if (not MaxDps.IsTrackedAuraActive(348)) and not MaxDps.IsSpellOnCooldown(348, true) then return 348 end --  Immolate
-        if not MaxDps.IsSpellOnCooldown(5740, true) then return 5740 end --  Rain of Fire
-        if not MaxDps.IsSpellOnCooldown(686, true) then return 686 end --  Shadow Bolt
+        if (MaxDps.Power("mana") < 10 or MaxDps.Starved()) then MaxDps:GlowDefensiveHPMidnight(1454, true) end -- Life Tap
+        if MaxDps.Near(10) then MaxDps:GlowDefensiveHPMidnight(1949, true) end -- Hellfire
+        if (not MaxDps.IsTrackedAuraActive(440892) and not MaxDps.IsTrackedAuraActive(702) and not coeLCExpire and not coeLCCT) and not MaxDps.IsSpellOnCooldown(440892, true) then return 440892 end -- Curse of the Elements
+        if not MaxDps.IsSpellOnCooldown(603, true) then return 603 end -- Bane of Doom
+        if (not MaxDps.Spells[603] and not MaxDps.IsTrackedAuraActive(980)) and not MaxDps.IsSpellOnCooldown(980, true) then return 980 end -- Bane of Agony
+        if (not MaxDps.IsTrackedAuraActive(172)) and not MaxDps.IsSpellOnCooldown(172, true) then return 172 end -- Corruption
+        if (not MaxDps.IsTrackedAuraActive(348)) and not MaxDps.IsSpellOnCooldown(348, true) then return 348 end -- Immolate
+        if not MaxDps.IsSpellOnCooldown(5740, true) then return 5740 end -- Rain of Fire
+        if not MaxDps.IsSpellOnCooldown(686, true) then return 686 end -- Shadow Bolt
     end
 end
+
+local totemFrame = CreateFrame("Frame")
+totemFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+totemFrame:SetScript("OnEvent", function(_, event, _, _, spellId)
+    local now = GetTime()
+
+    if event == "UNIT_SPELLCAST_SUCCEEDED" then
+        if MaxDps:issecretvalue(spellId) then return end
+
+        local name = spellId and C_Spell.GetSpellName(spellId)
+
+        if name == C_Spell.GetSpellName(440892) then
+            coeLCCT = now
+            coeLCExpire = now + 300
+        end
+    end
+end)
